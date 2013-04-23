@@ -35,6 +35,9 @@
 		var cursor=1;
         var id_respuesta=1;
 		var id_toma=1;
+		
+		var bufferRespuestas= new Array();
+		
         var id_categoria=null;
         var id_item=null;
         var valor=null;
@@ -142,12 +145,10 @@
 		this.id_segmento=id_segmento;
 	}
 	
-	function respuesta(id_respuesta,valor_respuesta,cadena_respuesta,id_toma,id_item,id_pregunta,id_categoria)
+	function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
 	{
             this.id_respuesta=id_respuesta;
-            this.valor_respuesta=valor_respuesta;
-            this.cadena_respuesta=cadena_respuesta;		
-            this.id_toma=id_toma;
+            this.valor_respuesta=valor_respuesta;               
             this.id_item=id_item;
             this.id_pregunta=id_pregunta;	
             this.id_categoria=id_categoria;
@@ -828,12 +829,14 @@
     function cargar_contenido(id_pregunta)
     {					
         // Si existen respuestas buscar la respuesta correspondiente a la pregunta actual
-        respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r9) {				
-                valor=r9.valor_respuesta;
-                cadena=r9.cadena_respuesta;
-                id_item=r9.id_item;
-                id_categoria=r9.id_categoria;
+		var cont=0;
+		
+        respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r9) {							
+			bufferRespuestas(new respuesta(cont,r9.valor_respuesta,r9.id_item,r9.id_pregunta,r9.id_categoria))			
+			cont++;	
         });
+		
+		bufferRespuestasDB=TAFFY(bufferRespuestas);
          
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
@@ -883,9 +886,9 @@
                                     itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
                                         if(cont===1)
-                                            html=html+"<td width='70%' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+                                            html=html+"<td width='70%' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
                                         else                                                                                                
-                                            html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+                                            html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
                                     });	
                                     cont++;
                                     });										
@@ -907,18 +910,21 @@
                                 html=html+"</table>";									
                             }							
                             $('#respuesta').html(html);   
-                            // Si existia una respuesta para esta pregunta, cargarla
-                            $('[name=radio]').filter('[categoria="'+id_categoria+'"][item="'+id_item+'"]').prop('checked', true);
-                            $('[name=radio]').filter('[categoria="'+id_categoria+'"][item="'+id_item+'"]').parent().addClass("seleccionada");
-							id_categoria=null;
-							id_item=null;
+                            // Si existian respuestas para esta pregunta, cargarlas
+							bufferRespuestasDB().each(function(r10){
+								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+							});
+							bufferRespuestas=new Array();
                             
                             $('#tabla_alternativas tr td').click(function(){
                                 $('.seleccionada').removeClass();
                                 $(this).addClass("seleccionada");                                
-                                $('[name=radio]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
-                                id_categoria=$('input:checked').attr('categoria');                                
-                                id_item=$('input:checked').attr('item');  
+                                $('[name=radio]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
+								guardarRespuestaBuffer(bufferRespuestasDB,1,null,parseInt($(this).children().attr('item')),id_pregunta,parseInt($(this).children().attr('categoria'))); 
+								
+								// Si estan todas las categorias contestadas, se considera la pregunta respondida
+								$('[name=radio]')
 								respondida=true;
                             });							
                             break;
@@ -927,8 +933,8 @@
                             $('#respuesta').html(html);
 							
 							// Si existia una respuesta para esta pregunta, cargarla							
-                            $('#valor').val(valor);							
-							valor=null;
+                            $('#valor').val(valor);	
+							bufferRespuestas=new Array();
 							
                             $('#valor').css('font-size','20px');
                             $('.teclado').css('font-size','20px');
@@ -937,6 +943,8 @@
                            $('.teclado').click(function(){
                                 $('#valor').val( parseInt($('#valor').val()+$(this).attr('val')));
                                 valor=$('#valor').val();   
+								//function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
+								guardarRespuestaBuffer(bufferRespuestasDB,1,$('#valor').val(),null,id_pregunta,null); 								
 								respondida=true;
                             });
                             break;
@@ -957,8 +965,7 @@
             existeRespuesta=true;
             return false;
         });
-        		
-		
+        				
         if(existeRespuesta)  
         {
             respuestasDB({'id_pregunta':id_pregunta}).update({valor_respuesta:valor,id_item:id_item,id_categoria:id_categoria});         
@@ -976,7 +983,55 @@
            //console.log(r1); 
         });
     }
+		
+	function guardar_respuestaBuffer(db,id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)    
+    {
+        var existeRespuesta=false;
+        
+        db().filter({'id_pregunta':id_pregunta}).each(function () {
+            existeRespuesta=true;
+            return false;
+        });
+        				
+        if(existeRespuesta)  
+        {
+            db({'id_pregunta':id_pregunta}).update({valor_respuesta:valor,id_item:id_item,id_categoria:id_categoria});         
+        }
+        else
+        {					
+            db.insert(new respuesta(id_respuesta,valor,cadena,id_toma,id_item,id_pregunta,id_categoria));  
+            id_respuesta++;
+        }
+    }	
 
+	function save_content_to_file(content, filename){
+		var dlg = false;
+		with(document){
+		 ir=createElement('iframe');
+		 ir.id='ifr';
+		 ir.location='about.blank';
+		 ir.style.display='none';
+		 body.appendChild(ir);
+		
+		  with(getElementById('ifr').contentWindow.document){
+			   open("text/plain", "replace");
+			   charset = "utf-8";
+			   write(content);
+			   close();
+			   document.charset = "utf-8";
+			   dlg = execCommand('SaveAs', true, filename);
+		   }
+		   //body.removeChild(ir);
+		 }
+		return dlg;
+	}
+
+	function load_content_from_file(filename){
+	}	
+	
+	function enviar_cuestionario(){
+	}
+	
 $(document).ready(function() {	
 
 	var callbacks = $.Callbacks();
@@ -984,7 +1039,6 @@ $(document).ready(function() {
 	callbacks.add( cargar_datos() );
 	callbacks.add( cargar_contenido(cursor) );
 	
-	//alert();
 	
 	$('#guardar').click(function(){
 		save_content_to_file(msg, '\\Application\\encuesta.txt');
@@ -1010,34 +1064,11 @@ $(document).ready(function() {
 		respondida=false;
 	});
         
-	//$('button').button();
 	
 	// content is the data (a string) you'll write to file.
 	// filename is a string filename to write to on server side.
 	// This function uses iFrame as a buffer, it fills it up with your content
-	// and prompts the user to save it out.
-	
-	function save_content_to_file(content, filename){
-		var dlg = false;
-		with(document){
-		 ir=createElement('iframe');
-		 ir.id='ifr';
-		 ir.location='about.blank';
-		 ir.style.display='none';
-		 body.appendChild(ir);
-		
-		  with(getElementById('ifr').contentWindow.document){
-			   open("text/plain", "replace");
-			   charset = "utf-8";
-			   write(content);
-			   close();
-			   document.charset = "utf-8";
-			   dlg = execCommand('SaveAs', true, filename);
-		   }
-		   //body.removeChild(ir);
-		 }
-		return dlg;
-	}
+	// and prompts the user to save it out.	
 	
 	/*
 	$.getJSON('\\Application\\encuesta.txt',function(data){

@@ -1,0 +1,86 @@
+button {
+        width: 8em;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #ffffff;
+	padding: 1px 1px;
+	background: -moz-linear-gradient(
+		top,
+		#96e600 0%,
+		#408f00);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#96e600),
+		to(#408f00));
+	border-radius: 31px;
+	-moz-border-radius: 31px;
+	-webkit-border-radius: 31px;
+	border: 1px solid #000000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0),
+		inset -8px 8px 21px rgba(255,255,255,0.6);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0),
+		inset -8px 8px 21px rgba(255,255,255,0.6);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0),
+		0px 1px 0px rgba(255,255,255,0);
+        
+        cursor: pointer;
+}
+
+  button:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #ffffff;
+	padding: 1px 1px;
+	background: -moz-linear-gradient(
+		top,
+		#d4fa8c 0%,
+		#85de3c);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#d4fa8c),
+		to(#85de3c));
+	border-radius: 31px;
+	-moz-border-radius: 31px;
+	-webkit-border-radius: 31px;
+	border: 1px solid #000000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0),
+		inset -8px 8px 21px rgba(255,255,255,0.6);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0),
+		inset -8px 8px 21px rgba(255,255,255,0.6);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0),
+		0px 1px 0px rgba(255,255,255,0);
+}
+
+    button {
+       font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: black;
+	padding: 1px 1px;
+	background: -moz-linear-gradient(
+		bottom,
+		#faff5e 0%,
+		#d1c702);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#faff5e),
+		to(#d1c702));
+	border-radius: 31px;
+	-moz-border-radius: 31px;
+	-webkit-border-radius: 31px;
+	border: 1px solid #000000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0),
+		inset -8px 8px 21px rgba(255,255,255,0.6);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0),
+		inset -8px 8px 21px rgba(255,255,255,0.6);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0),
+		0px 1px 0px rgba(255,255,255,0);
+}

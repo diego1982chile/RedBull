@@ -216,9 +216,9 @@
 		
 		preguntas.push(new pregunta(14,1,'¿Cuáles SKU de Red Bull están disponibles en la ubicación Principal (Físicamente ahí)?',4,1,2));	
 		preguntas.push(new pregunta(15,2,'¿Cuáles SKU de Red Bull están sin stock (OOS) en la Ubicación Principal (sin producto, pero con etiqueta de precio)?',4,1,2));
-		preguntas.push(new pregunta(16,3,'¿Cuál es el precio regular por SKU? (Sin Promo)?',4,2,2));	
+		preguntas.push(new pregunta(16,3,'¿Cuál es el precio regular por SKU? (Sin Promo)?',4,1,3));	
 		preguntas.push(new pregunta(17,4,'¿Qué SKU del Competidor #1 se encuentran en la Ubicación Principal (Físicamente ahí u OOS)?',4,1,2));	
-		preguntas.push(new pregunta(18,5,'¿Cuál es el precio regular por SKU? (Competidor #1)',4,2,2));				
+		preguntas.push(new pregunta(18,5,'¿Cuál es el precio regular por SKU? (Competidor #1)',4,1,3));				
 
 		///////////////////////////////////SECCION 1.5/////////////////////////////////////		
 
@@ -297,11 +297,14 @@
 		preguntas_categorias.push(new pregunta_categoria(2,14,2));		
 		
 		preguntas_categorias.push(new pregunta_categoria(3,15,1));
-		preguntas_categorias.push(new pregunta_categoria(4,15,2));				
+		preguntas_categorias.push(new pregunta_categoria(4,15,2));
+
+		preguntas_categorias.push(new pregunta_categoria(5,16,1));
+		preguntas_categorias.push(new pregunta_categoria(6,16,2));	
 		
 		preguntas_categorias.push(new pregunta_categoria(5,21,3));
 		preguntas_categorias.push(new pregunta_categoria(6,21,4));				
-		preguntas_categorias.push(new pregunta_categoria(7,21,5));						
+		preguntas_categorias.push(new pregunta_categoria(7,21,5));									
 		
 		preguntas_categorias.push(new pregunta_categoria(8,22,3));
 		preguntas_categorias.push(new pregunta_categoria(9,22,4));				
@@ -527,7 +530,9 @@
 		preguntas_categorias.push(new pregunta_categoria(208,42,23));				
 		preguntas_categorias.push(new pregunta_categoria(209,42,24));
 		preguntas_categorias.push(new pregunta_categoria(210,42,26));				
-		preguntas_categorias.push(new pregunta_categoria(211,42,26));							
+		preguntas_categorias.push(new pregunta_categoria(211,42,26));		
+
+			
 								
 		///////////////////////////////////ITEMES/////////////////////////////////////
 		
@@ -599,12 +604,25 @@
 		
 		alternativas.push(new alternativa(25,15,18,2));	
 		alternativas.push(new alternativa(26,15,19,2));	
+				
 		
-		// PREGUNTA15
+		// PREGUNTA16
+		alternativas.push(new alternativa(22,16,15,1));
+		alternativas.push(new alternativa(23,16,16,1));
+		alternativas.push(new alternativa(24,16,17,1));			
+		
+		alternativas.push(new alternativa(25,16,18,2));	
+		alternativas.push(new alternativa(26,16,19,2));			
+		
+		// PREGUNTA17
 		alternativas.push(new alternativa(26,17,20,null));
 		alternativas.push(new alternativa(27,17,21,null));		
 		alternativas.push(new alternativa(28,17,22,null));
 	
+		// PREGUNTA18
+		alternativas.push(new alternativa(26,18,20,null));
+		alternativas.push(new alternativa(27,18,21,null));		
+		alternativas.push(new alternativa(28,18,22,null));
 	
 		alternativas.push(new alternativa(30,19,10,null));			
 		alternativas.push(new alternativa(31,19,11,null));	
@@ -849,14 +867,12 @@
                                 tiene_categoria=true;
                                 return false;
                             });
-													
-							
+																					
 							switch(parseInt(r1.tipo2))
-							{
+							{								
 								case 1: // Tipo disyuntiva
 									if(tiene_categoria)
-									{                         
-										//alert("tiene categoria");
+									{                         										
 										var html="<table id='tabla_alternativas' width='98%' border='1'>";
 
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
@@ -867,8 +883,7 @@
 											
 											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
 												cont++;
-											});
-											//alert('cont='+cont);
+											});											
 											html=html+"<tr><td width='30%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
 											var cont=1;
 
@@ -921,70 +936,11 @@
 									});													
 									break;
 								case 2: // Tipo conjuntiva
-if(tiene_categoria)
+									if(tiene_categoria)
 									{                         
 										//alert("tiene categoria");
 										var html="<table id='tabla_alternativas' width='98%' border='1'>";
 
-<<<<<<< HEAD
-                                        if(cont===1)
-                                            html=html+"<td width='70%' style='text-align:left'><input type='radio' class='categoria' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
-                                        else                                                                                                
-                                            html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' class='categoria' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
-                                    });	
-                                    cont++;
-                                    });										
-                                });			
-                            });	
-                            html=html+"</table>";                         
-                            }
-                            else
-                            {
-                                // Si no existen categorias para esta pregunta, cargar directamente las alternativas
-                                var html="<table id='tabla_alternativas' width='100%' border='1'>";
-                                var cont=1;
-                                alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
-                                        cont++;
-                                        itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
-                                                html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='radio' class='categoria' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='radio' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
-                                        });															
-                                });		
-                                html=html+"</table>";									
-                            }							
-                            $('#respuesta').html(html);   
-                            // Si existian respuestas para esta pregunta, cargarlas
-							bufferRespuestasDB().each(function(r10){
-								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
-							});
-							bufferRespuestas=new Array();
-                            
-                            $('#tabla_alternativas tr td').click(function(){
-                                $('.seleccionada').removeClass();
-                                $(this).addClass("seleccionada");                                
-                                $('[name=radio]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
-								guardarRespuestaBuffer(null,parseInt($(this).children().attr('item')),id_pregunta,parseInt($(this).children().attr('categoria'))); 
-								
-								// Si estan todas las categorias contestadas, se considera la pregunta respondida
-								var cat=0;
-								var acum1=0;
-								var acum2=1;
-								
-								$('[name=radio]').each(function(){
-									
-									if(cat==$(this).children().attr('categoria'))
-									{
-										acum1=acum1+parseInt($(this).children().attr('checked'));
-									}
-									else
-									{
-										cat=$(this).children().attr('categoria')
-										acum2=acum2*acum1;									
-									}									
-								});
-								respondida=acum2;
-                            });							
-=======
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
 											categoriasDB().filter({'id_categoria':r5.id_categoria}).each(function (r6) {
@@ -993,8 +949,7 @@ if(tiene_categoria)
 											
 											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
 												cont++;
-											});
-											//alert('cont='+cont);
+											});											
 											html=html+"<tr><td width='30%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
 											var cont=1;
 
@@ -1003,9 +958,9 @@ if(tiene_categoria)
 											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
 												if(cont===1)
-													html=html+"<td width='70%' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name=''checkbox'"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+													html=html+"<td width='70%' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='checkbox' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
 												else                                                                                                
-													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name=''checkbox'"+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='checkbox' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
 											});	
 											cont++;
 											});										
@@ -1043,7 +998,7 @@ if(tiene_categoria)
 										}
 										else
 										{
-											$(this).addClass("seleccionada");                                
+											$(this).addClass("seleccionada");        											
 											$('[name=checkbox]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
 										}
 										                               
@@ -1053,10 +1008,95 @@ if(tiene_categoria)
 										
 										respondida=true;
 									});																													
-									break;
-							}															                            		
->>>>>>> 944072b267e7adb52749f97ab280fa06ce77b886
-                            break;
+									break;																					                                                     
+								case 3: // Tipo conjuntiva con valor									
+									if(tiene_categoria)
+									{                         										
+										var html="<table id='tabla_alternativas' width='98%' border='1'>";
+
+										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
+
+											categoriasDB().filter({'id_categoria':r5.id_categoria}).each(function (r6) {
+																				
+											var cont=0;
+											
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
+												cont++;
+											});											
+											html=html+"<tr><td width='30%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
+											var cont=1;
+
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r7) {
+
+											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
+
+												if(cont===1)
+													html=html+"<td width='60%' style='text-align:left'><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td><td><input id='valor"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='input' class='valor' /></td></tr>";                                                                                                
+												else                                                                                                
+													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td><td><input id='valor"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='input' class='valor' /></td></tr>";										
+											});	
+											cont++;
+											});										
+										});			
+									});	
+									html=html+"</table>";                         
+									}
+									else
+									{										
+										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
+										var html="<table id='tabla_alternativas' width='100%' border='1'>";
+										var cont=1;
+										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
+												cont++;
+												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
+													html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td><td><input id='valor"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='input' class='valor' /></td></tr>";										
+												});															
+										});		
+										html=html+"</table>";									
+									}																
+									$('#respuesta').html(html);  
+
+									var html2="<div style='height:220px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
+									$('#respuesta').html(html+html2);
+																		
+									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
+																				
+									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
+										$('#valor').val(r10.valor_respuesta);								
+									});
+																											
+									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
+																		
+									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {																
+										$('[name=]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+									});
+									
+									$('#valor').css('font-size','20px');
+									$('.teclado').css('font-size','20px');
+									$('.teclado').css('width','100%');
+									$('.borrar').css('width','100%');
+									$('.borrar').css('font-size','20px');
+									
+									var focus=$('.valor:first').attr('id');
+									
+									$('#'+focus).focus();
+									
+									$('.valor').focusin(function(){
+										focus=$(this).attr('id');
+									});										
+									
+									$('.teclado').click(function(){								
+										$(['name=input']).filter('[categoria="'+$('#'+focus).attr('categoria')+'"][item="'+$('#'+focus).attr('item')+'"]').val( parseInt($('#'+focus).val()+$(this).attr('val'))); 										
+										if($(['name=input']).filter('[categoria="'+$('#'+focus).attr('categoria')+'"][item="'+$('#'+focus).attr('item')+'"]').val()!='')									
+											guardarRespuesta(id_pregunta,null,null,$('#'+focus).val());
+									});
+									
+									$('.borrar').click(function(){								
+										$('#'+focus).val(''); 										
+									});																																					                           																			
+									break;		
+							}
+                            break;							
                         case 2:// Tipo numerico => cargar un input                                                        
                             var html="<div style='height:50px'><input id='valor' /></div><div style='height:220px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
                             $('#respuesta').html(html);
@@ -1064,8 +1104,7 @@ if(tiene_categoria)
 							// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
 																		
 							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
-								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+								$('#valor').val(r10.valor_respuesta);								
 							});
 							
                             $('#valor').css('font-size','20px');
@@ -1081,10 +1120,8 @@ if(tiene_categoria)
                             });
 							
 							$('.borrar').click(function(){								
-                                $('#valor').val(''); 
-								respondida=false; 								
-                            });
-							
+                                $('#valor').val(''); 										
+                            });							
                             break;				
                     }                      
                 });
@@ -1095,31 +1132,6 @@ if(tiene_categoria)
     function guardarRespuesta(id_pregunta,id_categoria,id_item,valor)    
     {		
         var existeRespuesta=false;
-<<<<<<< HEAD
-        
-        respuestasDB().filter({'id_pregunta':id_pregunta}).each(function () {
-            existeRespuesta=true;
-            return false;
-        });
-        				
-        if(existeRespuesta)  
-        {
-            respuestasDB({'id_pregunta':id_pregunta}).update({valor_respuesta:valor,id_item:id_item,id_categoria:id_categoria});         
-        }
-        else
-        {					
-            respuestasDB.insert(new respuesta(id_respuesta,valor,cadena,id_toma,id_item,id_pregunta,id_categoria));  
-            id_respuesta++;
-        }
-        id_item=null;
-		valor=null;
-		id_categoria=null;
-		cadena=null;
-        respuestasDB().each(function (r1) {
-           //console.log(r1); 
-        });
-    }	
-=======
         var tipoPregunta;		       
 		
 		preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r0) {
@@ -1165,7 +1177,6 @@ if(tiene_categoria)
            console.log(r1); 
         });
     }		
->>>>>>> 944072b267e7adb52749f97ab280fa06ce77b886
 
 	function save_content_to_file(content, filename){
 		var dlg = false;

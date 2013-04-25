@@ -34,14 +34,8 @@
 	
 		var cursor=1;
         var id_respuesta=1;
-		var id_toma=1;
+		var id_toma=1;			
 		
-		var bufferRespuestas= new Array();
-		
-        var id_categoria=null;
-        var id_item=null;
-        var valor=null;
-        var cadena=null;
 		respondida=false;
         
         var preguntasDB;
@@ -82,13 +76,14 @@
 	}
 	
 	//tipo: 1:alternativa, 2:numerico, 3:texto, 4:fecha
-	function pregunta(id_pregunta,numero_pregunta,contenido_pregunta,id_seccion,tipo)	
+	function pregunta(id_pregunta,numero_pregunta,contenido_pregunta,id_seccion,tipo,tipo2)	
 	{
 		this.id_pregunta=id_pregunta;
 		this.numero_pregunta=numero_pregunta;		
 		this.contenido_pregunta=contenido_pregunta;
 		this.id_seccion=id_seccion;		
 		this.tipo=tipo;						
+		this.tipo2=tipo2;
 	}			
 	
 	function pregunta_categoria(id_pregunta_categoria,id_pregunta,id_categoria)
@@ -197,80 +192,80 @@
 		
 		///////////////////////////////////SECCION 1.1/////////////////////////////////////
 		
-		preguntas.push(new pregunta(1,1,'¿Cuántos "facings" tienen todas las Bebidas Energéticas, incluyendo Red Bull?',1,2));
-		preguntas.push(new pregunta(2,2,'¿Cuántos "facings" tienen todos los SKU de Red Bull?',1,2));	
-		preguntas.push(new pregunta(3,'A','¿Cuántos "facings" tiene el SKU RED Edition?',1,2));		
-		preguntas.push(new pregunta(4,'B','¿Cuántos "facings" tiene el SKU de BLUE Edition?',1,2));	
-		preguntas.push(new pregunta(5,'C','¿Cuántos "facings" tiene el SKU de SILVER Edition?',1,2));			
-		preguntas.push(new pregunta(6,3,'¿Cuántos "facings" tienen los SKU del Competidor #1?',1,2));		
+		preguntas.push(new pregunta(1,1,'¿Cuántos "facings" tienen todas las Bebidas Energéticas, incluyendo Red Bull?',1,2,1));
+		preguntas.push(new pregunta(2,2,'¿Cuántos "facings" tienen todos los SKU de Red Bull?',1,2,1));	
+		preguntas.push(new pregunta(3,'A','¿Cuántos "facings" tiene el SKU RED Edition?',1,2,1));		
+		preguntas.push(new pregunta(4,'B','¿Cuántos "facings" tiene el SKU de BLUE Edition?',1,2,1));	
+		preguntas.push(new pregunta(5,'C','¿Cuántos "facings" tiene el SKU de SILVER Edition?',1,2,1));			
+		preguntas.push(new pregunta(6,3,'¿Cuántos "facings" tienen los SKU del Competidor #1?',1,2,1));		
 		
 		///////////////////////////////////SECCION 1.2/////////////////////////////////////
 		
-		preguntas.push(new pregunta(7,1,'Los SKU de Bebidas Energéticas, ¿están junto a, sobre o debajo de qué categorías de producto?',2,1));
-		preguntas.push(new pregunta(8,2,'¿Está la Categoría de Bebidas Energéticas ubicada en la primera o última góndola del pasillo?',2,1));	
-		preguntas.push(new pregunta(9,'A','¿Junto a qué SKU se ubican los SKU Editions?',2,1));		
+		preguntas.push(new pregunta(7,1,'Los SKU de Bebidas Energéticas, ¿están junto a, sobre o debajo de qué categorías de producto?',2,1,2));
+		preguntas.push(new pregunta(8,2,'¿Está la Categoría de Bebidas Energéticas ubicada en la primera o última góndola del pasillo?',2,1,1));	
+		preguntas.push(new pregunta(9,'A','¿Junto a qué SKU se ubican los SKU Editions?',2,1,1));		
 		
 		///////////////////////////////////SECCION 1.3/////////////////////////////////////
 		
-		preguntas.push(new pregunta(10,1,'¿Cuántos "facings" tienen todos los SKU de Red Bull en la Zona de Alto Impacto?',3,2));	
-		preguntas.push(new pregunta(11,2,'¿Cuántos "facings" tienen todos los SKU (incluyendo Red Bull) en la Zona de Alto Impacto?',3,2));
-		preguntas.push(new pregunta(12,'A','¿Cuántos "facings" tienen todos los SKU de Editions (Red, Blue y Silver) en la Zona de Alto Impacto?',3,2));	
-		preguntas.push(new pregunta(13,3,'¿Cuántos "facings" tienen los SKU del Competidor #1 en la Zona de Alto Impacto?',3,2));	
+		preguntas.push(new pregunta(10,1,'¿Cuántos "facings" tienen todos los SKU de Red Bull en la Zona de Alto Impacto?',3,2,1));	
+		preguntas.push(new pregunta(11,2,'¿Cuántos "facings" tienen todos los SKU (incluyendo Red Bull) en la Zona de Alto Impacto?',3,2,1));
+		preguntas.push(new pregunta(12,'A','¿Cuántos "facings" tienen todos los SKU de Editions (Red, Blue y Silver) en la Zona de Alto Impacto?',3,2,1));	
+		preguntas.push(new pregunta(13,3,'¿Cuántos "facings" tienen los SKU del Competidor #1 en la Zona de Alto Impacto?',3,2,1));	
 		
 		///////////////////////////////////SECCION 1.4/////////////////////////////////////
 		
-		preguntas.push(new pregunta(14,1,'¿Cuáles SKU de Red Bull están disponibles en la ubicación Principal (Físicamente ahí)?',4,1,1));	
-		preguntas.push(new pregunta(15,2,'¿Cuáles SKU de Red Bull están sin stock (OOS) en la Ubicación Principal (sin producto, pero con etiqueta de precio)?',4,1));
-		preguntas.push(new pregunta(16,3,'¿Cuál es el precio regular por SKU? (Sin Promo)?',4,2));	
-		preguntas.push(new pregunta(17,4,'¿Qué SKU del Competidor #1 se encuentran en la Ubicación Principal (Físicamente ahí u OOS)?',4,1));	
-		preguntas.push(new pregunta(18,5,'¿Cuál es el precio regular por SKU? (Competidor #1)',4,2));				
+		preguntas.push(new pregunta(14,1,'¿Cuáles SKU de Red Bull están disponibles en la ubicación Principal (Físicamente ahí)?',4,1,2));	
+		preguntas.push(new pregunta(15,2,'¿Cuáles SKU de Red Bull están sin stock (OOS) en la Ubicación Principal (sin producto, pero con etiqueta de precio)?',4,1,2));
+		preguntas.push(new pregunta(16,3,'¿Cuál es el precio regular por SKU? (Sin Promo)?',4,2,2));	
+		preguntas.push(new pregunta(17,4,'¿Qué SKU del Competidor #1 se encuentran en la Ubicación Principal (Físicamente ahí u OOS)?',4,1,2));	
+		preguntas.push(new pregunta(18,5,'¿Cuál es el precio regular por SKU? (Competidor #1)',4,2,2));				
 
 		///////////////////////////////////SECCION 1.5/////////////////////////////////////		
 
-		preguntas.push(new pregunta(19,1,'¿Existe un mensaje funcional Red Bull dispuesto?',5,1));	
-		preguntas.push(new pregunta(20,2,'¿Hay algún Ítem POP de la Competencia dispuesto?',5,1));				
+		preguntas.push(new pregunta(19,1,'¿Existe un mensaje funcional Red Bull dispuesto?',5,1,1));	
+		preguntas.push(new pregunta(20,2,'¿Hay algún Ítem POP de la Competencia dispuesto?',5,1,1));				
 				
 		///////////////////////////////////TOPICO 2////////////////////////////////////////
 		
 		///////////////////////////////////SECCION 2.1/////////////////////////////////////	
 		
-		preguntas.push(new pregunta(21,1,'Por favor, marque el tipo de Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1));	
-		preguntas.push(new pregunta(22,2,'Por favor marque el Área de las Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1));	
-		preguntas.push(new pregunta(23,3,'Por favor marque la disponibilidad de un mensaje funcional en las Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1));			
-		preguntas.push(new pregunta(24,'A','Por favor, marque si las Editions (Red, Blue y Silver) están disponibles en estas Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1));	
-		preguntas.push(new pregunta(25,'B','Por favor, marque si las ubicaciones sólo contienen Editions y no hay otros SKU de  Red Bull disponibles:',6,1));	
+		preguntas.push(new pregunta(21,1,'Por favor, marque el tipo de Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));	
+		preguntas.push(new pregunta(22,2,'Por favor marque el Área de las Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));	
+		preguntas.push(new pregunta(23,3,'Por favor marque la disponibilidad de un mensaje funcional en las Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));			
+		preguntas.push(new pregunta(24,'A','Por favor, marque si las Editions (Red, Blue y Silver) están disponibles en estas Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));	
+		preguntas.push(new pregunta(25,'B','Por favor, marque si las ubicaciones sólo contienen Editions y no hay otros SKU de  Red Bull disponibles:',6,1,1));	
 		
 		///////////////////////////////////SECCION 2.2/////////////////////////////////////
 		
-		preguntas.push(new pregunta(26,1,'Por favor, marque el tipo de Ubicaciones Adicionales REFRIGERADAS:',7,1));	
-		preguntas.push(new pregunta(27,2,'Por favor, marque el Área de las Ubicaciones Adicionales REFRIGERADAS:',7,1));	
-		preguntas.push(new pregunta(28,3,'Por favor, marque la disponibilidad de un mensaje funcional en las Ubicaciones Adicionales REFRIGERADAS:',7,1));			
-		preguntas.push(new pregunta(29,'A','Por favor, marque si las Editions (Red, Blue y Silver) están disponibles en esta Ubicaciones Adicionales REFRIGERADAS:',7,1));					
-		preguntas.push(new pregunta(30,'B','Por favor, marque si la ubicación sólo contiene Editions y no hay otros SKU de  Red Bull disponibles:',7,1));									
+		preguntas.push(new pregunta(26,1,'Por favor, marque el tipo de Ubicaciones Adicionales REFRIGERADAS:',7,1,1));	
+		preguntas.push(new pregunta(27,2,'Por favor, marque el Área de las Ubicaciones Adicionales REFRIGERADAS:',7,1,1));	
+		preguntas.push(new pregunta(28,3,'Por favor, marque la disponibilidad de un mensaje funcional en las Ubicaciones Adicionales REFRIGERADAS:',7,1,1));			
+		preguntas.push(new pregunta(29,'A','Por favor, marque si las Editions (Red, Blue y Silver) están disponibles en esta Ubicaciones Adicionales REFRIGERADAS:',7,1,1));					
+		preguntas.push(new pregunta(30,'B','Por favor, marque si la ubicación sólo contiene Editions y no hay otros SKU de  Red Bull disponibles:',7,1,1));									
 		
 		///////////////////////////////////SECCION 2.3/////////////////////////////////////
 		
-		preguntas.push(new pregunta(31,1,'¿Cuántas Ubicaciones adicionales a TEMPERATURA AMBIENTE tiene el Competidor #1 en la tienda? (EXCL. Ubicaciones en Caja registradora)',8,2));					
-		preguntas.push(new pregunta(32,2,'¿Cuántas Ubicaciones adicionales REFRIGERADAS  tiene el Competidor #1 en la tienda? (EXCL. Ubicaciones en Caja registradora)',8,2));				
+		preguntas.push(new pregunta(31,1,'¿Cuántas Ubicaciones adicionales a TEMPERATURA AMBIENTE tiene el Competidor #1 en la tienda? (EXCL. Ubicaciones en Caja registradora)',8,2,1));					
+		preguntas.push(new pregunta(32,2,'¿Cuántas Ubicaciones adicionales REFRIGERADAS  tiene el Competidor #1 en la tienda? (EXCL. Ubicaciones en Caja registradora)',8,2,1));				
 		
 		///////////////////////////////////TOPICO 3////////////////////////////////////////
 		
 		///////////////////////////////////SECCION 3.1/////////////////////////////////////
 		
-		preguntas.push(new pregunta(33,0,'¿Cuántas cajas registradoras tiene esta tienda en total?',9,2));					
+		preguntas.push(new pregunta(33,0,'¿Cuántas cajas registradoras tiene esta tienda en total?',9,2,1));					
 		
-		preguntas.push(new pregunta(34,1,'Si esta caja registradora tiene una Ubicación adicional de Red Bull a TEMPERATURA AMBIENTE disponible, por favor marque el tipo',9,1));											
-		preguntas.push(new pregunta(35,2,'¿Tiene esta ubicación un Mensaje Funcional Red Bull dispuesto?',9,1));					
-		preguntas.push(new pregunta(36,'A','¿Tiene esta caja registradora una Ubicación adicional de Editions (Red, Blue, Silver) a TEMPERATURA AMBIENTE disponible?',9,1));	
-		preguntas.push(new pregunta(37,3,'¿Tiene esta caja registradora una Ubicación adicional del  Competidor #1 a TEMPERATURA AMBIENTE disponible?',9,1));		
+		preguntas.push(new pregunta(34,1,'Si esta caja registradora tiene una Ubicación adicional de Red Bull a TEMPERATURA AMBIENTE disponible, por favor marque el tipo',9,1,1));											
+		preguntas.push(new pregunta(35,2,'¿Tiene esta ubicación un Mensaje Funcional Red Bull dispuesto?',9,1,1));					
+		preguntas.push(new pregunta(36,'A','¿Tiene esta caja registradora una Ubicación adicional de Editions (Red, Blue, Silver) a TEMPERATURA AMBIENTE disponible?',9,1,1));	
+		preguntas.push(new pregunta(37,3,'¿Tiene esta caja registradora una Ubicación adicional del  Competidor #1 a TEMPERATURA AMBIENTE disponible?',9,1,1));		
 		
 		///////////////////////////////////SECCION 3.2/////////////////////////////////////
 		
-		preguntas.push(new pregunta(37,1,'Si esta caja registradora tiene un refrigerador disponible, por favor marque el tipo.',10,2));					
-		preguntas.push(new pregunta(38,2,'Si esta caja registradora tiene un refrigerador, ¿Tiene Red Bull disponibles?',10,1));											
-		preguntas.push(new pregunta(39,3,'Si este refrigerador tiene Red Bull disponibles, ¿tiene un mensaje funcional?',10,1));					
-		preguntas.push(new pregunta(40,'A','Si esta caja registradora tiene un refrigerador, ¿Tiene Editions (Red, Blue, Silver) disponibles?',10,1));	
-		preguntas.push(new pregunta(41,4,'Si esta caja tiene un refrigerador, ¿Tiene Bebidas Energéticas del Competidor #1 disponibles?',10,1));		
+		preguntas.push(new pregunta(38,1,'Si esta caja registradora tiene un refrigerador disponible, por favor marque el tipo.',10,2,1));					
+		preguntas.push(new pregunta(39,2,'Si esta caja registradora tiene un refrigerador, ¿Tiene Red Bull disponibles?',10,1,1));											
+		preguntas.push(new pregunta(40,3,'Si este refrigerador tiene Red Bull disponibles, ¿tiene un mensaje funcional?',10,1,1));					
+		preguntas.push(new pregunta(41,'A','Si esta caja registradora tiene un refrigerador, ¿Tiene Editions (Red, Blue, Silver) disponibles?',10,1,1));	
+		preguntas.push(new pregunta(42,4,'Si esta caja tiene un refrigerador, ¿Tiene Bebidas Energéticas del Competidor #1 disponibles?',10,1,1));		
 
 		///////////////////////////////////CATEGORIAS/////////////////////////////////////
 		
@@ -827,17 +822,7 @@
 	// Carga el contenido desde objetos 'consultables' a partir de los contenedores
 	
     function cargar_contenido(id_pregunta)
-    {					
-        // Si existen respuestas buscar la respuesta correspondiente a la pregunta actual
-		var cont=0;
-		
-        respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r9) {							
-			bufferRespuestas(new respuesta(cont,r9.valor_respuesta,r9.id_item,r9.id_pregunta,r9.id_categoria))			
-			cont++;	
-        });
-		
-		bufferRespuestasDB=TAFFY(bufferRespuestas);
-         
+    {					         
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
 
@@ -856,35 +841,92 @@
                     switch(parseInt(r1.tipo))
                     {
                         case 1:// Tipo alternativa => cargar las alternativas para esta pregunta
-                            // Verificar si existen categorias para esta pregunta	                                                        
-                            var tiene_categoria=false;
-                            preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function () {
+                            // Verificar si existen categorias para esta pregunta	                                                       
+							
+							var tiene_categoria=false;
+                            
+							preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function () {
                                 tiene_categoria=true;
                                 return false;
                             });
+													
+							
+							switch(parseInt(r1.tipo2))
+							{
+								case 1: // Tipo disyuntiva
+									if(tiene_categoria)
+									{                         
+										//alert("tiene categoria");
+										var html="<table id='tabla_alternativas' width='98%' border='1'>";
 
-                            if(tiene_categoria)
-                            {                         
-								//alert("tiene categoria");
-                                var html="<table id='tabla_alternativas' width='98%' border='1'>";
+										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
-                                preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
+											categoriasDB().filter({'id_categoria':r5.id_categoria}).each(function (r6) {
+																				
+											var cont=0;
+											
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
+												cont++;
+											});
+											//alert('cont='+cont);
+											html=html+"<tr><td width='30%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
+											var cont=1;
 
-                                    categoriasDB().filter({'id_categoria':r5.id_categoria}).each(function (r6) {
-                                                                        
-                                    var cont=0;
-                                    
-                                    alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
-                                        cont++;
-                                    });
-                                    //alert('cont='+cont);
-                                    html=html+"<tr><td width='30%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
-                                    var cont=1;
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r7) {
 
-                                    alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r7) {
+											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
-                                    itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
+												if(cont===1)
+													html=html+"<td width='70%' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+												else                                                                                                
+													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+											});	
+											cont++;
+											});										
+										});			
+									});	
+									html=html+"</table>";                         
+									}
+									else
+									{
+										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
+										var html="<table id='tabla_alternativas' width='100%' border='1'>";
+										var cont=1;
+										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
+												cont++;
+												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
+														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='radio' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+												});															
+										});		
+										html=html+"</table>";									
+									}							
+									$('#respuesta').html(html);   															
+									
+									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
+																		
+									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
+										$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+										$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+									});
+									
+									$('#tabla_alternativas tr td').click(function(){
+										$('.seleccionada').removeClass();
+										$(this).addClass("seleccionada");                                
+										$('[name=radio]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
+										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null); 
+										
+										// Si estan todas las categorias contestadas, se considera la pregunta respondida
+										
+										respondida=true;
+									});													
+									break;
+								case 2: // Tipo conjuntiva
+if(tiene_categoria)
+									{                         
+										//alert("tiene categoria");
+										var html="<table id='tabla_alternativas' width='98%' border='1'>";
 
+<<<<<<< HEAD
                                         if(cont===1)
                                             html=html+"<td width='70%' style='text-align:left'><input type='radio' class='categoria' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
                                         else                                                                                                
@@ -942,39 +984,118 @@
 								});
 								respondida=acum2;
                             });							
+=======
+										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
+
+											categoriasDB().filter({'id_categoria':r5.id_categoria}).each(function (r6) {
+																				
+											var cont=0;
+											
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
+												cont++;
+											});
+											//alert('cont='+cont);
+											html=html+"<tr><td width='30%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
+											var cont=1;
+
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r7) {
+
+											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
+
+												if(cont===1)
+													html=html+"<td width='70%' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name=''checkbox'"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+												else                                                                                                
+													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name=''checkbox'"+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+											});	
+											cont++;
+											});										
+										});			
+									});	
+									html=html+"</table>";                         
+									}
+									else
+									{
+										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
+										var html="<table id='tabla_alternativas' width='100%' border='1'>";
+										var cont=1;
+										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
+												cont++;
+												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
+														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='checkbox' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+												});															
+										});		
+										html=html+"</table>";									
+									}							
+									$('#respuesta').html(html);   															
+									
+									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
+																		
+									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
+										$('[name=checkbox]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+										$('[name=checkbox]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+									});
+									
+									$('#tabla_alternativas tr td').click(function(){										
+										if($(this).children().prop('checked'))
+										{
+											$(this).removeClass("seleccionada");
+											$('[name=checkbox]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);											
+										}
+										else
+										{
+											$(this).addClass("seleccionada");                                
+											$('[name=checkbox]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
+										}
+										                               
+										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null); 
+										
+										// Si estan todas las categorias contestadas, se considera la pregunta respondida
+										
+										respondida=true;
+									});																													
+									break;
+							}															                            		
+>>>>>>> 944072b267e7adb52749f97ab280fa06ce77b886
                             break;
                         case 2:// Tipo numerico => cargar un input                                                        
-                            var html="<div style='height:50px'><input id='valor' /></div><div style='height:220px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='teclado'><-</button></td></tr><table></div>";
+                            var html="<div style='height:50px'><input id='valor' /></div><div style='height:220px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
                             $('#respuesta').html(html);
-							
-							// Si existia una respuesta para esta pregunta, cargarla							
-                            $('#valor').val(valor);	
-							bufferRespuestas=new Array();
+																		
+							// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
+																		
+							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
+								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+								$('[name=radio]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+							});
 							
                             $('#valor').css('font-size','20px');
                             $('.teclado').css('font-size','20px');
                             $('.teclado').css('width','100%');
+							$('.borrar').css('width','100%');
+							$('.borrar').css('font-size','20px');
                             
-                           $('.teclado').click(function(){
-                                $('#valor').val( parseInt($('#valor').val()+$(this).attr('val')));
-                                valor=$('#valor').val();   
-								//function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
-								guardarRespuestaBuffer(bufferRespuestasDB,1,$('#valor').val(),null,id_pregunta,null); 								
-								respondida=true;
+							$('.teclado').click(function(){								
+                                $('#valor').val( parseInt($('#valor').val()+$(this).attr('val')));  
+								if($('#valor').val()!='')									
+									guardarRespuesta(id_pregunta,null,null,$('#valor').val());
                             });
-                            break;
-                        case 3: // Tipo texto => cargar un input
-                            $('#respuesta').html("<input />");
-                            break;					
+							
+							$('.borrar').click(function(){								
+                                $('#valor').val(''); 
+								respondida=false; 								
+                            });
+							
+                            break;				
                     }                      
                 });
             });
         });
     }
 	
-    function guardar_respuesta(id_pregunta)    
-    {
+    function guardarRespuesta(id_pregunta,id_categoria,id_item,valor)    
+    {		
         var existeRespuesta=false;
+<<<<<<< HEAD
         
         respuestasDB().filter({'id_pregunta':id_pregunta}).each(function () {
             existeRespuesta=true;
@@ -998,6 +1119,53 @@
            //console.log(r1); 
         });
     }	
+=======
+        var tipoPregunta;		       
+		
+		preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r0) {
+            tipoPregunta=r0.tipo2;
+            return false;
+        });		
+		
+		switch(parseInt(tipoPregunta))
+		{
+			case 1: // TIPO DISYUNTIVA -> Buscar si existe la misma: pregunta y categoria
+				respuestasDB().filter({'id_pregunta':id_pregunta}).each(function () {
+					existeRespuesta=true;
+					return false;
+				});			
+				if(existeRespuesta)// Si existe la respuesta, actualizarla
+				{
+					respuestasDB({'id_pregunta':id_pregunta,'id_categoria':id_categoria}).update({valor_respuesta:valor,id_item:id_item,id_categoria:id_categoria});
+				}
+				else // Sino existe la respuesta, agregarla		
+				{
+					respuestasDB.insert(new respuesta(id_respuesta,valor,id_item,id_pregunta,id_categoria));              
+					id_respuesta++;
+				}
+				break;
+			case 2: // TIPO CONJUNTIVA => Buscar si existe la misma: pregunta, categoria e item
+				respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':id_categoria,'id_item':id_item}).each(function () {
+					existeRespuesta=true;
+					return false;
+				});						
+				if(existeRespuesta)  // Si existe la respuesta, eliminarla
+				{ 					
+					respuestasDB({'id_pregunta':id_pregunta,'id_categoria':id_categoria,'id_item':id_item}).remove();
+					id_respuesta--;
+				}
+				else // Sino existe la respuesta, agregarla
+				{
+					respuestasDB.insert(new respuesta(id_respuesta,valor,id_item,id_pregunta,id_categoria));              
+					id_respuesta++;
+				}				
+				break;
+		}        				
+        respuestasDB().each(function (r1) {
+           console.log(r1); 
+        });
+    }		
+>>>>>>> 944072b267e7adb52749f97ab280fa06ce77b886
 
 	function save_content_to_file(content, filename){
 		var dlg = false;
@@ -1039,24 +1207,19 @@ $(document).ready(function() {
 		save_content_to_file(msg, '\\Application\\encuesta.txt');
 	});
 	
-	$('.cursor').click(function(){
-	
-		if(respondida)
-			guardar_respuesta(cursor);
+	$('.cursor').click(function(){	
 	
 		if($(this).attr('id')==='ant')
 		{
-                    if(cursor>1)							
-                        cursor--;
+            if(cursor>1)							
+                cursor--;
 		}
 		else
 		{
-                    if(cursor<42)							
-                        cursor++;
-		}
-		
-		cargar_contenido(cursor);
-		respondida=false;
+            if(cursor<42)							
+                cursor++;
+		}		
+		cargar_contenido(cursor);		
 	});
         
 	

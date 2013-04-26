@@ -3,14 +3,14 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
 <link href="css/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
-<link href="css/jquery.loader.min.css" rel="stylesheet" />
+<link href="css/jquery.mobile-1.3.1.min.css" rel="stylesheet" />
 
 <style>
 	
 	table tr td{
 		text-align: center;
 		font-family: "Arial",Georgia,Serif;
-		vertical-align: middle !important;
+		
 	}	
 	h4,h5,div,table{
 		padding:0em;
@@ -28,7 +28,7 @@
 <script type="text/javascript" src="js/taffy.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
-<script type="text/javascript" src="js/jquery.loader.min.js"></script>
+<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
 <script>
@@ -129,6 +129,7 @@ String.prototype.fileExists = function() {
 	
     function cargar_contenido(id_pregunta)
     {					     			
+		// alert('voy a cargar el contenido');
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
 
@@ -161,7 +162,7 @@ String.prototype.fileExists = function() {
 								case 1: // Tipo disyuntiva
 									if(tiene_categoria)
 									{                         										
-										var html="<table id='tabla_alternativas' width='98%' border='1'>";
+										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
 
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
@@ -193,7 +194,7 @@ String.prototype.fileExists = function() {
 									else
 									{
 										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
-										var html="<table id='tabla_alternativas' width='100%' border='1'>";
+										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
@@ -202,7 +203,9 @@ String.prototype.fileExists = function() {
 												});															
 										});		
 										html=html+"</table>";									
-									}							
+									}					
+									
+									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
 									$('#respuesta').html(html);   															
 									
 									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
@@ -222,7 +225,7 @@ String.prototype.fileExists = function() {
 								case 2: // Tipo conjuntiva
 									if(tiene_categoria)
 									{                         										
-										var html="<table id='tabla_alternativas' width='98%' border='1'>";
+										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
 
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
@@ -254,7 +257,7 @@ String.prototype.fileExists = function() {
 									else
 									{
 										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
-										var html="<table id='tabla_alternativas' width='100%' border='1'>";
+										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
@@ -264,6 +267,7 @@ String.prototype.fileExists = function() {
 										});		
 										html=html+"</table>";									
 									}							
+									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
 									$('#respuesta').html(html);   															
 									
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
@@ -287,10 +291,11 @@ String.prototype.fileExists = function() {
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null); 																											
 									});																													
 									break;																					                                                     
-								case 3: // Tipo conjuntiva con valor											
+								case 3: // Tipo conjuntiva con valor	
+									var html="<div style='height:60px'><table width='100%'><tr><td width='16%'><button val='1' class='teclado'>1</button></td><td width='16%'><button val='2' class='teclado'>2</button></td><td width='16%'><button val='3' class='teclado'>3</button></td><td width='16%'><button val='4' class='teclado'>4</button></td><td width='16%'><button val='5' class='teclado'>5</button></td><td width='16%' rowspan='2'><button class='borrar'><-</button></td></tr><tr><td><button val='6' class='teclado'>6</button></td><td><button val='7' class='teclado'>7</button></td><td><button val='8' class='teclado'>8</button></td><td><button val='9' class='teclado'>9</button></td><td><button val='0' class='teclado'>0</button></td></tr><table></div>";																	
 									if(tiene_categoria)
-									{                         										
-										var html="<table id='tabla_alternativas' width='98%' border='1'>";
+									{                         													
+										html=html+"<div><table id='tabla_alternativas' width='100%' border='1' align='left'></div>";
 
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
@@ -322,7 +327,7 @@ String.prototype.fileExists = function() {
 									else
 									{										
 										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
-										var html="<table id='tabla_alternativas' width='100%' border='1'>";
+										html=html+"<div><table id='tabla_alternativas' width='100%' border='1' align='left'></div>";
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
@@ -332,10 +337,9 @@ String.prototype.fileExists = function() {
 										});		
 										html=html+"</table>";									
 									}																
-									$('#respuesta').html(html);  
-
-									var html2="<div style='height:220px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
-									$('#respuesta').html(html+html2);
+									// $('#respuesta').html(html); 
+									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
+									$('#respuesta').html(html);
 																											
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
@@ -344,10 +348,10 @@ String.prototype.fileExists = function() {
 									});
 									
 									$('#valor').css('font-size','20px');
-									$('.teclado').css('font-size','20px');
+									$('.teclado').css('font-size','15px');
 									$('.teclado').css('width','100%');
 									$('.borrar').css('width','100%');
-									$('.borrar').css('font-size','20px');
+									$('.borrar').css('font-size','15px');
 									$('input').css('width','100%');
 									
 									var categoria=$('.valor:first').attr('categoria');
@@ -367,15 +371,17 @@ String.prototype.fileExists = function() {
 									});
 									
 									$('.borrar').click(function(){								
-										$('#'+focus).val(''); 										
+										$('[categoria='+categoria+'][item='+item+']').val(''); 										
 									});																																					                           																			
 									break;		
 							}
                             break;							
                         case 2:// Tipo numerico => cargar un input                                                        
-                            var html="<div style='height:50px'><input id='valor' /></div><div style='height:220px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
+                            var html="<div style='height:50px'><input id='valor' /></div><div style='height:100px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
                             $('#respuesta').html(html);
-																		
+							// $('button').button();
+							// $('button').css('padding','0em');
+							// $('span').css('padding','0em');
 							// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
 																		
 							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
@@ -383,10 +389,10 @@ String.prototype.fileExists = function() {
 							});
 							
                             $('#valor').css('font-size','20px');
-                            $('.teclado').css('font-size','20px');
+                            $('.teclado').css('font-size','15px');
                             $('.teclado').css('width','100%');
 							$('.borrar').css('width','100%');
-							$('.borrar').css('font-size','20px');
+							$('.borrar').css('font-size','15px');
                             
 							$('.teclado').click(function(){								
                                 $('#valor').val( parseInt($('#valor').val()+$(this).attr('val')));  
@@ -491,12 +497,16 @@ String.prototype.fileExists = function() {
 		return dlg;
 	}
 
-	function activar_loader(){
-		$('#container').loader('show');	
+	function activar_loader(id){
+		// alert('voy a colorear el boton');
+		$('#'+id).addClass('seleccionada');
 	}	
 	
-	function desactivar_loader(){
-		$('#container').loader('hide');
+	function desactivar_loader(id){
+		// alert('voy a descolorear el boton');
+		setTimeout(function() {      
+			$('#'+id).removeClass('seleccionada');
+		}, 1000);		
 	}		
 	
 	function enviar_cuestionario(){
@@ -505,6 +515,8 @@ String.prototype.fileExists = function() {
 $(document).ready(function() {		
 
 	$('button').button();
+	$('button').css('padding','0em');
+	$('span').css('padding','0em');
 
 	var callbacks = $.Callbacks();			
 	
@@ -513,7 +525,7 @@ $(document).ready(function() {
 	callbacks.add( desactivar_loader() );					
 	
 	$('#cuestionario').dataTable({
-		"sScrollY": "490px",		 		 		
+		"sScrollY": "520px",		 		 		
 		"bFilter": false,
 		"bSort": false,
 		"bInfo": false,
@@ -540,9 +552,9 @@ $(document).ready(function() {
 		}		
 		var callbacks = $.Callbacks();
 
-		callbacks.add( activar_loader() );		
+		callbacks.add( activar_loader($(this).attr('id')) );		
 		callbacks.add( cargar_contenido(cursor) );		
-		callbacks.add( desactivar_loader() );				
+		callbacks.add( desactivar_loader($(this).attr('id')) );				
 	});	
 });
 </script>
@@ -554,7 +566,7 @@ $(document).ready(function() {
     <table id='cuestionario' width='100%' class='display table' border=1>
 			<thead>
             <tr style="background-color:#000000">
-                    <th>
+                    <th style='vertical-align:middle'>
                             <h4 style="color:#FFFFFF;">
                                     CUESTIONARIO PSA
                             </h4>
@@ -563,55 +575,60 @@ $(document).ready(function() {
 			<thead>
 			<tbody>
             <tr>
-                    <td id='topico'>
+                    <td id='topico' style='vertical-align:middle'>
                             <h4 style="background-color:#000000;">
                                     Topico
                             </h4>			
                     </td>
             </tr>		
             <tr>
-                    <td id='seccion'>
+                    <td id='seccion' style='vertical-align:middle'>
                             <h4>
                                     Seccion
                             </h4>			
                     </td>
             </tr>		
             <tr>
-                    <td id='pregunta' style='height:100px;'>
+                    <td id='pregunta' style='height:100px;' style='vertical-align:middle'>
                             <h4>
                                     Pregunta
                             </h4>
                     </td>
             </tr>				
             <tr>
-                <td id='respuesta' style='height:320px;'>				
+                <td id='respuesta' style='vertical-align:top'>				
                             <h4>
                                     Respuesta
                             </h4>
                 </td>		
             </tr>	
 			<tbody>
-    </table>		
-    <table width='100%'>    
+    </table>	
+	
+    <table width='70%' align='center'>    
         <tr>
             <td>
                 <button class='cursor' id='ant' style='padding:0em;margin:0em'>
-                    <img src='images/arrow-left.png' style='width:6em;height:4em'/>
+					<!-- Ant -->
+                    <img src='images/arrow-left.png' style='width:2em;height:1em'/>
                 </button>                
             </td>
             <td>
                 <button id='guardar' style='width:100%;height:50%'>
-                    <img src='images/System-Save-icon.png' style='width:6em;height:4em'/>
+					<!-- Guardar -->
+                    <img src='images/System-Save-icon.png' style='width:2em;height:1em'/>
                 </button>  
             </td>
             <td>
                 <button id='enviar' style='width:100%;height:50%'>
-                    <img src='images/600px-Black_check.svg.png' style='width:6em;height:4em'/>
+					<!-- Enviar -->
+                    <img src='images/600px-Black_check.svg.png' style='width:2em;height:1em'/>
                 </button> 
             </td>
             <td>
                 <button class='cursor' id='sig' style='padding:0em;margin:0em'>
-                    <img src='images/arrow.png' style='width:6em;height:4em'/>
+					<!-- Sig -->
+                    <img src='images/arrow.png' style='width:2em;height:1em'/>
                 </button>	
             </td>
         </tr>

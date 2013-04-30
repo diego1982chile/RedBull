@@ -68,8 +68,8 @@ String.prototype.fileExists = function() {
         var itemesDB;								
         var alternativasDB;	    	
 
-		// var pathCuestionario="cuestionario.txt"
-		var pathCuestionario="\\Application\\cuestionario.txt";
+		var pathCuestionario="cuestionario.txt"
+		// var pathCuestionario="\\Application\\cuestionario.txt";
 		
 	function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
 	{
@@ -89,20 +89,29 @@ String.prototype.fileExists = function() {
 	function cargar_datos()
 	{								
 		cargar_respuestas();
-			$.getJSON('data/topicos.txt',function(data){					
-				topicosDB=TAFFY(data);
-				$.getJSON('data/secciones.txt',function(data){
-					seccionesDB=TAFFY(data);
-					$.getJSON('data/categorias.txt',function(data){
-						categoriasDB=TAFFY(data);
-						$.getJSON('data/preguntas.txt',function(data){			
-							preguntasDB=TAFFY(data);	
-							$.getJSON('data/preguntas_categorias.txt',function(data){
-								preguntas_categoriasDB=TAFFY(data);
-								$.getJSON('data/itemes.txt',function(data){
-									itemesDB=TAFFY(data);
-									$.getJSON('data/alternativas.txt',function(data){
-										alternativasDB=TAFFY(data);									
+			$.getJSON('php/cargarBD.php',{caso:1},function(data){						
+				topicosDB=TAFFY(JSON.stringify(data));
+				topicosDB().each(function(r){
+					console.log(r);
+				});
+				$.getJSON('php/cargarBD.php',{caso:2},function(data){
+					seccionesDB=TAFFY(JSON.stringify(data));
+					seccionesDB().each(function(r){
+						console.log(r);
+					});
+					$.getJSON('php/cargarBD.php',{caso:3},function(data){
+						categoriasDB=TAFFY(JSON.stringify(data));
+						$.getJSON('php/cargarBD.php',{caso:4},function(data){					
+							preguntasDB=TAFFY(JSON.stringify(data));
+							preguntasDB().each(function(r){
+								console.log(r);
+							});								
+							$.getJSON('php/cargarBD.php',{caso:5},function(data){
+								preguntas_categoriasDB=TAFFY(JSON.stringify(data));
+								$.getJSON('php/cargarBD.php',{caso:6},function(data){
+									itemesDB=TAFFY(JSON.stringify(data));
+									$.getJSON('php/cargarBD.php',{caso:7},function(data){
+										alternativasDB=TAFFY(JSON.stringify(data));									
 										cargar_contenido(cursor);									
 									});									
 								});	
@@ -110,8 +119,7 @@ String.prototype.fileExists = function() {
 						});	
 					});	
 				});				
-			});																	      
-		
+			});																	      		
 	}
 	
 	function cargar_respuestas()
@@ -526,16 +534,14 @@ String.prototype.fileExists = function() {
 
 	function activar_loader(id){
 		// alert('voy a colorear el boton');
-		// $('#'+id).addClass('seleccionada');		
-		$('#container').hide();
+		$('#'+id).addClass('seleccionada');
 	}	
 	
 	function desactivar_loader(id){
 		// alert('voy a descolorear el boton');
-		// setTimeout(function() {      
-			// $('#container').show();
-		// }, 600);
-		$('#container').show();		
+		setTimeout(function() {      
+			$('#'+id).removeClass('seleccionada');
+		}, 1000);		
 	}		
 	
 	function enviar_cuestionario(){
@@ -582,11 +588,10 @@ $(document).ready(function() {
 		}		
 		var callbacks = $.Callbacks();
 
-		callbacks.add( activar_loader() );		
-		callbacks.add( cargar_contenido(cursor) );
-		callbacks.add( desactivar_loader() );		
-	});
-	
+		callbacks.add( activar_loader($(this).attr('id')) );		
+		callbacks.add( cargar_contenido(cursor) );		
+		callbacks.add( desactivar_loader($(this).attr('id')) );				
+	});	
 });
 </script>
 </head>
@@ -640,21 +645,25 @@ $(document).ready(function() {
         <tr>
             <td>
                 <button class='cursor' id='ant' style='padding:0em;margin:0em'>
+					<!-- Ant -->
                     <img src='images/arrow-left.png' style='width:2em;height:1em'/>
                 </button>                
             </td>
             <td>
                 <button id='guardar' style='width:100%;height:50%'>
+					<!-- Guardar -->
                     <img src='images/System-Save-icon.png' style='width:2em;height:1em'/>
                 </button>  
             </td>
             <td>
                 <button id='enviar' style='width:100%;height:50%'>
+					<!-- Enviar -->
                     <img src='images/600px-Black_check.svg.png' style='width:2em;height:1em'/>
                 </button> 
             </td>
             <td>
                 <button class='cursor' id='sig' style='padding:0em;margin:0em'>
+					<!-- Sig -->
                     <img src='images/arrow.png' style='width:2em;height:1em'/>
                 </button>	
             </td>

@@ -1,0 +1,50 @@
+﻿[
+	{
+		"COD_SUP": "320",
+		"SUPERVISOR": "ALFREDO POBLETE"
+	},
+	{
+		"COD_SUP": "11",
+		"SUPERVISOR": "ANA ARAVENA"
+	},
+	{
+		"COD_SUP": "221",
+		"SUPERVISOR": "CLAUDIA CONTRERAS"
+	},
+	{
+		"COD_SUP": "635",
+		"SUPERVISOR": "ERIK FAUNDEZ"
+	},
+	{
+		"COD_SUP": "52",
+		"SUPERVISOR": "ESTEBAN HUENCHUQUEN"
+	},
+	{
+		"COD_SUP": "121",
+		"SUPERVISOR": "ITALO PIETROBONI"
+	},
+	{
+		"COD_SUP": "510",
+		"SUPERVISOR": "JACQUELINE KUSCHEL"
+	},
+	{
+		"COD_SUP": "54",
+		"SUPERVISOR": "JUAN CARRILLO"
+	},
+	{
+		"COD_SUP": "600",
+		"SUPERVISOR": "MARIA FIGUEROA"
+	},
+	{
+		"COD_SUP": "722",
+		"SUPERVISOR": "MARTA CARCAMO"
+	},
+	{
+		"COD_SUP": "136",
+		"SUPERVISOR": "SOFIA OLIVARES"
+	},
+	{
+		"COD_SUP": "419",
+		"SUPERVISOR": "VICTOR GUERRERO"
+	}
+]

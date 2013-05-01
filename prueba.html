@@ -29,7 +29,7 @@
 <script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="js/base64.js"></script>
 
 <script>
 
@@ -110,9 +110,71 @@ String.prototype.fileExists = function() {
 						});	
 					});	
 				});				
-			});																	      
-		
+			});				
 	}
+	
+	// Carga de datos en los contenedores de objetos
+	
+		function cargar_auditores()
+		{								
+			// $.getJSON('http://200.29.139.244/REDBULL/php/cargar_maestra.php?callback=?',{caso:1},function(data){					
+								
+								// alert('hola');
+				// var html="<table id='auditores' width='100%' border='1'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
+				
+				// $(data).each(function(key,value){									
+					// html=html+"<tr codigo="+value.codigo_auditor+"><td>"+value.nombre_auditor+"</td></tr>";
+				// });
+				// html=html+"</tbody></table>";
+				// alert(html);
+				// $('#sesion').html(html);
+				// $('#auditores').dataTable({
+					// "sScrollY": "520px",		 		 		
+					// "bFilter": true,
+					// "bSort": false,
+					// "bInfo": false,
+					// "bPaginate": false,
+					// "bJQueryUI": false,
+					// "bAutoWidth": false, 		
+				// });					
+			// });							
+			
+			$.ajax({
+				type: "GET",
+				// contentType: "application/json",				
+				dataType: "jsonp",				
+				url: 'http://200.29.139.244/REDBULL/php/cargar_maestra.php',
+				data: {caso:1},
+				// beforeSend: function(xhr) {
+					// var username="administrador";
+					// var password="Qwerty01928374";
+					// var Base64 = base64.encode(username + ":" + password);
+					// xhr.setRequestHeader("Authorization", "Basic " + Base64);
+					// xhr.withCredentials = true;
+				// },
+				error: function(data){
+					alert("error");
+				},
+				success: function(data){
+					alert("success"); 
+				}
+			});
+		}
+	
+	function cargar_salas(id_auditor)
+	{								
+			$.getJSON('php/cargar_maestra.php',{caso:2,id_auditor:id_auditor},function(data){					
+				var html="<table id='salas' width='100%'><thead><tr><th>Auditor</th></tr></thead><tbody>";
+				
+				data.each(function(){
+					html=html+"<tr><td></td></tr>";
+				});
+				html=html+"</tbody></table>";
+			});				
+			$('#sesion').html(html);
+			
+		
+	}	
 	
 	function cargar_respuestas()
 	{				
@@ -526,7 +588,8 @@ String.prototype.fileExists = function() {
 
 	function activar_loader(id){
 		// alert('voy a colorear el boton');
-		// $('#'+id).addClass('seleccionada');		
+		// $('#'+id).addClass('seleccionada');
+		$		
 		$('#container').hide();
 	}	
 	
@@ -550,9 +613,10 @@ $(document).ready(function() {
 
 	var callbacks = $.Callbacks();			
 	
-	callbacks.add( activar_loader() );			
+	callbacks.add( activar_loader() );	
+	callbacks.add( cargar_auditores() );			
 	callbacks.add( cargar_datos() );			
-	callbacks.add( desactivar_loader() );					
+	// callbacks.add( desactivar_loader() );					
 	
 	$('#cuestionario').dataTable({
 		"sScrollY": "520px",		 		 		
@@ -660,6 +724,8 @@ $(document).ready(function() {
             </td>
         </tr>
     </table>
+</div>
+<div id="sesion" style="width:100%;">
 </div>
 </body>
 </html>

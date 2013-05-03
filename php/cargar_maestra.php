@@ -65,5 +65,9 @@ $result=array();
 	}
 	// print_r($result);				
 	
-	echo json_encode($result);
+	if(isset($_GET['callback'])){ // Si es una petición cross-domain
+           echo $_GET['callback'].'('.json_encode($result).')';
+        }
+        else // Si es una normal, respondemos de forma normal
+           echo json_encode($result);			
 ?>

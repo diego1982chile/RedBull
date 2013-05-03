@@ -60,6 +60,10 @@ String.prototype.fileExists = function() {
         var id_respuesta=1;
 		var id_toma=1;			
         
+		// Estas variables se usan para identificar el archivo con la toma
+		var codigo_auditor;
+		var folio_sala;
+		
         var preguntasDB;
         var seccionesDB;		
         var topicosDB;        
@@ -78,6 +82,15 @@ String.prototype.fileExists = function() {
             this.id_item=id_item;
             this.id_pregunta=id_pregunta;	
             this.id_categoria=id_categoria;
+	}	
+	
+	function toma(fecha_toma,estado_toma,id_auditor,id_sala,respuestas)
+	{		
+		this.fecha_toma=fecha_toma;
+		this.estado_toma=estado_toma;		
+		this.id_auditor=id_auditor;
+		this.id_sala=id_sala;
+		this.respuestas=respuestas;
 	}	
 
 	var respuestas= new Array();
@@ -103,7 +116,16 @@ String.prototype.fileExists = function() {
 									itemesDB=TAFFY(data);
 									$.getJSON('data/alternativas.txt',function(data){
 										alternativasDB=TAFFY(data);									
-										cargar_contenido(cursor);									
+										cargar_contenido(cursor);	
+										$('#cuestionario').dataTable({
+											"sScrollY": "520px",		 		 		
+											"bFilter": false,
+											"bSort": false,
+											"bInfo": false,
+											"bPaginate": false,
+											"bJQueryUI": false,
+											"bAutoWidth": false, 		
+										});										
 									});									
 								});	
 							});		
@@ -116,49 +138,112 @@ String.prototype.fileExists = function() {
 	// Carga de datos en los contenedores de objetos
 	
 		function cargar_auditores()
-		{								
-			// $.getJSON('http://200.29.139.244/REDBULL/php/cargar_maestra.php?callback=?',{caso:1},function(data){					
-								
-								// alert('hola');
-				// var html="<table id='auditores' width='100%' border='1'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
+		{										
+									
+			var xmlhttp;
+			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
+				xmlhttp=new XMLHttpRequest();				
+			}
+			else{// code for IE6, IE5				
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
+			}
+																	
+			xmlhttp.onreadystatechange=function(){
+													
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{									
+					var data = JSON.parse(xmlhttp.responseText);											
+					
+					var html="<table id='tabla_auditores' width='100%'><thead><tr><th>Seleccione auditor</th></tr></thead><tbody>";
 				
-				// $(data).each(function(key,value){									
-					// html=html+"<tr codigo="+value.codigo_auditor+"><td>"+value.nombre_auditor+"</td></tr>";
-				// });
-				// html=html+"</tbody></table>";
-				// alert(html);
-				// $('#sesion').html(html);
-				// $('#auditores').dataTable({
-					// "sScrollY": "520px",		 		 		
-					// "bFilter": true,
-					// "bSort": false,
-					// "bInfo": false,
-					// "bPaginate": false,
-					// "bJQueryUI": false,
-					// "bAutoWidth": false, 		
-				// });					
-			// });							
-			
-			$.ajax({
-				type: "GET",
-				// contentType: "application/json",				
-				dataType: "jsonp",				
-				url: 'http://200.29.139.244/REDBULL/php/cargar_maestra.php',
-				data: {caso:1},
-				// beforeSend: function(xhr) {
-					// var username="administrador";
-					// var password="Qwerty01928374";
-					// var Base64 = base64.encode(username + ":" + password);
-					// xhr.setRequestHeader("Authorization", "Basic " + Base64);
-					// xhr.withCredentials = true;
-				// },
-				error: function(data){
-					alert("error");
-				},
-				success: function(data){
-					alert("success"); 
+					$(data).each(function(key,value){									
+						
+						html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=400px'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
+					});
+					html=html+"</tbody></table>";
+					// alert(html);					
+					$('#auditores').html(html);
+					$('#tabla_auditores').dataTable({
+						"sScrollY": "215px",		 		 		
+						"bFilter": true,
+						"bSort": false,
+						"bInfo": false,
+						"bPaginate": false,
+						"bJQueryUI": true,
+						"bAutoWidth": false, 		
+					});			
+					
+					$('.auditor').click(function(){											
+						
+						$('#salas').html('Cargando salas...');
+						$('.ui-state-active').removeClass();
+						$(this).addClass('ui-state-active');
+					
+						codigo_auditor=$(this).attr('codigo_auditor');
+						var id_auditor=$(this).attr('id_auditor');
+					
+						var xmlhttp;
+						if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
+							xmlhttp=new XMLHttpRequest();				
+						}
+						else{// code for IE6, IE5							
+							xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
+						}												
+											
+						xmlhttp.onreadystatechange=function(){												
+													
+							if (xmlhttp.readyState==4 && xmlhttp.status==200)
+							{																	
+								var data = JSON.parse(xmlhttp.responseText);	
+								
+								if($.isEmptyObject(data))
+								{
+									alert("No existen salas asignadas para este auditor");
+									$('#salas').html('');
+								}
+								else
+								{
+									var html="<table id='tabla_salas' width='100%'><thead><tr><th>Seleccione sala</th></tr></thead><tbody>";
+							
+									$(data).each(function(key,value){																			
+										html=html+"<tr folio="+value.folio+"><td><button class='sala' folio_sala="+value.folio+" style='width=400px'><label style='font-size:1.5em'>"+value.direccion+"</label></button></td></tr>";									
+									});
+									html=html+"</tbody></table>";
+		
+									$('#loader').hide();
+									$('#salas').html(html);
+								
+									$('#tabla_salas').dataTable({
+										"sScrollY": "215px",		 		 		
+										"bFilter": true,
+										"bSort": false,
+										"bInfo": false,
+										"bPaginate": false,
+										"bJQueryUI": true,
+										"bAutoWidth": false, 																				
+									});
+
+									$('.sala').click(function(){
+										
+										folio_sala=$(this).attr('folio_sala');
+										
+										pathCuestionario="\\Application\\toma"+codigo_auditor+folio_sala+".txt";
+										
+										$('#sesion').hide(),
+										$('#container').show();
+										cargar_datos();
+									});
+								}																										
+							}
+						}
+						
+						xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'",true);
+						xmlhttp.send();	
+					});						
 				}
-			});
+			}
+			xmlhttp.open("GET",'http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=1',true);
+			xmlhttp.send();			
 		}
 	
 	function cargar_salas(id_auditor)
@@ -584,22 +669,7 @@ String.prototype.fileExists = function() {
 		   //body.removeChild(ir);
 		 }
 		return dlg;
-	}
-
-	function activar_loader(id){
-		// alert('voy a colorear el boton');
-		// $('#'+id).addClass('seleccionada');
-		$		
-		$('#container').hide();
 	}	
-	
-	function desactivar_loader(id){
-		// alert('voy a descolorear el boton');
-		// setTimeout(function() {      
-			// $('#container').show();
-		// }, 600);
-		$('#container').show();		
-	}		
 	
 	function enviar_cuestionario(){
 	
@@ -609,30 +679,19 @@ $(document).ready(function() {
 
 	$('button').button();
 	$('button').css('padding','0em');
-	$('span').css('padding','0em');
-
-	var callbacks = $.Callbacks();			
-	
-	callbacks.add( activar_loader() );	
-	callbacks.add( cargar_auditores() );			
-	callbacks.add( cargar_datos() );			
-	// callbacks.add( desactivar_loader() );					
-	
-	$('#cuestionario').dataTable({
-		"sScrollY": "520px",		 		 		
-		"bFilter": false,
-		"bSort": false,
-		"bInfo": false,
-		"bPaginate": false,
-		"bJQueryUI": false,
-		"bAutoWidth": false, 		
-	});
-	
+	$('span').css('padding','0em');	
+	cargar_auditores();
+		
 	$('#guardar').click(function(){		
-		save_content_to_file(respuestasDB().stringify(), pathCuestionario);
+		
+		var obj_toma=new toma(new Date(),1,id_auditor,id_sala,respuestasDB().stringify());
+		
+		save_content_to_file(obj_toma, pathCuestionario);
 	});
 	
 	$('.cursor').click(function(){			
+	
+		$(this).addClass('ui-state-active');
 	
 		if($(this).attr('id')==='ant')
 		{
@@ -643,12 +702,16 @@ $(document).ready(function() {
 		{
             if(cursor<42)							
                 cursor++;
-		}		
-		var callbacks = $.Callbacks();
-
-		callbacks.add( activar_loader() );		
-		callbacks.add( cargar_contenido(cursor) );
-		callbacks.add( desactivar_loader() );		
+		}				
+		
+		cargar_contenido(cursor);		
+		
+		$(this).removeClass('ui-state-active');
+	});
+	
+	$('#volver').click(function(){
+		$('#container').hide();
+		$('sesion').show();
 	});
 	
 });
@@ -656,7 +719,7 @@ $(document).ready(function() {
 </head>
 <body>
 
-<div id="container" style="width:100%;">
+<div id="container" style="width:100%;display:none">
 
     <table id='cuestionario' width='100%' class='display table' border=1>
 			<thead>
@@ -672,28 +735,28 @@ $(document).ready(function() {
             <tr>
                     <td id='topico' style='vertical-align:middle'>
                             <h4 style="background-color:#000000;">
-                                    Topico
+                                    Cargando...
                             </h4>			
                     </td>
             </tr>		
             <tr>
                     <td id='seccion' style='vertical-align:middle'>
                             <h4>
-                                    Seccion
+                                    Cargando...
                             </h4>			
                     </td>
             </tr>		
             <tr>
                     <td id='pregunta' style='height:100px;' style='vertical-align:middle'>
                             <h4>
-                                    Pregunta
+                                    Cargando...
                             </h4>
                     </td>
             </tr>				
             <tr>
                 <td id='respuesta' style='vertical-align:top'>				
                             <h4>
-                                    Respuesta
+                                    Cargando...
                             </h4>
                 </td>		
             </tr>	
@@ -726,6 +789,32 @@ $(document).ready(function() {
     </table>
 </div>
 <div id="sesion" style="width:100%;">
+	<table width='100%'>
+			<thead>
+            <tr style="background-color:#000000">
+                    <th style='vertical-align:middle'>
+                            <h4 style="color:#FFFFFF;">
+                                    Ingreso Usuario
+                            </h4>
+                    </th>
+            </tr>
+			<thead>
+		<tr>
+			<td>
+				<div id='auditores'>
+					<h1>
+						Cargando auditores...
+					</h1>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id='salas'>
+				</div>
+			</td>
+		</tr>
+	</table>
 </div>
 </body>
 </html>

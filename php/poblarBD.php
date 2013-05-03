@@ -1,10 +1,13 @@
 <?php
-$serverName = "localhost"; //serverName\instanceName
-
+// $serverName = "localhost"; //serverName\instanceName
+$serverName = "200.29.139.244";
 // Since UID and PWD are not specified in the $connectionInfo array,
 // The connection will be attempted using Windows Authentication.
-$connectionInfo = array( "Database"=>"RedBull",  "CharacterSet" => "UTF-8");
+// $connectionInfo = array( "Database"=>"RedBull",  "CharacterSet" => "UTF-8");
+
+$connectionInfo = array( "Database"=>"encuesta_redbull", "UID"=>"admin", "PWD"=>"Jgh240482710", "CharacterSet" => "UTF-8");
 $conn = sqlsrv_connect( $serverName, $connectionInfo);
+
 
 if( $conn ) {
      echo "Connection established.<br />";

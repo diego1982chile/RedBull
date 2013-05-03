@@ -29,7 +29,7 @@
 <script type="text/javascript" src="js/json2.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="js/base64.js"></script>
+<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
 
 <script>
 
@@ -101,7 +101,7 @@ String.prototype.fileExists = function() {
 	
 	function cargar_datos()
 	{								
-		cargar_respuestas();
+		// cargar_respuestas();
 			$.getJSON('data/topicos.txt',function(data){					
 				topicosDB=TAFFY(data);
 				$.getJSON('data/secciones.txt',function(data){
@@ -156,8 +156,7 @@ String.prototype.fileExists = function() {
 					
 					var html="<table id='tabla_auditores' width='100%'><thead><tr><th>Seleccione auditor</th></tr></thead><tbody>";
 				
-					$(data).each(function(key,value){									
-						
+					$(data).each(function(key,value){															
 						html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=400px'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
 					});
 					html=html+"</tbody></table>";
@@ -206,7 +205,7 @@ String.prototype.fileExists = function() {
 									var html="<table id='tabla_salas' width='100%'><thead><tr><th>Seleccione sala</th></tr></thead><tbody>";
 							
 									$(data).each(function(key,value){																			
-										html=html+"<tr folio="+value.folio+"><td><button class='sala' folio_sala="+value.folio+" style='width=400px'><label style='font-size:1.5em'>"+value.direccion+"</label></button></td></tr>";									
+										html=html+"<tr title='"+value.direccion+"'><td><button class='sala' folio_sala="+value.folio+" style='width=400px'><label style='font-size:1.5em'>"+value.folio+"/"+value.calle+"-"+value.numero+"</label></button></td></tr>";									
 									});
 									html=html+"</tbody></table>";
 		
@@ -231,12 +230,33 @@ String.prototype.fileExists = function() {
 										
 										$('#sesion').hide(),
 										$('#container').show();
-										cargar_datos();
+										// cargar_datos();
+										
+										if(pathCuestionario.fileExists())
+										{									
+											$.getJSON(pathCuestionario,function(data){					
+											respuestasDB=TAFFY(data.respuestas);
+												if(parseInt(toma.estado)==1)
+												{																														
+													if(confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?"))
+														cargar_datos();
+												}
+												else
+												{
+													if(confirm("Esta sesión corresponde a una toma completada en este equipo. ¿Desea cargar los datos de esta toma?"))
+														cargar_datos();
+												}												
+											});		
+										}	
+										else
+										{
+											alert("Esta sesión corresponde a una nueva toma. Se cargará el cuestionario");
+											cargar_datos();
+										}										
 									});
 								}																										
 							}
-						}
-						
+						}						
 						xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'",true);
 						xmlhttp.send();	
 					});						
@@ -245,32 +265,6 @@ String.prototype.fileExists = function() {
 			xmlhttp.open("GET",'http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=1',true);
 			xmlhttp.send();			
 		}
-	
-	function cargar_salas(id_auditor)
-	{								
-			$.getJSON('php/cargar_maestra.php',{caso:2,id_auditor:id_auditor},function(data){					
-				var html="<table id='salas' width='100%'><thead><tr><th>Auditor</th></tr></thead><tbody>";
-				
-				data.each(function(){
-					html=html+"<tr><td></td></tr>";
-				});
-				html=html+"</tbody></table>";
-			});				
-			$('#sesion').html(html);
-			
-		
-	}	
-	
-	function cargar_respuestas()
-	{				
-		if(pathCuestionario.fileExists())
-		{			
-			alert("Existe una toma pendiente. Se cargarán los datos de la toma");
-			$.getJSON(pathCuestionario,function(data){				
-				respuestasDB=TAFFY(data);																				
-			});		
-		}					
-	}
 	
 	// Carga el contenido desde objetos 'consultables' a partir de los contenedores
 	
@@ -320,8 +314,7 @@ String.prototype.fileExists = function() {
 										else
 										{
 											maxCat=15;
-										}
-										
+										}										
 									
 										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
 
@@ -623,7 +616,7 @@ String.prototype.fileExists = function() {
 				}
 				else // Sino existe la respuesta, agregarla
 				{
-					respuestasDB.insert(new respuesta(id_respuesta,valor,id_item,id_pregunta,id_categoria));              
+					respuestasDB.insert(new respuesta(id_respuesta,valor,parseInt(id_item),parseInt(id_pregunta),parseInt(id_categoria)));              
 					id_respuesta++;
 				}				
 				break;		
@@ -638,7 +631,7 @@ String.prototype.fileExists = function() {
 				}
 				else // Sino existe la respuesta, agregarla		
 				{
-					respuestasDB.insert(new respuesta(id_respuesta,valor,id_item,id_pregunta,id_categoria));              
+					respuestasDB.insert(new respuesta(id_respuesta,valor,parseInt(id_item),parseInt(id_pregunta),parseInt(id_categoria)));              
 					id_respuesta++;
 				}				
 				break;
@@ -647,7 +640,7 @@ String.prototype.fileExists = function() {
         // respuestasDB().each(function (r1) {
            // console.log(r1); 
         // });
-    }		
+    }				
 
 	function save_content_to_file(content, filename){		
 		var dlg = false;
@@ -671,8 +664,157 @@ String.prototype.fileExists = function() {
 		return dlg;
 	}	
 	
-	function enviar_cuestionario(){
+	function validar_cuestionario(){
 	
+		var ok=true;	
+		var flag=false;
+	
+		preguntasDB().each(function(pregunta){
+		
+			if(flag)
+				return false;
+		
+			var tieneCategoria=false;			
+			var tipo1=parseInt(pregunta.tipo);
+			var tipo2=parseInt(pregunta.tipo2);			
+			var aux=false;																					
+			
+			switch(tipo1)
+			{
+				case 1: //Tipo alternativa
+				
+				preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){
+					tieneCategoria=true;
+					return false;
+				});
+				
+					switch(tipo2)
+					{
+						case 1: // Tipo disyuntiva												
+						
+							if(tieneCategoria)
+							{								
+								var cont1=1;								
+								preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){									
+									var cont2=0;
+									respuestasDB().filter({'id_pregunta':pregunta.id_pregunta,'id_categoria':categoria.id_categoria}).each(function(){
+										cont2++;
+									});
+									cont1=cont1*cont2;
+									alert("cont1="+cont1);
+								});
+								if(cont1!=0) // Para cada categoria debe haber una respuesta
+									aux=true; 
+							}
+							else
+							{								
+								respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
+									aux=true;	
+									return false;
+								});
+							}
+							break;
+						case 2: // Tipo conjuntiva
+							if(tieneCategoria)
+							{
+								var cont=0;
+								preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){	
+<!-- 									alert('soy categoria conjuuntiva');
+									alert(JSON.stringify(categoria)); -->
+									alert(respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).stringify());
+									respuestasDB().filter({'id_pregunta':pregunta.id_pregunta,'id_categoria':categoria.id_categoria}).each(function(){
+										alert('hay respuesta');
+										cont++;
+										return false;
+									});
+								});
+								if(cont>0) // Para al menos una categoria debe haber una respuesta
+									aux=true; 								
+							}
+							else
+							{
+								respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
+									aux=true;	
+									return false;
+								});
+							}
+							break;
+						case 3: // Tipo conjuntiva con valor
+							if(tieneCategoria)
+							{
+								var cont=0;
+								preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){									
+									respuestasDB().filter({'id_pregunta':pregunta.id_pregunta,'id_categoria':categoria.id_categoria}).each(function(){
+										cont++;
+										return false;
+									});
+								});
+								if(cont>0) // Para al menos una categoria debe haber una respuesta
+									aux=true;
+							}
+							else
+							{
+								respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
+									if(respuesta.valor_respuesta!=null)						
+										aux=true;						
+								});
+							}							
+					}
+					break;
+				case 2: //Tipo valor					
+					respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
+						if(respuesta.valor_respuesta!=null)						
+							aux=true;						
+					});
+					break;
+			}
+			ok=ok*aux;
+			
+			if(!ok)
+			{								
+				alert("La siguiente pregunta no ha sido correctamente respondida");				
+				flag=true;
+				cursor=pregunta.id_pregunta;
+				cargar_contenido(cursor);				
+			}
+						
+		});
+		
+		if(ok)
+		{		
+			if(confirm("Encuesta completada correctamente, ¿Confirma el envío de la toma?"))
+				enviar_toma();
+		}		
+		else
+		{
+			// alert('ups...algo raro paso');
+		}
+	}
+	
+	function enviar_toma(){
+
+		var xmlhttp;
+			
+		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
+			xmlhttp=new XMLHttpRequest();				
+		}
+		else{// code for IE6, IE5				
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
+		}
+																
+		xmlhttp.onreadystatechange=function(){
+										
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{									
+			var data = JSON.parse(xmlhttp.responseText);											
+		
+		}
+		
+		var obj_toma=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().get());		
+		
+		xmlhttp.open("POST",'http://200.29.139.244/REDBULL/php/ingresar_toma.php?toma='+obj_toma,true);
+		xmlhttp.send();
+		}
 	}
 	
 $(document).ready(function() {		
@@ -684,9 +826,9 @@ $(document).ready(function() {
 		
 	$('#guardar').click(function(){		
 		
-		var obj_toma=new toma(new Date(),1,id_auditor,id_sala,respuestasDB().stringify());
+		var obj_toma=new toma(new Date(),1,codigo_auditor,folio_sala,respuestasDB().get());			
 		
-		save_content_to_file(obj_toma, pathCuestionario);
+		save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
 	});
 	
 	$('.cursor').click(function(){			
@@ -709,78 +851,83 @@ $(document).ready(function() {
 		$(this).removeClass('ui-state-active');
 	});
 	
-	$('#volver').click(function(){
-		$('#container').hide();
-		$('sesion').show();
+	$('#enviar').click(function(){
+		validar_cuestionario();
 	});
+	
+	$('button').selectable();
 	
 });
 </script>
 </head>
 <body>
 
-<div id="container" style="width:100%;display:none">
+<div id="container" style="width:100%;display:none;">
 
     <table id='cuestionario' width='100%' class='display table' border=1>
-			<thead>
-            <tr style="background-color:#000000">
-                    <th style='vertical-align:middle'>
-                            <h4 style="color:#FFFFFF;">
-                                    CUESTIONARIO PSA
-                            </h4>
-                    </th>
-            </tr>
-			<thead>
-			<tbody>
-            <tr>
-                    <td id='topico' style='vertical-align:middle'>
-                            <h4 style="background-color:#000000;">
-                                    Cargando...
-                            </h4>			
-                    </td>
-            </tr>		
-            <tr>
-                    <td id='seccion' style='vertical-align:middle'>
-                            <h4>
-                                    Cargando...
-                            </h4>			
-                    </td>
-            </tr>		
-            <tr>
-                    <td id='pregunta' style='height:100px;' style='vertical-align:middle'>
-                            <h4>
-                                    Cargando...
-                            </h4>
-                    </td>
-            </tr>				
-            <tr>
-                <td id='respuesta' style='vertical-align:top'>				
-                            <h4>
-                                    Cargando...
-                            </h4>
-                </td>		
-            </tr>	
-			<tbody>
+		<thead>
+		<tr style="background-color:#000000">
+			<th style='vertical-align:middle'>
+					<h4 style="color:#FFFFFF;">
+							CUESTIONARIO PSA
+					</h4>
+			</th>
+		</tr>
+		<thead>
+		<tbody>
+		<tr>
+			<td id='topico' style='vertical-align:middle'>
+					<h4 style="background-color:#000000;">
+							Cargando...
+					</h4>			
+			</td>
+		</tr>		
+		<tr>
+			<td id='seccion' style='vertical-align:middle'>
+					<h4>
+							Cargando...
+					</h4>			
+			</td>
+		</tr>		
+		<tr>
+			<td id='pregunta' style='height:100px;' style='vertical-align:middle'>
+					<h4>
+							Cargando...
+					</h4>
+			</td>
+		</tr>				
+		<tr>
+			<td id='respuesta' style='vertical-align:top'>				
+						<h4>
+								Cargando...
+						</h4>
+			</td>		
+		</tr>	
+		<tbody>
     </table>	
 	
     <table width='70%' align='center'>    
         <tr>
-            <td>
+            <td width='20%'>
                 <button class='cursor' id='ant' style='padding:0em;margin:0em'>
                     <img src='images/arrow-left.png' style='width:2em;height:1em'/>
                 </button>                
+				<a class="carousel-control left" href="#selectable-carousel" data-slide="prev">
+					<i class="icon-backward icon-white">
+					</i>
+				</a>
             </td>
-            <td>
+            <td width='20%'>
                 <button id='guardar' style='width:100%;height:50%'>
                     <img src='images/System-Save-icon.png' style='width:2em;height:1em'/>
                 </button>  
             </td>
-            <td>
+            <td width='20%'>
                 <button id='enviar' style='width:100%;height:50%'>
                     <img src='images/600px-Black_check.svg.png' style='width:2em;height:1em'/>
                 </button> 
             </td>
-            <td>
+            <td width='20%'>
                 <button class='cursor' id='sig' style='padding:0em;margin:0em'>
                     <img src='images/arrow.png' style='width:2em;height:1em'/>
                 </button>	
@@ -793,9 +940,9 @@ $(document).ready(function() {
 			<thead>
             <tr style="background-color:#000000">
                     <th style='vertical-align:middle'>
-                            <h4 style="color:#FFFFFF;">
-                                    Ingreso Usuario
-                            </h4>
+						<h4 style="color:#FFFFFF;">
+								Ingreso Usuario
+						</h4>
                     </th>
             </tr>
 			<thead>

@@ -9,8 +9,7 @@
 	
 	table tr td{
 		text-align: center;
-		font-family: "Arial",Georgia,Serif;
-		
+		font-family: "Arial",Georgia,Serif;		
 	}	
 	h4,h5,div,table{
 		padding:0em;
@@ -68,7 +67,7 @@ String.prototype.fileExists = function() {
         var itemesDB;								
         var alternativasDB;	    	
 
-		var pathCuestionario="cuestionario.txt"
+		// var pathCuestionario="cuestionario.txt"
 		// var pathCuestionario="\\Application\\cuestionario.txt";
 		
 	function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
@@ -87,32 +86,22 @@ String.prototype.fileExists = function() {
 	// Carga de datos en los contenedores de objetos
 	
 	function cargar_datos()
-	{								
-		cargar_respuestas();
-			$.getJSON('php/cargarBD.php',{caso:1},function(data){						
-				topicosDB=TAFFY(JSON.stringify(data));
-				topicosDB().each(function(r){
-					console.log(r);
-				});
-				$.getJSON('php/cargarBD.php',{caso:2},function(data){
+	{												
+			$.getJSON('php/cargar_cuestionario.php',{caso:1},function(data){										
+				topicosDB=TAFFY(JSON.stringify(data));		
+				$.getJSON('php/cargar_cuestionario.php',{caso:2},function(data){
 					seccionesDB=TAFFY(JSON.stringify(data));
-					seccionesDB().each(function(r){
-						console.log(r);
-					});
-					$.getJSON('php/cargarBD.php',{caso:3},function(data){
+					$.getJSON('php/cargar_cuestionario.php',{caso:3},function(data){
 						categoriasDB=TAFFY(JSON.stringify(data));
-						$.getJSON('php/cargarBD.php',{caso:4},function(data){					
-							preguntasDB=TAFFY(JSON.stringify(data));
-							preguntasDB().each(function(r){
-								console.log(r);
-							});								
-							$.getJSON('php/cargarBD.php',{caso:5},function(data){
+						$.getJSON('php/cargar_cuestionario.php',{caso:4},function(data){					
+							preguntasDB=TAFFY(JSON.stringify(data));								
+							$.getJSON('php/cargar_cuestionario.php',{caso:5},function(data){
 								preguntas_categoriasDB=TAFFY(JSON.stringify(data));
-								$.getJSON('php/cargarBD.php',{caso:6},function(data){
+								$.getJSON('php/cargar_cuestionario.php',{caso:6},function(data){
 									itemesDB=TAFFY(JSON.stringify(data));
-									$.getJSON('php/cargarBD.php',{caso:7},function(data){
+									$.getJSON('php/cargar_cuestionario.php',{caso:7},function(data){
 										alternativasDB=TAFFY(JSON.stringify(data));									
-										cargar_contenido(cursor);									
+										// cargar_contenido(cursor);									
 									});									
 								});	
 							});		
@@ -120,23 +109,12 @@ String.prototype.fileExists = function() {
 					});	
 				});				
 			});																	      		
-	}
-	
-	function cargar_respuestas()
-	{				
-		if(pathCuestionario.fileExists())
-		{			
-			alert("Existe una toma pendiente. Se cargarán los datos de la toma");
-			$.getJSON(pathCuestionario,function(data){				
-				respuestasDB=TAFFY(data);																				
-			});		
-		}					
-	}
+	}	
 	
 	// Carga el contenido desde objetos 'consultables' a partir de los contenedores
 	
     function cargar_contenido(id_pregunta)
-    {					     			
+    {					     					
 		// alert('voy a cargar el contenido');
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
@@ -144,15 +122,16 @@ String.prototype.fileExists = function() {
             seccionesDB().filter({'id_seccion':r1.id_seccion}).each(function (r2) { 
 
                 topicosDB().filter({'id_topico':r2.id_topico}).each(function (r3) { 
+				
+					// alert('id_topico='+r3.id_topico+' id_seccion'+r2.id_seccion);				
+					$('#head_topico'+r3.id_topico).html("<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>");
+					$('#head_topico'+r3.id_topico).css('background-color',r3.color_topico);
+					
+					$('#seccion'+r3.id_topico+r2.id_seccion+' thead tr th').html("<h5>"+r3.numero_topico+"."+r2.numero_seccion+" "+r2.nombre_seccion+"</h5>");
+                    $('#seccion'+r3.id_topico+r2.id_seccion+' thead tr th').css('background-color',r2.color_seccion);										                
 
-                    $('#topico').html("<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>");
-                    $('#topico').css('background-color',r3.color_topico);
-
-                    $('#seccion').html("<h5>"+r3.numero_topico+'.'+r2.numero_seccion+' '+r2.nombre_seccion+"</h5>");
-                    $('#seccion').css('background-color',r2.color_seccion);					
-
-                    $('#pregunta').html("<h5 style='padding:0em'>"+r3.numero_topico+'.'+r2.numero_seccion+'.'+r1.numero_pregunta+' '+r1.contenido_pregunta+"</h5>");
-
+					$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData(["<h5 style='padding:0em'>"+r3.numero_topico+'.'+r2.numero_seccion+'.'+r1.numero_pregunta+' '+r1.contenido_pregunta+"</h5>"]);					
+					
                     switch(parseInt(r1.tipo))
                     {
                         case 1:// Tipo alternativa => cargar las alternativas para esta pregunta
@@ -181,10 +160,9 @@ String.prototype.fileExists = function() {
 										else
 										{
 											maxCat=15;
-										}
-										
+										}										
 									
-										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
+										var html="<table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'>";
 
 										var contCat=0;
 										
@@ -210,9 +188,9 @@ String.prototype.fileExists = function() {
 											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
 												if(cont===1)
-													html=html+"<td width='75%' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+													html=html+"<td width='75%' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+cursor+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
 												else                                                                                                
-													html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+													html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+cursor+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
 											});	
 											cont++;
 											});	
@@ -227,19 +205,20 @@ String.prototype.fileExists = function() {
 									else
 									{
 										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
-										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
+										var html="<table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'>";
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
 												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
-														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='radio"+r5.id_categoria+"' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='radio"+cursor+r5.id_categoria+"' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
 												});															
 										});		
 										html=html+"</table>";									
 									}					
 									
 									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
-									$('#respuesta').html(html);   															
+									$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
+									// $('#respuesta').html(html);   															
 									
 									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
 																		
@@ -248,17 +227,17 @@ String.prototype.fileExists = function() {
 										$('[name=radio'+r10.id_categoria+']').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
 									});
 									
-									$('#tabla_alternativas tr td').click(function(){
-										$('[name=radio'+$(this).children().attr('categoria')+']').parent('.seleccionada').removeClass();
+									$('#tabla_alternativas'+cursor+' tr td').click(function(){
+										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').parent('.seleccionada').removeClass();
 										$(this).addClass("seleccionada");                                
-										$('[name=radio'+$(this).children().attr('categoria')+']').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
+										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null); 																																						
 									});													
 									break;
 								case 2: // Tipo conjuntiva
 									if(tiene_categoria)
 									{                         										
-										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
+										var html="<table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'>";
 
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
@@ -277,9 +256,9 @@ String.prototype.fileExists = function() {
 											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
 												if(cont===1)
-													html=html+"<td width='70%' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='checkbox' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+													html=html+"<td width='70%' style='text-align:left'><input type='checkbox' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='checkbox' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
 												else                                                                                                
-													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='checkbox' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='checkbox' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
 											});	
 											cont++;
 											});										
@@ -290,19 +269,19 @@ String.prototype.fileExists = function() {
 									else
 									{
 										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
-										var html="<table id='tabla_alternativas' width='100%' border='1' align='left'>";
+										var html="<table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'>";
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
 												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
-														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='checkbox' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='checkbox' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
 												});															
 										});		
 										html=html+"</table>";									
 									}							
 									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
-									$('#respuesta').html(html);   															
-									
+									// $('#respuesta').html(html);   															
+									$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
 									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
@@ -310,16 +289,17 @@ String.prototype.fileExists = function() {
 										$('[name=checkbox]').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
 									});
 									
-									$('#tabla_alternativas tr td').click(function(){										
+									$('#tabla_alternativas'+cursor+' tr td').click(function(){	
+										// alert($(this).children().attr('pregunta'));
 										if($(this).children().prop('checked'))
 										{
 											$(this).removeClass("seleccionada");
-											$('[name=checkbox]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);											
+											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);											
 										}
 										else
 										{
 											$(this).addClass("seleccionada");        											
-											$('[name=checkbox]').filter('[categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
+											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
 										}										                              
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null); 																											
 									});																													
@@ -329,7 +309,7 @@ String.prototype.fileExists = function() {
 									
 									if(tiene_categoria)
 									{                         													
-										html=html+"<div><table id='tabla_alternativas' width='100%' border='1' align='left'></div>";
+										html=html+"<div><table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'></div>";
 
 										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {
 
@@ -348,9 +328,9 @@ String.prototype.fileExists = function() {
 											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
 												if(cont===1)
-													html=html+"<td width='50%' style='text-align:left'><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='input"+r5.id_categoria+r7.id_item+"' class='valor' /></td></tr>";                                                                                                
+													html=html+"<td width='50%' style='text-align:left'><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='input"+r5.id_categoria+r7.id_item+"' class='valor' /></td></tr>";                                                                                                
 												else                                                                                                
-													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='input"+r5.id_categoria+r7.id_item+"' class='valor' /></td></tr>";										
+													html=html+"<tr width='50%' id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='input"+r5.id_categoria+r7.id_item+"' class='valor' /></td></tr>";										
 											});	
 											cont++;
 											});										
@@ -361,59 +341,50 @@ String.prototype.fileExists = function() {
 									else
 									{										
 										// Si no existen categorias para esta pregunta, cargar directamente las alternativas
-										html=html+"<div><table id='tabla_alternativas' width='100%' border='1' align='left'></div>";
+										html=html+"<div><table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'></div>";
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
 												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
-													html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left' width='50%'><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='input"+r5.id_categoria+r5.id_item+"' class='valor' /></td></tr>";										
+													html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left' width='50%'><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='input"+r5.id_categoria+r5.id_item+"' class='valor' /></td></tr>";										
 												});															
 										});		
 										html=html+"</table>";									
-									}						
-									html=html+"<div style='height:60px'><table width='100%'><tr><td width='16%'><button val='1' class='teclado'>1</button></td><td width='16%'><button val='2' class='teclado'>2</button></td><td width='16%'><button val='3' class='teclado'>3</button></td><td width='16%'><button val='4' class='teclado'>4</button></td><td width='16%'><button val='5' class='teclado'>5</button></td><td width='16%' rowspan='2'><button class='borrar'><-</button></td></tr><tr><td><button val='6' class='teclado'>6</button></td><td><button val='7' class='teclado'>7</button></td><td><button val='8' class='teclado'>8</button></td><td><button val='9' class='teclado'>9</button></td><td><button val='0' class='teclado'>0</button></td></tr><table></div>";									
+									}															
 									// $('#respuesta').html(html); 
 									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
-									$('#respuesta').html(html);
-																											
+									// $('#respuesta').html(html);
+									$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);																		
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
 									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {											
 										$('[name=input'+r10.id_categoria+r10.id_item+']').val(r10.valor_respuesta);
 									});
+																		
+									$('.valor').css('width','100%');
 									
-									$('#valor').css('font-size','20px');
-									$('.teclado').css('font-size','15px');
-									$('.teclado').css('width','100%');
-									$('.borrar').css('width','100%');
-									$('.borrar').css('font-size','15px');
-									$('input').css('width','100%');
-									
+									var pregunta=$('.valor:first').attr('pregunta');
 									var categoria=$('.valor:first').attr('categoria');
 									var item=$('.valor:first').attr('item');
 									
-									$('[categoria='+categoria+'][item='+item+']').focus();
+									$('[pregunta='+pregunta+'][categoria='+categoria+'][item='+item+']').focus();
 									
 									$('.valor').focusin(function(){
+										pregunta=$(this).attr('pregunta');
 										categoria=$(this).attr('categoria');
 										item=$(this).attr('item');
-									});										
-									
-									$('.teclado').click(function(){												
-										$('[categoria='+categoria+'][item='+item+']').val( parseInt($('[categoria='+categoria+'][item='+item+']').val()+$(this).attr('val'))); 										
-										if($('[categoria="'+categoria+'"][item="'+item+'"]').val()!='')																																		
-											guardarRespuesta(id_pregunta,categoria,item,$('[categoria='+categoria+'][item='+item+']').val());										
-									});
+									});																			
 									
 									$('.borrar').click(function(){								
-										$('[categoria='+categoria+'][item='+item+']').val(''); 										
+										$('[pregunta='+pregunta+'][categoria='+categoria+'][item='+item+']').val(''); 										
 									});																																					                           																			
 									break;		
 							}
                             break;							
                         case 2:// Tipo numerico => cargar un input                                                        
-                            var html="<div style='height:50px'><input id='valor' /></div><div style='height:100px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
-                            $('#respuesta').html(html);
+                            var html="<div style='height:50px'><input id='valor' /></div>";
+                            // $('#respuesta').html(html);
+							$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
 							// $('button').button();
 							// $('button').css('padding','0em');
 							// $('span').css('padding','0em');
@@ -423,26 +394,13 @@ String.prototype.fileExists = function() {
 								$('#valor').val(r10.valor_respuesta);								
 							});
 							
-                            $('#valor').css('font-size','20px');
-                            $('.teclado').css('font-size','15px');
-                            $('.teclado').css('width','100%');
-							$('.borrar').css('width','100%');
-							$('.borrar').css('font-size','15px');
-                            
-							$('.teclado').click(function(){								
-                                $('#valor').val( parseInt($('#valor').val()+$(this).attr('val')));  
-								if($('#valor').val()!='')									
-									guardarRespuesta(id_pregunta,null,null,$('#valor').val());
-                            });
-							
-							$('.borrar').click(function(){								
-                                $('#valor').val(''); 										
-                            });							
+                            // $('#valor').css('font-size','20px');
+					
                             break;				
                     }						
                 });
             });
-        });
+        });				
     }
 	
     function guardarRespuesta(id_pregunta,id_categoria,id_item,valor)    
@@ -532,43 +490,132 @@ String.prototype.fileExists = function() {
 		return dlg;
 	}
 
-	function activar_loader(id){
-		// alert('voy a colorear el boton');
-		$('#'+id).addClass('seleccionada');
-	}	
-	
-	function desactivar_loader(id){
-		// alert('voy a descolorear el boton');
-		setTimeout(function() {      
-			$('#'+id).removeClass('seleccionada');
-		}, 1000);		
-	}		
+	function cargar_contenidos(){
+		
+		respuestasDB().each(function(r1){												
+			console.log(r1);
+		});
+		
+		while(cursor<44)
+		{		
+			respuestasDB().filter({'id_pregunta':cursor.toString()}).each(function(r1){												
+				console.log(r1);
+			});
+			cargar_contenido(cursor);
+			cursor++;
+		}
+	}
 	
 	function enviar_cuestionario(){
 	
 	}
 	
-$(document).ready(function() {		
-
-	$('button').button();
-	$('button').css('padding','0em');
-	$('span').css('padding','0em');
-
-	var callbacks = $.Callbacks();			
+	function cargar_toma(){
 	
-	callbacks.add( activar_loader() );			
-	callbacks.add( cargar_datos() );			
-	callbacks.add( desactivar_loader() );					
+	}
 	
-	$('#cuestionario').dataTable({
-		"sScrollY": "520px",		 		 		
+	function cargar_tomas(){
+		
+		var xmlhttp;
+		
+		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari			
+			xmlhttp=new XMLHttpRequest();
+		}
+		else{// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		
+		xmlhttp.onreadystatechange=function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){
+				
+				var data = JSON.parse(xmlhttp.responseText);
+				
+				$(data).each(function(key,value){				
+					switch(parseInt(value.estado))
+					{
+						case 2:
+							var estado="<a class='revisar' id_toma='"+value.id+"' href='#'>REVISAR</a>";
+							break;
+						case 3:
+							var estado="<label>REVISADA</a>";
+							break;
+					}
+					// alert(estado);
+					$('#tabla_tomas').dataTable().fnAddData([value.id,value.sala,value.auditor,value.fecha,estado]);
+										
+				});		
+				
+				$('.revisar').click(function(event){
+					
+					var id_toma=$(event.target).attr('id_toma');																				
+					
+					var xmlhttp;
+		
+					if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari						
+						xmlhttp=new XMLHttpRequest();
+					}
+					else{// code for IE6, IE5
+						xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					
+					xmlhttp.onreadystatechange=function(){
+					
+						if (xmlhttp.readyState==4 && xmlhttp.status==200){												
+							var data = JSON.parse(xmlhttp.responseText);	
+							
+							respuestasDB=TAFFY(data);
+							
+							var callbacks = $.Callbacks();					
+							callbacks.add( cargar_contenidos() );							
+							$('#tomas').hide();
+							$('#container').show();
+						}				
+					}
+					xmlhttp.open("GET","php/cargar_toma.php?id_toma="+id_toma,true);
+					xmlhttp.send();	
+				});				
+			}
+		}
+		xmlhttp.open("GET","php/cargar_tomas.php",true);
+		xmlhttp.send();		
+	}
+	
+	function decorar_tablas(){
+		$('.dataTable').dataTable({
+		// "sScrollY": "520px",		 		 		
 		"bFilter": false,
 		"bSort": false,
 		"bInfo": false,
 		"bPaginate": false,
 		"bJQueryUI": false,
 		"bAutoWidth": false, 		
-	});
+		"aoColumnDefs": [{ "aTargets": [0] }],		
+		});		
+		
+		$('#tabla_tomas').dataTable({
+		"sScrollY": "520px",		 		 		
+		"bFilter": true,
+		"bSort": false,
+		"bInfo": false,
+		"bPaginate": false,
+		"bJQueryUI": true,
+		"bAutoWidth": false, 				
+		});				
+	}
+	
+$(document).ready(function() {		
+
+	$('button').button();
+	$('button').css('padding','0em');
+	$('span').css('padding','0em');		
+	
+	var callbacks = $.Callbacks();
+	callbacks.add( cargar_datos() );
+	callbacks.add( decorar_tablas() );
+	callbacks.add( cargar_tomas() );
+	
+	// callbacks.add( decorar_tablas() );	
+	// callbacks.add( cargar_contenidos() );		
 	
 	$('#guardar').click(function(){		
 		save_content_to_file(respuestasDB().stringify(), pathCuestionario);
@@ -585,62 +632,224 @@ $(document).ready(function() {
 		{
             if(cursor<42)							
                 cursor++;
-		}		
-		var callbacks = $.Callbacks();
-
-		callbacks.add( activar_loader($(this).attr('id')) );		
-		callbacks.add( cargar_contenido(cursor) );		
-		callbacks.add( desactivar_loader($(this).attr('id')) );				
+		}							
+		cargar_contenidos();						
 	});	
 });
 </script>
 </head>
 <body>
 
-<div id="container" style="width:100%;">
+<div id="container" style="width:100%;display:none;">
 
-    <table id='cuestionario' width='100%' class='display table' border=1>
+    <table id='cuestionario' width='100%' class='display table dataTable' border=1>
 			<thead>
             <tr style="background-color:#000000">
-                    <th style='vertical-align:middle'>
-                            <h4 style="color:#FFFFFF;">
-                                    CUESTIONARIO PSA
-                            </h4>
-                    </th>
+				<th style='vertical-align:middle'>
+						<h4 style="color:#FFFFFF;">
+								CUESTIONARIO PSA
+						</h4>
+				</th>
             </tr>
 			<thead>
 			<tbody>
             <tr>
-                    <td id='topico' style='vertical-align:middle'>
-                            <h4 style="background-color:#000000;">
-                                    Topico
-                            </h4>			
-                    </td>
+				<td style='vertical-align:middle'>
+					<table id='topico1' class='display table dataTable' width='100%' border=1>
+						<thead>	
+							<tr>
+								<th id='head_topico1'>
+									Topico1
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table id='seccion11' class='display table dataTable' width='100%' border=1> 
+										<thead>
+											<tr>
+												<th>
+													Seccion11
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion12' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion12
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>	
+							<tr>
+								<td>
+									<table id='seccion13' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion13
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion14' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion14
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion15' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion15
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>							
+						</tbody>
+					</table>		
+				</td>
+            </tr>
+            <tr>
+				<td style='vertical-align:middle'>
+					<table id='topico2' class='display table dataTable' width='100%' border=1>
+						<thead>						
+							<tr>
+								<th id='head_topico2'>
+									Topico2
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table id='seccion26' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion21
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion27' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion22
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>	
+							<tr>
+								<td>
+									<table id='seccion28' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion23
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>								
+						</tbody>
+					</table>		
+				</td>
             </tr>		
-            <tr>
-                    <td id='seccion' style='vertical-align:middle'>
-                            <h4>
-                                    Seccion
-                            </h4>			
-                    </td>
+			<tr>
+				<td style='vertical-align:middle'>
+					<table id='topico3' class='display table dataTable' width='100%' border=1>
+						<thead>						
+							<tr>
+								<th id='head_topico3'>
+									Topico3
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table id='seccion39' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion31
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion310' class='display table dataTable' width='100%' border=1>
+										<thead>
+											<tr>
+												<th>
+													Seccion32
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>								
+						</tbody>
+					</table>		
+				</td>
             </tr>		
-            <tr>
-                    <td id='pregunta' style='height:100px;' style='vertical-align:middle'>
-                            <h4>
-                                    Pregunta
-                            </h4>
-                    </td>
-            </tr>				
-            <tr>
-                <td id='respuesta' style='vertical-align:top'>				
-                            <h4>
-                                    Respuesta
-                            </h4>
-                </td>		
-            </tr>	
 			<tbody>
-    </table>	
-	
+    </table>		
     <table width='70%' align='center'>    
         <tr>
             <td>
@@ -669,6 +878,32 @@ $(document).ready(function() {
             </td>
         </tr>
     </table>
+</div>
+<div id='tomas'>
+<table id='tabla_tomas' width='100%'>
+	<thead>
+		<tr>
+			<th width='20%'>
+				TOMA
+			</th>
+			<th width='20%'>
+				FOLIO SALA
+			</th>
+			<th width='20%'>
+				AUDITOR
+			</th>			
+			<th width='20%'>
+				FECHA
+			</th>					
+			<th width='20%'>
+				ESTADO
+			</th>
+		</tr>
+	</thead>
+</table>
+<a id='nueva_toma' href>
+	NUEVA TOMA
+</a>
 </div>
 </body>
 </html>

@@ -22,7 +22,7 @@
 	
 </style>
 
-<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
 
 <script type="text/javascript" src="js/taffy.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
@@ -47,8 +47,7 @@ String.prototype.fileExists = function() {
 		url: filename,
 		type: 'HEAD',
 		async: false
-	}).status;	
-	
+	}).status;		
 	return (response != "200") ? false : true;
 }
 
@@ -57,6 +56,7 @@ String.prototype.fileExists = function() {
 		var cursor=1;
         var id_respuesta=1;
 		var id_toma=1;			
+		var htmlTeclado="<div style='height:50px'><input id='valor' /></div><div style='height:100px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
         
 		// Estas variables se usan para identificar el archivo con la toma
 		var codigo_auditor;
@@ -234,7 +234,7 @@ String.prototype.fileExists = function() {
 										{									
 											$.getJSON(pathCuestionario,function(data){					
 											respuestasDB=TAFFY(data.respuestas);
-												if(parseInt(toma.estado)==1)
+												if(parseInt(data.estado_toma)==1)
 												{																														
 													if(confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?"))
 														cargar_datos();
@@ -276,10 +276,12 @@ String.prototype.fileExists = function() {
 
                 topicosDB().filter({'id_topico':r2.id_topico}).each(function (r3) { 
 
-                    $('#topico').html("<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>");
+					document.getElementById('topico').innerHTML = "<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>";
+                    // $('#topico').html("<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>");					
                     $('#topico').css('background-color',r3.color_topico);
 
-                    $('#seccion').html("<h5>"+r3.numero_topico+'.'+r2.numero_seccion+' '+r2.nombre_seccion+"</h5>");
+					document.getElementById('seccion').innerHTML = "<h5>"+r3.numero_topico+'.'+r2.numero_seccion+' '+r2.nombre_seccion+"</h5>";
+                    // $('#seccion').html("<h5>"+r3.numero_topico+'.'+r2.numero_seccion+' '+r2.nombre_seccion+"</h5>");
                     $('#seccion').css('background-color',r2.color_seccion);					
 
                     $('#pregunta').html("<h5 style='padding:0em'>"+r3.numero_topico+'.'+r2.numero_seccion+'.'+r1.numero_pregunta+' '+r1.contenido_pregunta+"</h5>");
@@ -369,7 +371,8 @@ String.prototype.fileExists = function() {
 									}					
 									
 									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
-									$('#respuesta').html(html);   															
+									document.getElementById('respuesta').innerHTML = html;
+									// $('#respuesta').html(html);   															
 									
 									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
 																		
@@ -431,7 +434,8 @@ String.prototype.fileExists = function() {
 										html=html+"</table>";									
 									}							
 									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
-									$('#respuesta').html(html);   															
+									document.getElementById('respuesta').innerHTML = html;
+									// $('#respuesta').html(html);   															
 									
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
@@ -502,7 +506,8 @@ String.prototype.fileExists = function() {
 									html=html+"<tr><td colspan=3><table width='100%'><tr><td width='16%'><button val='1' class='teclado'>1</button></td><td width='16%'><button val='2' class='teclado'>2</button></td><td width='16%'><button val='3' class='teclado'>3</button></td><td width='16%'><button val='4' class='teclado'>4</button></td><td width='16%'><button val='5' class='teclado'>5</button></td><td width='16%' rowspan='2'><button class='borrar'><-</button></td></tr><tr><td><button val='6' class='teclado'>6</button></td><td><button val='7' class='teclado'>7</button></td><td><button val='8' class='teclado'>8</button></td><td><button val='9' class='teclado'>9</button></td><td><button val='0' class='teclado'>0</button></td></tr><table></td></tr></div></table>";																												
 									// $('#respuesta').html(html); 
 									// $('#respuesta').css('height',"'"+430-parseInt($('#pregunta').css('height'))+"px'"); 
-									$('#respuesta').html(html);
+									// $('#respuesta').html(html);
+									document.getElementById('respuesta').innerHTML = html;
 																											
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
@@ -540,9 +545,9 @@ String.prototype.fileExists = function() {
 									break;		
 							}
                             break;							
-                        case 2:// Tipo numerico => cargar un input                                                        
-                            var html="<div style='height:50px'><input id='valor' /></div><div style='height:100px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
-                            $('#respuesta').html(html);
+                        case 2:// Tipo numerico => cargar un input                                                                                    
+                            // $('#respuesta').html(html);
+							document.getElementById('respuesta').innerHTML = htmlTeclado;
 							// $('button').button();
 							// $('button').css('padding','0em');
 							// $('span').css('padding','0em');
@@ -566,7 +571,12 @@ String.prototype.fileExists = function() {
 							
 							$('.borrar').click(function(){								
                                 $('#valor').val(''); 										
-                            });							
+                            });	
+
+							$('#valor').keyup(function(event){
+								alert(event);
+								$(this).val(parseInt(event));
+							});
                             break;				
                     }						
                 });
@@ -811,31 +821,7 @@ String.prototype.fileExists = function() {
 		}
 	}
 	
-	function enviar_toma(){		
-	
-		// var xmlhttp;
-			
-		// if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
-			// xmlhttp=new XMLHttpRequest();				
-		// }
-		// else{// code for IE6, IE5				
-			// xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
-		// }
-																
-		// xmlhttp.onreadystatechange=function(){
-										
-			// if (xmlhttp.readyState==4 && xmlhttp.status==200)											
-				// var data = JSON.parse(xmlhttp.responseText);																	
-			// else
-				// alert("Ups...algo raro pasó");
-		// }
-		
-		// var obj_toma=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().get());		
-		
-		// alert(JSON.stringify(obj_toma));
-		
-		// xmlhttp.open("POST",'http://200.29.139.244/REDBULL/php/ingresar_toma.php?toma='+1+'',true);
-		// xmlhttp.send();	
+	function enviar_toma(){			
 
 		var obj_toma=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().get());
 		
@@ -846,31 +832,16 @@ String.prototype.fileExists = function() {
 		var cont=0;
 		
 		$(obj_toma.respuestas).each(function(key,value){	
-			html += "<input  name='categoria"+cont+"' value='"+value.id_categoria+"' />";			
-			html += "<input  name='pregunta"+cont+"' value='"+value.id_pregunta+"' />";			
-			html += "<input  name='item"+cont+"' value='"+value.id_item+"' />";						
-			html += "<input  name='valor"+cont+"' value='"+value.valor_respuesta+"' />";	
+			html += "<input type='hidden' name='categoria"+cont+"' value='"+value.id_categoria+"' />";			
+			html += "<input type='hidden' name='pregunta"+cont+"' value='"+value.id_pregunta+"' />";			
+			html += "<input type='hidden' name='item"+cont+"' value='"+value.id_item+"' />";						
+			html += "<input type='hidden' name='valor"+cont+"' value='"+value.valor_respuesta+"' />";	
 			cont++;
-		});		
-		html += '<input type="submit" />';
-		html += '</form>';		
-		$('#div_form').html(html);
-		alert(html);
-		// $('#form').submit();
-		
-		// $.ajax({
-			// type: 'POST',
-			// url: 'http://200.29.139.244/REDBULL/php/ingresar_toma.php',
-			// crossDomain: true,
-			// data: {'toma':JSON.stringify(obj_toma)},			
-			// dataType: 'json',
-			// success: function(responseData, textStatus, jqXHR) {
-				// alert('Succes');
-			// },
-			// error: function (responseData, textStatus, errorThrown) {
-				// alert('POST failed.');
-			// }
-		// });		
+		});				
+		html += "<input type='hidden' name='cont' value='"+cont+"' type='submit' />";
+		html += "</form>";	
+		$('body').append(html);				
+		$('#form').submit();	
 	}	
 	
 $(document).ready(function() {		
@@ -908,8 +879,8 @@ $(document).ready(function() {
 	});
 	
 	$('#enviar').click(function(){
-		enviar_toma();
-		// validar_cuestionario();
+		// enviar_toma();
+		validar_cuestionario();
 	});
 		
 	
@@ -966,22 +937,22 @@ $(document).ready(function() {
         <tr>
             <td width='20%'>
                 <button class='cursor' id='ant' style='padding:0em;margin:0em'>
-                    <img src='images/arrow-left.png' style='width:4em;height:2em'/>
+                    <img src='images/arrow-left.png' style='width:4em;height:3em'/>
                 </button>                
             </td>
             <td width='20%'>
                 <button id='guardar' style='width:100%;height:50%'>
-                    <img src='images/System-Save-icon.png' style='width:4em;height:2em'/>
+                    <img src='images/System-Save-icon.png' style='width:4em;height:3em'/>
                 </button>  
             </td>
             <td width='20%'>
                 <button id='enviar' style='width:100%;height:50%'>
-                    <img src='images/600px-Black_check.svg.png' style='width:4em;height:2em'/>
+                    <img src='images/600px-Black_check.svg.png' style='width:4em;height:3em'/>
                 </button> 
             </td>
             <td width='20%'>
                 <button class='cursor' id='sig' style='padding:0em;margin:0em'>
-                    <img src='images/arrow.png' style='width:4em;height:2em'/>
+                    <img src='images/arrow.png' style='width:4em;height:3em'/>
                 </button>	
             </td>
         </tr>
@@ -1015,6 +986,5 @@ $(document).ready(function() {
 		</tr>
 	</table>
 </div>
-<div id='div_form'></div>
 </body>
 </html>

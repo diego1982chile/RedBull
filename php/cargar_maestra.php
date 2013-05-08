@@ -37,7 +37,7 @@ $result=array();
 					case '1': // La entidad es auditor
 																			
 						// $sql="SELECT id_auditor,codigo_auditor,nombre_auditor,id_auditor_padre FROM [MAESTRA].[dbo].[AUDITOR] where id_rol=2";
-						$sql="SELECT * FROM [MAESTRA].[dbo].[AUDITOR]";
+						$sql="SELECT * FROM [MAESTRA].[dbo].[AUDITOR] where id_rol=2";
 						// $params=array();
 						// $stmt = sqlsrv_prepare($conn,$sql,$params);					
 						// if(!$stmt) 
@@ -51,7 +51,7 @@ $result=array();
 					
 					case '2': // La entidad es sala
 									
-						$sql="SELECT * FROM [MAESTRA].[dbo].[AUDITOR_SALA] AS asala INNER JOIN [MAESTRA].[dbo].[SALA] AS s on asala.id_sala=s.id_sala and asala.id_auditor=$id_auditor";
+						$sql="SELECT folio,direccion,calle,numero FROM [MAESTRA].[dbo].[AUDITOR_SALA] AS asala INNER JOIN [MAESTRA].[dbo].[SALA] AS s on asala.id_sala=s.id_sala and asala.id_auditor=$id_auditor";
 						// $params=array(&$id_auditor);
 						// $stmt = sqlsrv_prepare($conn,$sql,$params);					
 						// if(!$stmt) 

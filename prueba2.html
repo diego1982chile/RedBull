@@ -55,7 +55,7 @@ String.prototype.fileExists = function() {
 		var cursor=1;
         var id_respuesta=1;
 		// var id_toma=1;			
-		var htmlTeclado="<div style='height:50px'><input id='valor' /></div><div style='height:100px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
+		var htmlTeclado="<div style='height:50px'><input id='valor' /></div>";
         
 		// Estas variables se usan para identificar el archivo con la toma
 		var codigo_auditor;
@@ -113,16 +113,16 @@ String.prototype.fileExists = function() {
 									itemesDB=TAFFY(data);
 									$.getJSON('data/alternativas.txt',function(data){
 										alternativasDB=TAFFY(data);									
-										cargar_contenido(cursor);	
-										$('#cuestionario').dataTable({
-											"sScrollY": "520px",		 		 		
-											"bFilter": false,
-											"bSort": false,
-											"bInfo": false,
-											"bPaginate": false,
-											"bJQueryUI": false,
-											"bAutoWidth": false, 		
-										});										
+										// cargar_contenido(cursor);											
+										var callbacks = $.Callbacks();	
+										// Primero decorar tabla cuestionario											
+										callbacks.add( decorar_cuestionario() );
+										// Decorar resto de las tablas
+										callbacks.add( decorar_tablas() );										
+										// Luego agregar las tablas de preguntas a la tabla cuestionario
+										// callbacks.add( crear_cuestionario() );											
+										// Luego cargar el contenido en las tablas de preguntas										
+										// callbacks.add( cargar_contenidos() );																																					
 									});									
 								});	
 							});		
@@ -223,7 +223,8 @@ String.prototype.fileExists = function() {
 										
 										folio_sala=$(this).attr('folio_sala');
 										
-										pathCuestionario="\\Application\\toma"+codigo_auditor+folio_sala+".txt";
+										// pathCuestionario="\\Application\\toma"+codigo_auditor+folio_sala+".txt";
+										pathCuestionario="toma51151028001.txt";
 										
 										$('#sesion').hide(),
 										$('#container').show();
@@ -236,19 +237,26 @@ String.prototype.fileExists = function() {
 												if(parseInt(data.estado_toma)==1)
 												{																														
 													if(confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?"))
-														cargar_datos();
+													{														
+														cargar_contenidos();
+														// setTimeout(function(){cargar_listeners()},30000)														
+													}
 												}
 												else
 												{
 													if(confirm("Esta sesión corresponde a una toma completada en este equipo. ¿Desea cargar los datos de esta toma?"))
-														cargar_datos();
+													{
+														cargar_contenidos();
+														// setTimeout(function(){cargar_listeners()},30000)
+													}
 												}												
 											});		
 										}	
 										else
 										{
-											alert("Esta sesión corresponde a una nueva toma en este equipo. Se cargará el cuestionario");
-											cargar_datos();
+											alert("Esta sesión corresponde a una nueva toma en este equipo. Se cargará el cuestionario");											
+											cargar_contenidos();
+											// setTimeout(function(){cargar_listeners()},30000)
 										}										
 									});
 								}																										
@@ -263,7 +271,9 @@ String.prototype.fileExists = function() {
 			xmlhttp.send();			
 		}
 	
-	    function cargar_contenido(id_pregunta)
+	// Carga el contenido desde objetos 'consultables' a partir de los contenedores
+	
+    function cargar_contenido(id_pregunta)
     {					     					
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
@@ -272,13 +282,13 @@ String.prototype.fileExists = function() {
 
                 topicosDB().filter({'id_topico':r2.id_topico}).each(function (r3) { 
 				
-					$('#topico').html("<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>");
-					$('#topico').css('background-color',r3.color_topico);
+					$('#head_topico'+r3.id_topico).html("<h5 style='color:"+r3.color_letra+"'>"+r3.numero_topico+'. '+r3.nombre_topico+"<h5>");
+					$('#head_topico'+r3.id_topico).css('background-color',r3.color_topico);
 					
-					$('#seccion').html("<h5>"+r3.numero_topico+"."+r2.numero_seccion+" "+r2.nombre_seccion+"</h5>");
-                    $('#seccion').css('background-color',r2.color_seccion);										                
+					$('#seccion'+r3.id_topico+r2.id_seccion+' thead tr th').html("<h5>"+r3.numero_topico+"."+r2.numero_seccion+" "+r2.nombre_seccion+"</h5>");
+                    $('#seccion'+r3.id_topico+r2.id_seccion+' thead tr th').css('background-color',r2.color_seccion);										                
 
-					$('#pregunta').html("<h5 style='padding:0em'>"+r3.numero_topico+'.'+r2.numero_seccion+'.'+r1.numero_pregunta+' '+r1.contenido_pregunta+"</h5>");					
+					$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData(["<h5 style='padding:0em'>"+r3.numero_topico+'.'+r2.numero_seccion+'.'+r1.numero_pregunta+' '+r1.contenido_pregunta+"</h5>"]);					
 					
                     switch(parseInt(r1.tipo))
                     {
@@ -339,8 +349,8 @@ String.prototype.fileExists = function() {
 										});		
 										html=html+"</table>";									
 									}					
-									// $('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
-									$('#respuesta').html(html);   															
+									$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
+									// $('#respuesta').html(html);   															
 									
 									// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
 																		
@@ -395,8 +405,7 @@ String.prototype.fileExists = function() {
 										});		
 										html=html+"</table>";									
 									}  															
-									// $('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
-									$('#respuesta').html(html);
+									$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
 									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
@@ -451,8 +460,7 @@ String.prototype.fileExists = function() {
 										});		
 										html=html+"</table>";									
 									}															
-									// $('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);	
-									$('#respuesta').html(html);									
+									$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);																		
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
 									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {											
@@ -464,8 +472,8 @@ String.prototype.fileExists = function() {
                         case 2:// Tipo numerico => cargar un input                                                        
                             var html="<div style='height:50px'><input id='valor"+id_pregunta+"' /></div>";
                             // $('#respuesta').html(html);
-							// $('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
-							$('#respuesta').html(html);
+							$('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
+							
 							// Si existen respuestas buscar las respuestas correspondiente a la pregunta actual y cargarlas
 							// alert('voy a cargar la respuesta');				
 							respuestasDB().filter({'id_pregunta':cursor}).each(function (r10) {	
@@ -480,8 +488,7 @@ String.prototype.fileExists = function() {
         });				
     }
 	
-	
-// Carga listener para eventos para cada pregunta y sus validaciones
+	// Carga listener para eventos para cada pregunta y sus validaciones
 	
     function cargar_listener(id_pregunta)
     {					     			
@@ -663,8 +670,85 @@ String.prototype.fileExists = function() {
                 });
             });
         });
-    }		
+    }	
 	
+	function cargar_contenidos(){				
+		alert('voy a entrar');
+		while(cursor<20)
+		{		
+			cargar_contenido(cursor);
+			cursor++;
+		}
+		cursor=1;
+		alert('sali');
+	}
+	
+	function cargar_listeners(){		
+		
+		alert('listeners');
+		while(cursor<20)
+		{		
+			cargar_listener(cursor);
+			cursor++;
+		}
+		cursor=1;
+	}
+	
+	function crear_cuestionario()
+	{
+		var cont=1;
+
+		while(cont<42)
+		{
+			var html="<div id='contenedor_pregunta"+cont+"'><table id='pregunta"+cont+"' width='100%'>";
+			html+="<tr><td id='topico_pregunta"+cont+"'></td></tr>";
+			html+="<tr><td id='seccion_pregunta"+cont+"'></td></tr>";
+			html+="<tr><td id='contenido_pregunta"+cont+"'></td></tr>";
+			html+="<tr><td id='respuesta_pregunta"+cont+"'></td></tr>";
+			html+="</table></div>";					
+			$('#cuestionario').dataTable().fnAddData([html]);
+			cont++;
+		}
+	
+	}
+	
+	function decorar_tablas(){
+			
+		$('.miDataTable').dataTable({
+		// "sScrollY": "520px",		 		 		
+		"bFilter": false,
+		"bSort": false,
+		"bInfo": false,
+		"bPaginate": false,
+		"bJQueryUI": false,
+		"bAutoWidth": false, 		
+		"aoColumnDefs": [{ "aTargets": [0] }],		
+		});		
+		
+		$('#tabla_tomas').dataTable({
+		"sScrollY": "520px",		 		 		
+		"bFilter": true,
+		"bSort": false,
+		"bInfo": false,
+		"bPaginate": false,
+		"bJQueryUI": true,
+		"bAutoWidth": false, 				
+		});				
+	}
+	
+	function decorar_cuestionario()
+	{
+		$('#cuestionario').dataTable({
+			// "sScrollY": "520px",		 		 		
+			"bFilter": false,
+			"bSort": false,
+			"bInfo": false,
+			"bPaginate": false,
+			"bJQueryUI": false,
+			"bAutoWidth": false, 
+			"aoColumnDefs": [{ "aTargets": [0] }],
+		});	
+	}
 	
     function guardarRespuesta(id_pregunta,id_categoria,id_item,valor)    
     {		
@@ -752,6 +836,16 @@ String.prototype.fileExists = function() {
 		 }
 		return dlg;
 	}	
+	
+	function ocultar_pregunta(pregunta,sentido)
+	{			
+		$("#contenedor_pregunta"+pregunta).hide();
+	}	
+	
+	function mostrar_pregunta(pregunta,sentido)
+	{			
+		$("#contenedor_pregunta"+pregunta).show();
+	}
 	
 	function validar_cuestionario(){
 	
@@ -1079,7 +1173,9 @@ $(document).ready(function() {
 	// $('button').button();
 	$('button').css('padding','0em');
 	$('span').css('padding','0em');	
-	cargar_auditores();
+	var callbacks = $.Callbacks();
+	callbacks.add( cargar_datos() );
+	callbacks.add( cargar_auditores() );	
 		
 	$('#guardar').click(function(){		
 		
@@ -1092,21 +1188,20 @@ $(document).ready(function() {
 	
 		$(this).addClass('ui-state-active');
 	
+		ocultar_pregunta(cursor);
+	
 		if($(this).attr('id')==='ant')
-		{
+		{			
             if(cursor>1)							
-                cursor--;
+                cursor--;				
 		}
 		else
-		{
+		{			
             if(cursor<42)							
-                cursor++;
-		}				
-		
-		cargar_contenido(cursor);	
-		cargar_listener(cursor);
-		
-		$(this).removeClass('ui-state-active');
+                cursor++;					
+		}
+
+		mostrar_pregunta(cursor);
 	});
 	
 	$('#enviar').click(function(){
@@ -1121,48 +1216,214 @@ $(document).ready(function() {
 <body>
 
 <div id="container" style="width:100%;display:none;">
-
-    <table id='cuestionario' width='100%' class='display table' border=1>
-		<thead>
-		<tr style="background-color:#000000">
-			<th style='vertical-align:middle'>
-					<h4 style="color:#FFFFFF;">
-							CUESTIONARIO PSA
-					</h4>
-			</th>
-		</tr>
-		<thead>
-		<tbody>
-		<tr>
-			<td id='topico' style='vertical-align:middle'>
-					<h4 style="background-color:#000000;">
-							Cargando...
-					</h4>			
-			</td>
-		</tr>		
-		<tr>
-			<td id='seccion' style='vertical-align:middle'>
-					<h4>
-							Cargando...
-					</h4>			
-			</td>
-		</tr>		
-		<tr>
-			<td id='pregunta' style='height:100px;' style='vertical-align:middle'>
-					<h4>
-							Cargando...
-					</h4>
-			</td>
-		</tr>				
-		<tr>
-			<td id='respuesta' style='vertical-align:top'>				
-						<h4>
-								Cargando...
+<table id='cuestionario' width='100%' class='display table' border=1>
+			<thead>
+            <tr style="background-color:#000000">
+				<th style='vertical-align:middle'>
+						<h4 style="color:#FFFFFF;">
+								CUESTIONARIO PSA
 						</h4>
-			</td>		
-		</tr>	
-		<tbody>
-    </table>	
+				</th>
+            </tr>
+			<thead>
+			<tbody>
+            <tr>
+				<td style='vertical-align:middle'>
+					<table id='topico1' class='display table miDataTable' width='100%'>
+						<thead>	
+							<tr>
+								<th id='head_topico1'>
+									Topico1
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table id='seccion11' class='display table miDataTable' width='100%'> 
+										<thead>
+											<tr>
+												<th>
+													Seccion11
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion12' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion12
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>	
+							<tr>
+								<td>
+									<table id='seccion13' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion13
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion14' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion14
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion15' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion15
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>							
+						</tbody>
+					</table>		
+				</td>
+            </tr>
+            <tr>
+				<td style='vertical-align:middle'>
+					<table id='topico2' class='display table miDataTable' width='100%'>
+						<thead>						
+							<tr>
+								<th id='head_topico2'>
+									Topico2
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table id='seccion26' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion21
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion27' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion22
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>	
+							<tr>
+								<td>
+									<table id='seccion28' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion23
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>								
+						</tbody>
+					</table>		
+				</td>
+            </tr>		
+			<tr>
+				<td style='vertical-align:middle'>
+					<table id='topico3' class='display table miDataTable' width='100%'>
+						<thead>						
+							<tr>
+								<th id='head_topico3'>
+									Topico3
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table id='seccion39' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion31
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table id='seccion310' class='display table miDataTable' width='100%'>
+										<thead>
+											<tr>
+												<th>
+													Seccion32
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</td>
+							</tr>								
+						</tbody>
+					</table>		
+				</td>
+            </tr>		
+		</tbody>
+    </table>			
 	
     <table width='70%' align='center'>    
         <tr>

@@ -8,9 +8,14 @@
 	
 	table tr td{
 		text-align: center;
-		font-family: "Arial",Georgia,Serif;
-		
+		font-family: "Arial",Georgia,Serif;		
 	}	
+	
+	table thead tr th{
+		text-align: center;
+		font-family: "Arial",Georgia,Serif;		
+	}	
+	
 	h4,h5,div,table{
 		padding:0em;
 		margin:0em;
@@ -50,14 +55,47 @@ String.prototype.fileExists = function() {
 	return (response != "200") ? false : true;
 }
 
+ function isDocumentAvailable(url) {
+
+        var fSuccess = false;
+        var client = null;
+
+        // XHR is supported by most browsers.
+        // IE 9 supports it (maybe IE8 and earlier) off webserver
+        // IE running pages off of disk disallows XHR unless security zones are set appropriately. Throws a security exception.
+        // Workaround is to use old ActiveX control on IE (especially for older versions of IE that don't support XHR)
+
+        // FireFox 4 supports XHR (and likely v3 as well) on web and from local disk
+
+        // Works on Chrome, but Chrome doesn't seem to allow XHR from local disk. (Throws a security exception) No workaround known.
+
+        // Try the ActiveX control if available
+        if (client === null) {
+            try {
+                client = new ActiveXObject("Microsoft.XMLHTTP");
+                client.open("GET", url, false);
+                client.send();
+            }
+            catch (err) {
+                // Giving up, nothing we can do
+                client = null;
+            }
+        }
+
+        fSuccess = Boolean(client && client.responseText);
+
+        return fSuccess;
+    }
+
 	// Indice comienza en 1
 	
 		var cursor=1;
         var id_respuesta=1;
-		// var id_toma=1;			
-		var htmlTeclado="<div style='height:50px'><input id='valor' /></div><div style='height:100px'><table width='100%'><tr><td width='33%'><button val='7' class='teclado'>7</button></td><td width='33%'><button val='8' class='teclado'>8</button></td><td width='33%'><button val='9' class='teclado'>9</button></td></tr><tr><td><button val='4' class='teclado'>4</button></td><td><button val='5' class='teclado'>5</button></td><td><button val='6' class='teclado'>6</button></td></tr><tr><td><button val='1' class='teclado'>1</button></td><td><button val='2' class='teclado'>2</button></td><td><button val='3' class='teclado'>3</button></td></tr><tr><td colspan='2'><button val='0' class='teclado'>0</button></td><td><button val='0' class='borrar'><-</button></td></tr><table></div>";
+		var contestadas=0;
+		// var id_toma=1;					
         
 		// Estas variables se usan para identificar el archivo con la toma
+		var id_medicion;
 		var codigo_auditor;
 		var folio_sala;
 		
@@ -67,7 +105,9 @@ String.prototype.fileExists = function() {
         var categoriasDB;									
         var preguntas_categoriasDB;											
         var itemesDB;								
-        var alternativasDB;	    	
+        var alternativasDB;	  
+
+		var cuestionario_valido=true;
 
 	// var pathCuestionario="cuestionario.txt"
 	var pathCuestionario="\\Application\\cuestionario.txt";
@@ -81,8 +121,9 @@ String.prototype.fileExists = function() {
             this.id_categoria=id_categoria;
 	}	
 	
-	function toma(fecha_toma,estado_toma,id_auditor,id_sala,respuestas)
+	function toma(id_medicion,fecha_toma,estado_toma,id_auditor,id_sala,respuestas)
 	{		
+		this.id_medicion=id_medicion;
 		this.fecha_toma=fecha_toma;
 		this.estado_toma=estado_toma;		
 		this.id_auditor=id_auditor;
@@ -92,12 +133,15 @@ String.prototype.fileExists = function() {
 
 	var respuestas= new Array();
 
-	var respuestasDB= TAFFY(respuestas); 			
+	var respuestasDB= TAFFY(respuestas); 									
 
 	// Carga de datos en los contenedores de objetos
 	
 	function cargar_datos()
-	{								
+	{				
+		$('#sesion').hide(),
+		$('#container').show();
+		$('#titulo').text($('#mediciones :selected').text()+'/'+codigo_auditor+'/'+folio_sala);	
 		// cargar_respuestas();
 			$.getJSON('data/topicos.txt',function(data){					
 				topicosDB=TAFFY(data);
@@ -114,6 +158,7 @@ String.prototype.fileExists = function() {
 									$.getJSON('data/alternativas.txt',function(data){
 										alternativasDB=TAFFY(data);									
 										cargar_contenido(cursor);	
+										cargar_listener(cursor);
 										$('#cuestionario').dataTable({
 											"sScrollY": "520px",		 		 		
 											"bFilter": false,
@@ -121,7 +166,9 @@ String.prototype.fileExists = function() {
 											"bInfo": false,
 											"bPaginate": false,
 											"bJQueryUI": false,
-											"bAutoWidth": false, 		
+											"bAutoWidth": false, 	
+											"bRetrieve": true, 											
+											// "bDestroy": false, 
 										});										
 									});									
 								});	
@@ -135,8 +182,7 @@ String.prototype.fileExists = function() {
 	// Carga de datos en los contenedores de objetos
 	
 		function cargar_auditores()
-		{										
-									
+		{																		
 			var xmlhttp;
 			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
 				xmlhttp=new XMLHttpRequest();				
@@ -151,10 +197,21 @@ String.prototype.fileExists = function() {
 				{									
 					var data = JSON.parse(xmlhttp.responseText);											
 					
-					var html="<table id='tabla_auditores' width='100%'><thead><tr><th>Seleccione auditor</th></tr></thead><tbody>";
+					if(data.Codigo==0)
+					{
+						alert("Error al recuperar auditores y mediciones, porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
+						return false;
+					}									
+					
+					$(data.mediciones).each(function(key,value){	
+						$('#mediciones').append("<option value='"+value.id_medicion+"' "+value.activa+">"+value.nombre_medicion+"</option>");						
+					});
+					
+					
+					var html="<table id='tabla_auditores' width='100%'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
 				
-					$(data).each(function(key,value){															
-						html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=400px'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
+					$(data.auditores).each(function(key,value){															
+						html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=390px;padding:0em'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
 					});
 					html=html+"</tbody></table>";
 					// alert(html);					
@@ -165,11 +222,11 @@ String.prototype.fileExists = function() {
 						"bSort": false,
 						"bInfo": false,
 						"bPaginate": false,
-						"bJQueryUI": false,
+						"bJQueryUI": true,
 						"bAutoWidth": false, 		
 					});			
 					
-					$('.auditor').click(function(){											
+					$('.auditor').mousedown(function(){											
 						
 						$('#salas').html('Cargando salas...');
 						$('.ui-state-active').removeClass();
@@ -199,34 +256,43 @@ String.prototype.fileExists = function() {
 								}
 								else
 								{
-									var html="<table id='tabla_salas' width='100%'><thead><tr><th>Seleccione sala</th></tr></thead><tbody>";
+									var html="<table id='tabla_salas' border=1 width='100%'><thead><tr><th width='90%'>SALAS</th><th width='10%'></th></tr></thead><tbody>";
 							
-									$(data).each(function(key,value){																			
-										html=html+"<tr title='"+value.direccion+"'><td><button class='sala' folio_sala="+value.folio+" style='width=400px'><label style='font-size:1.5em'>"+value.folio+"/"+value.calle+"-"+value.numero+"</label></button></td></tr>";									
+									$(data.salas).each(function(key,value){	
+										var pathToma="\\Application\\toma"+id_medicion+codigo_auditor+value.folio+".txt";
+										// Si la toma no existe
+										var estado="<img src='images/bubble-red-md.png' style='height:1em;width:1em' />";										
+										// Si la toma existe en el equipo
+										if(isDocumentAvailable(pathToma))										
+											estado="<img src='images/bubble-yellow-md.png' style='height:1em;width:1em' />";																					
+										// Si la toma existe en la BD
+										if(value.id_toma!=0)											
+											estado="<img src='images/bubble-green-md.png' style='height:1em;width:1em' />";
+											
+										html+="<tr><td style='padding:0em'><button class='sala' folio_sala="+value.folio+" style='width=370px;padding:0em'><label style='font-size:1.5em'>"+value.folio+"/"+value.calle+"-"+value.numero+"</label></button></td><td style='padding:0em'>"+estado+"</td></tr>";									
+										
 									});
-									html=html+"</tbody></table>";
+									html+="</tbody></table>";
 		
 									$('#loader').hide();
 									$('#salas').html(html);
 								
 									$('#tabla_salas').dataTable({
-										"sScrollY": "215px",		 		 		
+										"sScrollY": "215px",										
 										"bFilter": true,
 										"bSort": false,
 										"bInfo": false,
 										"bPaginate": false,
 										"bJQueryUI": false,
 										"bAutoWidth": false, 																				
-									});
+									});																	
 
-									$('.sala').click(function(){
+									$('.sala').mousedown(function(){
 										
 										folio_sala=$(this).attr('folio_sala');
 										
-										pathCuestionario="\\Application\\toma"+codigo_auditor+folio_sala+".txt";
+										pathCuestionario="\\Application\\toma"+id_medicion+codigo_auditor+folio_sala+".txt";
 										
-										$('#sesion').hide(),
-										$('#container').show();
 										// cargar_datos();
 										
 										if(pathCuestionario.fileExists())
@@ -235,26 +301,31 @@ String.prototype.fileExists = function() {
 											respuestasDB=TAFFY(data.respuestas);
 												if(parseInt(data.estado_toma)==1)
 												{																														
-													if(confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?"))
-														cargar_datos();
+													var opcion=confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?");																																						
+													if(opcion)
+														cargar_datos();													
 												}
 												else
 												{
-													if(confirm("Esta sesión corresponde a una toma completada en este equipo. ¿Desea cargar los datos de esta toma?"))
-														cargar_datos();
+													var opcion=confirm("Esta sesión corresponde a una toma completada en este equipo. ¿Desea cargar los datos de esta toma?");													
+														cargar_datos();	
+													if(opcion)
+														cargar_datos();															
 												}												
 											});		
 										}	
 										else
 										{
-											alert("Esta sesión corresponde a una nueva toma en este equipo. Se cargará el cuestionario");
-											cargar_datos();
+											var opcion=confirm("La siguiente sesión:\nMedición: "+$('#mediciones :selected').text()+"\nAuditor: "+codigo_auditor+"\nSala: "+folio_sala+"\ncorresponde a una nueva toma en este equipo. ¿Desea iniciar esta toma?");
+											if(opcion)
+												cargar_datos();																						
 										}										
 									});
 								}																										
 							}
 						}						
-						xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'",true);
+						id_medicion=$('#mediciones').val();
+						xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'&id_medicion='"+id_medicion+"'",true);
 						xmlhttp.send();	
 					});						
 				}
@@ -264,7 +335,7 @@ String.prototype.fileExists = function() {
 		}
 	
 	    function cargar_contenido(id_pregunta)
-    {					     					
+		{					     					
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
 
@@ -285,12 +356,7 @@ String.prototype.fileExists = function() {
                         case 1:// Tipo alternativa => cargar las alternativas para esta pregunta
                             // Verificar si existen categorias para esta pregunta	                                                       
 							
-							var tiene_categoria=false;
-                            
-							preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function () {
-                                tiene_categoria=true;
-                                return false;
-                            });
+							var tiene_categoria=(preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).count()>0);
 																					
 							switch(parseInt(r1.tipo2))
 							{								
@@ -299,31 +365,40 @@ String.prototype.fileExists = function() {
 									{                      																		
 										var html="<table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'>";										
 										
-										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {															
+										preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {																																					
 											
-											categoriasDB().filter({'id_categoria':r5.id_categoria}).each(function (r6) {
+											categoriasDB().filter({'id_categoria':r5.id_categoria},{'estado_categoria':true}).each(function (r6) {
 																				
+											// alert(JSON.stringify(r6));
+											
 											var cont=0;
 											
-											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){
+											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r9){												
 												cont++;
-											});											
-											html=html+"<tr><td width='25%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
+											});			
+											
+											html=html+"<tr><td width='10%' style='text-align:left' rowspan='"+cont+"'>"+r6.nombre_categoria+"</td>";											
 											var cont=1;
 
 											alternativasDB().filter({'id_categoria':r5.id_categoria},{'id_pregunta':id_pregunta}).each(function (r7) {
 
-											itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
+												itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {
 
-												if(cont===1)
-													html=html+"<td width='75%' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+cursor+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
-												else                                                                                                
-													html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+cursor+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
-											});	
-											cont++;
+													if(cont===1)
+														html=html+"<td width='90%' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+cursor+r5.id_categoria+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";                                                                                                
+													else                                                                                                
+														html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r7.id_item+"' name='radio"+cursor+r5.id_categoria+"' value='"+r5.id_categoria+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+												});	
+												cont++;
 											});																																	
 										});			
 									});	
+									// Aqui se agrega la alternativa adicional "no existen ubiaciones adicionales"
+									alternativasDB().filter({'id_categoria':null},{'id_pregunta':id_pregunta}).each(function (r7) {												
+										itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {                                                                                              
+											html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' colspan='2' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='null' item='"+r7.id_item+"' name='radio"+cursor+"null' value='null"+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+										});	
+									});		
 									html=html+"</table>";                         
 									}
 									else
@@ -334,7 +409,7 @@ String.prototype.fileExists = function() {
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
 												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
-														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='radio"+cursor+r5.id_categoria+"' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+													html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='radio"+cursor+r5.id_categoria+"' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
 												});															
 										});		
 										html=html+"</table>";									
@@ -350,7 +425,7 @@ String.prototype.fileExists = function() {
 									});										
 									
 									break;
-								case 2: // Tipo conjuntiva
+								case 2: // Tipo conjuntiva									
 									if(tiene_categoria)
 									{                         										
 										var html="<table id='tabla_alternativas"+cursor+"' width='100%' border='1' align='left'>";
@@ -462,7 +537,7 @@ String.prototype.fileExists = function() {
 							}
                             break;							
                         case 2:// Tipo numerico => cargar un input                                                        
-                            var html="<div style='height:50px'><input id='valor"+id_pregunta+"' /></div>";
+                            var html="<div style='height:50px'><input id='valor"+id_pregunta+"' valor='null' categoria='null' size='4' item='null' /></div>";
                             // $('#respuesta').html(html);
 							// $('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);
 							$('#respuesta').html(html);
@@ -477,10 +552,10 @@ String.prototype.fileExists = function() {
                     }						
                 });
             });
-        });				
+        });
+	return true;
     }
-	
-	
+		
 // Carga listener para eventos para cada pregunta y sus validaciones
 	
     function cargar_listener(id_pregunta)
@@ -499,42 +574,172 @@ String.prototype.fileExists = function() {
 																					
 							switch(parseInt(r1.tipo2))
 							{								
-								case 1: // Tipo disyuntiva																																										
-									$('#tabla_alternativas'+cursor+' tr td').click(function(){
+								case 1: // Tipo disyuntiva	
+									if(id_pregunta==19)
+									{				
+										var ok=true;
+										respuestasDB().filter({'id_pregunta':17}).each(function(r1){
+											if(respuestasDB().filter({'id_pregunta':18},{'id_categoria':r1.id_categoria},{'id_item':r1.id_item}).count()==0)
+											{		
+												if(!ok)
+													return false;											
+												alert("Por cada SKU marcado en la pregunta '1.4.4' debe haber un precio correspondiente. Revise porfavor");														
+												cursor=cursor-2;
+												cargar_contenido(cursor);
+												cargar_listener(cursor);
+												ok=false;
+												return false;
+											}
+										});	
+										if(ok)
+											cuestionario_valido=true;
+										else
+											cuestionario_valido=false;
+									}
+									$('#tabla_alternativas'+cursor+' tr td').mousedown(function(){
+										if($.inArray(id_pregunta,[21,22,23,24,25,26,27,28,29,30])!=-1)
+										{
+											// alert($(this).children().attr('item'));
+											if($(this).children().attr('item')=='31')// Si se selecciono "no hay ubicaciones adicionales" deseleccionar el resto de alternativas
+											{
+												$(':input').parent('.seleccionada').removeClass();
+												$(':input').prop('checked',false);   
+												// Eliminar todas las respuestas para esta pregunta
+												respuestasDB({'id_pregunta':id_pregunta}).remove();	
+											}
+											else
+											{
+												$('[name=radio'+id_pregunta+'null]').parent('.seleccionada').removeClass();												                           
+												$('[name=radio'+id_pregunta+'null]').prop('checked',false);                                
+												// Eliminar todas las respuestas para esta pregunta
+												respuestasDB({'id_pregunta':id_pregunta},{'id_item':'31'}).remove();
+											}
+										}
 										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').parent('.seleccionada').removeClass();
 										$(this).addClass("seleccionada");                                
 										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);																																						
 									});													
 									break;
-								case 2: // Tipo conjuntiva				
-									$('#tabla_alternativas'+cursor+' tr td').click(function(){										
+								case 2: // Tipo conjuntiva	
+																							
+									// Hacer matching entre itemes preguntas anteriores		
+									if(id_pregunta==17)
+									{
+										var ok=true;
+										// Por cada respuesta en pregunta 15 debe haber una respuesta en pregunta 16																								
+										respuestasDB().filter({'id_pregunta':15}).each(function(r1){													
+											if(respuestasDB().filter({'id_pregunta':16},{'id_categoria':r1.id_categoria},{'id_item':r1.id_item}).count()==0)
+											{			
+												if(!ok)
+													return false;
+												alert("Por cada SKU marcado en la pregunta '1.4.2' debe haber un precio correspondiente. Revise porfavor");
+												cursor=cursor-2;
+												cargar_contenido(cursor);
+												cargar_listener(cursor);
+												ok=false;
+												return false;
+											}
+										});
+										if(ok)										
+											cuestionario_valido=true;
+										else
+											cuestionario_valido=false;
+									}
+									// Verificar que si se contesto facing distinto de nulo en pregunta 1, no se deje de marcar presencia en pregunta relacionada
+									if(id_pregunta==15)
+									{	
+										
+										if(respuestasDB().filter({'id_pregunta':1}).count()!=0 &&
+										   parseInt(respuestasDB().filter({'id_pregunta':1}).select('valor_respuesta'))!=0 &&
+										   respuestasDB().filter({'id_pregunta':14}).count()==0)										 
+										{
+											alert("En la pregunta '1.1.1' ha contestado un valor de 'facings' totales distinto de 0. No puede haber quiebre de latas si existen 'facings'. Porfavor revise");
+											cursor=cursor-1;
+											cargar_contenido(cursor);
+											cargar_listener(cursor);
+											return false;
+										}
+									}
+									// Verificar que si se contesto facing distinto de nulo en pregunta 6, no se deje de marcar presencia en pregunta relacionada
+									if(id_pregunta==18)
+									{
+										if(respuestasDB().filter({'id_pregunta':6}).count()!=0 &&
+										   parseInt(respuestasDB().filter({'id_pregunta':6}).select('valor_respuesta'))!=0 &&
+										   respuestasDB().filter({'id_pregunta':17}).count()==0)										 
+										{
+											alert("En la pregunta '1.1.3' ha contestado un valor de 'facings' totales distinto de 0. No puede haber quiebre de competencia si existen 'facings'. Porfavor revise");
+											cursor=cursor-1;
+											cargar_contenido(cursor);
+											cargar_listener(cursor);
+											return false;
+										}
+									}									
+									$('#tabla_alternativas'+cursor+' tr td').mousedown(function(){										
 										if($(this).children().prop('checked'))
 										{
 											$(this).removeClass("seleccionada");
-											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);											
+											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
 											if($.inArray(id_pregunta,[15,17])!=-1)
-											{
-												if($('[name=input'+$(this).children().attr('categoria')+$(this).children().attr('item')+']').val()!='')
+											{																				
+												// Si se deselecciono algun checkbox el precio no deberia existir
+												if(respuestasDB().filter({'id_pregunta':id_pregunta+1},{'id_categoria':$(this).children().attr('categoria')},{'id_item':$(this).children().attr('item')}).count()!=0)
 												{
-													alert("Existe un precio ingresado en la siguiente pregunta. Debe quitar el precio o volver a marcar el SKU");
-													$('input').filter('[pregunta='+id_pregunta+1+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').focus();
-												}
-											}											
+													alert("El 'SKU' correspondiente tiene un precio en la siguiente regunta ('1.4.3'). Debe quitar el precio primero");													
+													$(this).addClass("seleccionada");        											
+													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
+													return false;
+												}													
+											}
 										}
 										else
 										{
 											$(this).addClass("seleccionada");        											
 											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
-										
-											if($.inArray(id_pregunta,[15,17])!=-1)
-											{ // Si se ingreso algun precio, el SKU debe estar previamente marcado
-												if($('[name=input'+$(this).children().attr('categoria')+$(this).children().attr('item')+']').val()=='')
+											// Verificar que el facing no sea 0 en pregunta 1											
+											if(id_pregunta==14)
+											{
+												if(respuestasDB().filter({'id_pregunta':1}).count()==0)
 												{
-													alert("El precio correspondiente en la siguiente pregunta no está ingresado. Debe ingresar un precio o desmarcar el SKU");
-													$(this).val('');
+													alert("No ha contestado pregunta '1.1.1' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
+													$(this).removeClass("seleccionada");
+													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+													id_respuesta--;
+													return false;											
 												}
-											}
+												if(parseInt(respuestasDB().filter({'id_pregunta':1}).select('valor_respuesta'))==0)
+												{
+													alert("En la pregunta '1.1.1' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
+													$(this).removeClass("seleccionada");
+													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+													id_respuesta--;
+													return false;											
+												}
+											}	
+											// Verificar que el facing no sea 0 en pregunta 6
+											if(id_pregunta==17)
+											{
+												if(respuestasDB().filter({'id_pregunta':6}).count()==0)
+												{
+													alert("No ha contestado pregunta '1.1.6' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
+													$(this).removeClass("seleccionada");
+													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+													id_respuesta--;
+													return false;											
+												}											
+												if(parseInt(respuestasDB().filter({'id_pregunta':6}).select('valor_respuesta'))==0)
+												{
+													alert("En la pregunta '1.1.3' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
+													$(this).removeClass("seleccionada");
+													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+													id_respuesta--;
+													return false;											
+												}
+											}																									
 										}										
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);  																											
 									});																													
@@ -542,7 +747,7 @@ String.prototype.fileExists = function() {
 								case 3: // Tipo conjuntiva con valor
 									var pregunta=$('.valor:first').attr('pregunta');								
 									var categoria=$('.valor:first').attr('categoria');
-									var item=$('.valor:first').attr('item');
+									var item=$('.valor:first').attr('item');																		
 									
 									$('[categoria='+categoria+'][item='+item+']').focus();
 									
@@ -551,121 +756,188 @@ String.prototype.fileExists = function() {
 										categoria=$(this).attr('categoria');
 										item=$(this).attr('item');
 									});	
-									$('.valor').keyup(function(event){	
+									// Hacer matching entre presencias y quiebres preguntas anteriores (deben ser complementarios)	
+									if(id_pregunta==16)
+									{										
+										var ok=true;
+										// Por cada respuesta en pregunta 14 debe haber una omision en pregunta 15																								
+										respuestasDB().filter({'id_pregunta':14}).each(function(r1){		
+											JSON.stringify(r1);
+											if(respuestasDB().filter({'id_pregunta':15},{'id_categoria':r1.id_categoria},{'id_item':r1.id_item}).count()>0	)										
+											{																								
+												if(!ok)
+													return false;
+												alert("Existen SKUs marcados como presentes en '1.4.1' y marcados como ausentes en pregunta '1.4.2'. Revise porfavor");
+												cursor=cursor-2;
+												cargar_contenido(cursor);
+												cargar_listener(cursor);
+												ok=false;
+												return false;
+											}
+										});
+										if(ok)										
+											cuestionario_valido=true;
+										else
+											cuestionario_valido=false;
+									}									
+									$('.valor').keyup(function(event){											
 																			
 										if(parseInt($(this).val()).toString()!="NaN")
-										{
+										{											
+											// Guardar la respuesta
 											$(this).val(parseInt($(this).val()));
+											$(this).attr('valor',$(this).val());
+											guardarRespuesta(id_pregunta,$(this).attr('categoria'),$(this).attr('item'),$(this).val());	
 											
 											// Validacion de precios segun SKUs con flejes (grupo1)
 												
-											if($.inArray(id_pregunta,[18,20])!=-1)
-											{																								
+											if($.inArray(id_pregunta,[16,18])!=-1)
+											{																												
 												// Si se ingreso algun precio, el SKU debe estar previamente marcado
-												if(!$('[name=checkbox]').filter('[pregunta='+id_pregunta-1+'][categoria="'+$(this).attr('categoria')+'"][item="'+$(this).attr('item')+'"]').is(':checked'))
+												if(respuestasDB().filter({'id_pregunta':id_pregunta-1},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).count()==0)
 												{
-													alert("El 'SKU' correspondiente no está marcado en la pregunta anterior. Debe quitar el precio o marcar el SKU");
-													$('[name=checkbox]').filter('[pregunta='+id_pregunta-1+'][categoria="'+$(this).attr('categoria')+'"][item="'+$(this).attr('item')+'"]').focus();
-												}												
+													alert("El 'SKU' correspondiente no está marcado en la pregunta anterior ('1.4.2'). Debe quitar el precio o marcar el SKU");
+													$(this).val('');
+													// Eliminar la respuesta
+													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+													id_respuesta--;
+													return false;
+												}													
 											}												
 										}
 										else
-										{					
-											// Si se quito un precio el SKU debe estar desmarcado
-											if($(this).val()=='')
-											{
-												if($('[name=checkbox]').filter('[pregunta='+id_pregunta-1+'][categoria="'+$(this).attr('categoria')+'"][item="'+$(this).attr('item')+'"]').is(':checked'))
+										{																								
+											$(this).val('');											
+											if($.inArray(id_pregunta,[16,18])!=-1)
+											{										
+												// Si se quito un precio el SKU debe estar desmarcado
+												if($(this).val()=='')
 												{
-													alert("El 'SKU' correspondiente está marcado en la pregunta anterior. Debe ingresar un precio o desmarcar el SKU");
-													$('[name=checkbox]').filter('[pregunta='+id_pregunta-1+'][categoria="'+$(this).attr('categoria')+'"][item="'+$(this).attr('item')+'"]').focus();
-												}											
-											}																				
+													if(respuestasDB().filter({'id_pregunta':id_pregunta-1},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).count()>0)
+													{
+														alert("El 'SKU' correspondiente está marcado en la pregunta anterior ('1.4.2'). Debe ingresar un precio o desmarcar el SKU");
+														$(this).val('');
+														// Eliminar la respuesta
+														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+														id_respuesta--;
+														return false;
+													}												
+												}
+											}
 										}
 									});
 									break;		
 							}
                             break;							
-                        case 2:// Tipo numerico => cargar un input     
-
-							$('#valor'+id_pregunta).keyup(function(event){								
+                        case 2:// Tipo numerico => cargar un input     																		
+							setTimeout("setFocus('valor"+id_pregunta+"')", 0);
 							
+							$('#valor'+id_pregunta).keyup(function(event){															
+								
 								if(parseInt($(this).val()).toString()!="NaN")
 								{
+									// Guardar la respuesta
 									$(this).val(parseInt($(this).val()));
+									$(this).attr('valor',$(this).val());
+									guardarRespuesta(id_pregunta,$(this).attr('categoria'),$(this).attr('item'),$(this).val());									
+									// Si esta en pregunta 33 las preguntas siguientes son dependientes de lo que se ingrese aqui
 									if(id_pregunta==33)
-									{
-										$('#tabla_alternativas34 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});
-										$('#tabla_alternativas35 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});		
-										$('#tabla_alternativas36 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});		
-										$('#tabla_alternativas37 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});		
-										$('#tabla_alternativas38 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});						
-										$('#tabla_alternativas39 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});						
-										$('#tabla_alternativas40 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});	
-										$('#tabla_alternativas41 tr:gt('+$(this).val()+')').each(function(){
-											$(this).css('background','blue');
-											$(this).hide();
-										});																							
-									}
-									// Validacion totales primer grupo
-									if($.inArray(id_pregunta,[1,2,3,4,5,6])!=-1)
-									{
-										if(parseInt($('#valor1').val())<parseInt($('#valor2').val())+parseInt($('#valor3').val())+parseInt($('#valor4').val())+parseInt($('#valor5').val())+parseInt($('#valor6').val()))
+									{				
+										if(parseInt($(this).val())>9)
 										{
-											alert("El 'facing' total no puede ser inferior a la suma de 'facings' parciales");
+											alert("Excede numero maximo de cajas disponibles");
 											$(this).val('');
+											// Eliminar la respuesta
+											respuestasDB({'id_pregunta':id_pregunta}).remove();											
+											return false;
 										}
-										if(parseInt($('#valor2').val())<parseInt($('#valor3').val())+parseInt($('#valor4').val())+parseInt($('#valor5').val()))
+										var cont=6; // 1a Caja
+										var activas=cont+parseInt($(this).val()); // Cajas activas
+										var valores1= new Array();
+										var valores2= new Array();
+										
+										while(cont<activas)
 										{
-											alert("El 'facing' total de SKUs REDBULL no puede ser inferior a la suma de 'facings' parciales de SKUs REDBULL");
+											valores1.push(cont);
+											cont++;
+										}
+										while(cont<15)
+										{
+											valores2.push(cont);
+											cont++;
+										}		
+										// Se activan las categorias menores o iguales a la cantidad ingresada
+										categoriasDB().filter({id_categoria:valores1}).update({estado_categoria:true});
+										// Se desactivan las categorias menores o iguales a la cantidad ingresada
+										categoriasDB().filter({id_categoria:valores2}).update({estado_categoria:false});										
+									}
+									// Validacion totales primer grupo									
+									if($.inArray(id_pregunta,[1,2,3,4,5,6])!=-1)
+									{										
+										var valores= new Array();
+										respuestasDB().filter({id_pregunta:[1,2,3,4,5,6]}).each(function(r1){
+											valores.push(parseInt(r1.valor_respuesta));											
+										});											
+										var parciales=0;
+										for(var i=1;i<valores.length;++i)
+											parciales+=valores[i];										
+										if(valores[0]<parciales)
+										{
+											alert("El 'facing' total en la pregunta 1.1.1 no puede ser inferior a la suma de 'facings' parciales. Por favor verifique");
 											$(this).val('');
+											// Eliminar la respuesta
+											respuestasDB({'id_pregunta':id_pregunta}).remove();	
+											id_respuesta--;																								
+										}
+										else
+										{												
+											return true;
 										}
 									}
 									// Validacion totales segundo grupo
 									if($.inArray(id_pregunta,[10,11,12,13])!=-1)
 									{
-										if(parseInt($('#valor10').val())<parseInt($('#valor11').val())+parseInt($('#valor12').val())+parseInt($('#valor13').val()))
+										var valores= new Array();
+										respuestasDB().filter({id_pregunta:[10,11,12,13]}).each(function(r1){
+											valores.push(parseInt(r1.valor_respuesta));											
+										});										
+										var parciales=0;
+										for(var i=1;i<valores.length;++i)
+											parciales+=valores[i];											
+										if(valores[0]<parciales)
 										{
-											alert("El 'facing' total no puede ser inferior a la suma de 'facings' parciales");
+											alert("El 'facing' total en la pregunta '1.3.1' no puede ser inferior a la suma de 'facings' parciales. Por favor verifique");
 											$(this).val('');
+											// Eliminar la respuesta
+											respuestasDB({'id_pregunta':id_pregunta}).remove();
+											id_respuesta--;
 										}
-									}										
+										else
+										{												
+											return true;
+										}																											
+									}												
 								}
 								else
 								{
 									$(this).val('');
-								}
-								
-								// Si esta en pregunta 33 las preguntas siguientes son dependientes de lo que se ingrese aqui
-							});															
-                            break;				
+								}															
+							});	
+						
+                        break;				
                     }						
                 });
             });
-        });
+        });		
+		return true;
     }		
 	
+	function setFocus(id)
+	{
+		document.getElementById(id).focus();
+	}	
 	
+		
     function guardarRespuesta(id_pregunta,id_categoria,id_item,valor)    
     {		
         var existeRespuesta=false;
@@ -678,14 +950,15 @@ String.prototype.fileExists = function() {
 		
 		switch(parseInt(tipoPregunta))
 		{
-			case 1: // TIPO DISYUNTIVA -> Buscar si existe la misma: pregunta y categoria			
+			case 1: // TIPO DISYUNTIVA -> Buscar si existe la misma: pregunta y categoria	
+
 				respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':id_categoria}).each(function () {
 					existeRespuesta=true;
 					return false;
 				});							
 				if(existeRespuesta)// Si existe la respuesta, actualizarla
 				{
-					respuestasDB({'id_pregunta':id_pregunta,'id_categoria':id_categoria}).update({valor_respuesta:valor,id_item:id_item,id_categoria:id_categoria});
+					respuestasDB({'id_pregunta':id_pregunta,'id_categoria':id_categoria}).update({valor_respuesta:valor,id_item:id_item,id_categoria:id_categoria});					
 				}
 				else // Sino existe la respuesta, agregarla		
 				{
@@ -726,9 +999,9 @@ String.prototype.fileExists = function() {
 				break;
 				
 		}        				
-        respuestasDB().each(function (r1) {
+        // respuestasDB().each(function (r1) {
            // console.log(r1); 
-        });
+        // });
     }				
 
 	function save_content_to_file(content, filename){		
@@ -754,38 +1027,47 @@ String.prototype.fileExists = function() {
 	}	
 	
 	function validar_cuestionario(){
+
+		if(respuestasDB().distinct('id_pregunta').length==42)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
+	function validar_pregunta(id_pregunta){			
+		
 		var ok=true;	
 		var flag=false;
+		
+		if(flag)
+			return false;			
 	
-		preguntasDB().each(function(pregunta){
+		var tieneCategoria=(preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).count()>0);			
+		var tipo1=parseInt(preguntasDB().filter({'id_pregunta':id_pregunta}).select('tipo'));
+		var tipo2=parseInt(preguntasDB().filter({'id_pregunta':id_pregunta}).select('tipo2'));			
+		var aux=false;																					
 		
-			if(flag)
-				return false;
-		
-			var tieneCategoria=false;			
-			var tipo1=parseInt(pregunta.tipo);
-			var tipo2=parseInt(pregunta.tipo2);			
-			var aux=false;																					
+		switch(tipo1)
+		{
+			case 1: //Tipo alternativa
 			
-			switch(tipo1)
-			{
-				case 1: //Tipo alternativa
-				
-				preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){
-					tieneCategoria=true;
-					return false;
-				});
-				
-					switch(tipo2)
-					{
-						case 1: // Tipo disyuntiva												
-						
-							if(tieneCategoria)
-							{							
-								var maxCat;
-																											
-								if(pregunta.id_pregunta>33)
+				switch(tipo2)
+				{
+					case 1: // Tipo disyuntiva		
+						if(tieneCategoria)
+						{																
+							// Ahora ademas hay que considerar que en estos casos puede haber respuesta sin categoria
+							if(respuestasDB().filter({'id_pregunta':id_pregunta},{'id_item':'31'}).count()>0)
+							{
+								aux=true;
+							}
+							else
+							{									
+								if(id_pregunta>33)
 								{
 									respuestasDB().filter({'id_pregunta':33}).each(function(r20){												
 										maxCat=parseInt(r20.valor_respuesta);												
@@ -801,12 +1083,12 @@ String.prototype.fileExists = function() {
 								var flag2=false;
 							
 								var cont1=1;								
-								preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){		
+								preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function(categoria){		
 									if(flag2)
 										return false;								
 										
 									var cont2=0;
-									respuestasDB().filter({'id_pregunta':pregunta.id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){
+									respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){
 										cont2++;
 									});
 									cont1=cont1*cont2;
@@ -819,83 +1101,83 @@ String.prototype.fileExists = function() {
 								if(cont1!=0) // Para cada categoria debe haber una respuesta
 									aux=true; 
 							}
-							else
-							{								
-								respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
-									aux=true;	
+						}
+						else
+						{								
+							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(respuesta){
+								aux=true;	
+								return false;
+							});
+						}							
+						break;
+					case 2: // Tipo conjuntiva
+						if(tieneCategoria)
+						{
+							var cont=0;
+							preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function(categoria){	
+								// alert('soy categoria conjuuntiva');
+								// alert(JSON.stringify(categoria)); 
+								// alert(respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).stringify());
+								respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){									
+									cont++;
 									return false;
 								});
-							}
-							break;
-						case 2: // Tipo conjuntiva
-							if(tieneCategoria)
-							{
-								var cont=0;
-								preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){	
- 									// alert('soy categoria conjuuntiva');
-									// alert(JSON.stringify(categoria)); 
-									// alert(respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).stringify());
-									respuestasDB().filter({'id_pregunta':pregunta.id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){									
-										cont++;
-										return false;
-									});
-								});
-								if(cont>0) // Para al menos una categoria debe haber una respuesta
-									aux=true; 								
-							}
-							else
-							{
-								respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
-									aux=true;	
+							});
+							if(cont>0) // Para al menos una categoria debe haber una respuesta
+								aux=true; 								
+						}
+						else
+						{
+							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(respuesta){
+								aux=true;	
+								return false;
+							});
+						}
+						break;
+					case 3: // Tipo conjuntiva con valor
+						if(tieneCategoria)
+						{
+							var cont=0;
+							preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function(categoria){									
+								respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){
+									cont++;
 									return false;
 								});
-							}
-							break;
-						case 3: // Tipo conjuntiva con valor
-							if(tieneCategoria)
-							{
-								var cont=0;
-								preguntas_categoriasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(categoria){									
-									respuestasDB().filter({'id_pregunta':pregunta.id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){
-										cont++;
-										return false;
-									});
-								});
-								if(cont>0) // Para al menos una categoria debe haber una respuesta
-									aux=true;
-							}
-							else
-							{
-								respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
-									if(respuesta.valor_respuesta!=null)						
-										aux=true;						
-								});
-							}							
-					}
-					break;
-				case 2: //Tipo valor					
-					respuestasDB().filter({'id_pregunta':pregunta.id_pregunta}).each(function(respuesta){
-						if(respuesta.valor_respuesta!=null)						
-							aux=true;						
-					});
-					break;
-			}
-			ok=ok*aux;
-			
-			if(!ok)
-			{								
-				alert("La siguiente pregunta no ha sido correctamente respondida");				
-				flag=true;
-				cursor=pregunta.id_pregunta;
-				cargar_contenido(cursor);				
-			}
-						
-		});
+							});
+							if(cont>0) // Para al menos una categoria debe haber una respuesta
+								aux=true;
+						}
+						else
+						{
+							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(respuesta){
+								if(respuesta.valor_respuesta!=null)						
+									aux=true;						
+							});
+						}							
+				}
+				break;
+			case 2: //Tipo valor					
+				respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(respuesta){
+					if(respuesta.valor_respuesta!=null)						
+						aux=true;						
+				});
+				break;
+		}
+		ok=ok*aux;
 		
+		if(!ok)
+		{								
+			alert("Esta pregunta no ha sido correctamente respondida. Porfavor verifique");				
+			flag=true;
+			return false;
+		}
+	
 		if(ok)
 		{		
-			if(confirm("Cuestionario completado correctamente, ¿Confirma el envío de la toma?"))
-				enviar_toma();
+			// if(confirm("Cuestionario completado correctamente, ¿Confirma el envío de la toma?"))
+				// enviar_toma2();
+			contestadas++;
+			return true;
 		}		
 		else
 		{
@@ -930,6 +1212,9 @@ String.prototype.fileExists = function() {
 	}	
 	
 	function enviar_toma2(){		
+	
+		$('#container').hide();
+		$('body').append('<div><h2>ENVIANDO TOMA...</h2></div>');
 		
 		var xmlhttp;				
 		
@@ -939,25 +1224,27 @@ String.prototype.fileExists = function() {
 		
 		var largo_respuestas=respuestasDB().get().length;		
 		
-		alert('largo_respuestas='+largo_respuestas);
+		// alert('largo_respuestas='+largo_respuestas);
 		
 		// Luego obtenemos desplazamientos en base al largo de las respuestas
 		
 		var offset1=largo_respuestas/3;
 		var offset2=2*largo_respuestas/3;
 
-		alert("offset1="+offset1);
-		alert("offset2="+offset2);
+		// alert("offset1="+offset1);
+		// alert("offset2="+offset2);
 		
 		// Creamos los tres segmentos
 		
-		var obj_toma1=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().limit(offset1).select('id_pregunta','id_categoria','id_item','valor_respuesta'));		
-		var obj_toma2=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().start(offset1+1).limit(offset1).select('id_pregunta','id_categoria','id_item','valor_respuesta'));				
-		var obj_toma3=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().start(offset2+1).select('id_pregunta','id_categoria','id_item','valor_respuesta'));						
+		var id_medicion= $('#mediciones').val();
 		
-		alert(JSON.stringify(obj_toma1));
-		alert(JSON.stringify(obj_toma2));
-		alert(JSON.stringify(obj_toma3));
+		var obj_toma1=new toma(id_medicion,new Date(),2,codigo_auditor,folio_sala,respuestasDB().limit(offset1).select('id_pregunta','id_categoria','id_item','valor_respuesta'));		
+		var obj_toma2=new toma(id_medicion,new Date(),2,codigo_auditor,folio_sala,respuestasDB().start(offset1+1).limit(offset1).select('id_pregunta','id_categoria','id_item','valor_respuesta'));				
+		var obj_toma3=new toma(id_medicion,new Date(),2,codigo_auditor,folio_sala,respuestasDB().start(offset2+1).select('id_pregunta','id_categoria','id_item','valor_respuesta'));						
+		
+		// alert(JSON.stringify(obj_toma1));
+		// alert(JSON.stringify(obj_toma2));
+		// alert(JSON.stringify(obj_toma3));
 		// return false;
 		// Luego se debe hacer 3 GETS para enviar cada segmento de la toma
 		
@@ -978,22 +1265,28 @@ String.prototype.fileExists = function() {
 				
 				switch(parseInt(data.Codigo))
 				{
-					case 0:
-						alert("Error al ingresar la toma, porfavor vuelva a intentarlo más tarde");
+					case 0: // Si hubo errores no manejables en la transaccion
+						$('#container').show();						
+						alert("Error al ingresar el 1er segmento de la toma. porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
 						break;
-					case 1: // Si el primer envio fue exitoso continuar con el segundo envio
-					
+					case 2: // Si la toma enviada ya existe
+						alert(data.Mensaje);
+						break;
+					case 1: // Si el primer envio fue exitoso continuar con el segundo envio					
 						// Si el segundo segmento esta vacio terminar el proceso
 						
 						if($.isEmptyObject(obj_toma2.respuestas))
 						{
 							alert("Envio completado con exito. Por favor confirme el siguiente diálogo para actualizar el estado de la toma");
-							obj_toma= new toma(new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
+							obj_toma= new toma(id_medicion,new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
 							save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
+							location.reload();														
+							$('#container').hide();
+							$('#sesion').show();							
 							return true;
 						}
 						
-						alert(xmlhttp.responseText);
+						// alert(xmlhttp.responseText);
 						var xmlhttp2;
 						
 						if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari			
@@ -1006,23 +1299,27 @@ String.prototype.fileExists = function() {
 						
 							if (xmlhttp2.readyState==4 && xmlhttp2.status==200){
 								
-								alert(xmlhttp2.responseText);
+								// alert(xmlhttp2.responseText);
 								var data2 = JSON.parse(xmlhttp2.responseText);
 								
 								switch(parseInt(data2.Codigo))
 								{
 									case 0:
-										alert("Error al ingresar la toma, porfavor vuelva a intentarlo más tarde");
+										$('#container').show();
+										alert("Error al ingresar el 2o segmento de la toma, porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
 										break;
 									case 1: // Si el segundo envio fue exitoso continuar con el tercer envio
 									
-										// Si el segundo segmento esta vacio terminar el proceso
+										// Si el tercer segmento esta vacio terminar el proceso
 						
 										if($.isEmptyObject(obj_toma3.respuestas))
 										{
 											alert("Envio completado con exito. Por favor confirme el siguiente diálogo para actualizar el estado de la toma");
-											obj_toma= new toma(new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
+											obj_toma= new toma(id_medicion,new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
 											save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
+											location.reload();														
+											$('#container').hide();
+											$('#sesion').show();																	
 											return true;
 										}
 										
@@ -1038,18 +1335,22 @@ String.prototype.fileExists = function() {
 										
 											if (xmlhttp3.readyState==4 && xmlhttp3.status==200){
 												
-												alert(xmlhttp3.responseText);
+												// alert(xmlhttp3.responseText);
 												var data3 = JSON.parse(xmlhttp3.responseText);
 												
 												switch(parseInt(data3.Codigo))
 												{
 													case 0:
-														alert("Error al ingresar la toma, porfavor vuelva a intentarlo más tarde");
+														$('#container').show();
+														alert("Error al ingresar el 3er segmento de la toma, porfavor vuelva a intentarlo más tarde. \nDetalles: "+data.Mensaje);
 														break;
 													case 1: // Si el tercer envio fue exitoso actualizar el estado de la toma local	
 														alert("Envio completado con exito. Por favor confirme el siguiente diálogo para actualizar el estado de la toma");
-														obj_toma= new toma(new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
-														save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);														
+														obj_toma= new toma(id_medicion,new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
+														save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
+														location.reload();														
+														$('#container').hide();
+														$('#sesion').show();
 														return true;													
 														break;
 												}
@@ -1076,21 +1377,55 @@ String.prototype.fileExists = function() {
 	
 $(document).ready(function() {		
 
+	$(document).keydown(function(e){		
+			
+		switch(e.keyCode)
+		{
+			case 32:	
+				e.preventDefault();							
+				if(!validar_pregunta(cursor))
+					return false;
+				$('#sig').addClass('ui-state-active');
+				var id='sig';
+				if(cursor<42)
+					cursor++;
+				var dfd = $.Deferred();		 
+				/* add handlers to be called when dfd is resolved */
+				dfd
+				/* .done() can take any number of functions or arrays of functions */
+				.done( cargar_contenido(cursor),cargar_listener(cursor) )
+				/* we can chain done methods, too */
+				.done(function() {
+				  // alert('estamos listos');
+				  setTimeout(function() { $('#'+id).removeClass('ui-state-active'); }, 1000);
+				  //$(event.target).removeClass('ui-state-active');				  
+				});	
+				dfd.resolve("and");			
+				return false;
+				break;
+			// case 9:	
+				// $('#ant').addClass('ui-state-active');
+				// var id='ant';
+				// cursor--;
+				// break;
+		}					
+	});
+
 	// $('button').button();
 	$('button').css('padding','0em');
 	$('span').css('padding','0em');	
 	cargar_auditores();
 		
-	$('#guardar').click(function(){		
+	$('#guardar').mousedown(function(){		
 		
-		var obj_toma=new toma(new Date(),1,codigo_auditor,folio_sala,respuestasDB().get());			
+		var obj_toma=new toma(id_medicion,new Date(),1,codigo_auditor,folio_sala,respuestasDB().get());			
 		
 		save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
 	});
 	
-	$('.cursor').click(function(){			
+	$('.cursor').mousedown(function(event){				
 	
-		$(this).addClass('ui-state-active');
+		$(event.target).addClass('ui-state-active');	
 	
 		if($(this).attr('id')==='ant')
 		{
@@ -1099,22 +1434,42 @@ $(document).ready(function() {
 		}
 		else
 		{
+			if(!validar_pregunta(cursor))
+			{
+				$(event.target).removeClass('ui-state-active');
+				return false;				
+			}
             if(cursor<42)							
                 cursor++;
 		}				
 		
-		cargar_contenido(cursor);	
-		cargar_listener(cursor);
-		
-		$(this).removeClass('ui-state-active');
+		var dfd = $.Deferred();
+		 
+		/* add handlers to be called when dfd is resolved */
+		dfd
+		/* .done() can take any number of functions or arrays of functions */
+		.done( cargar_contenido(cursor),cargar_listener(cursor) )
+		/* we can chain done methods, too */
+		.done(function() {
+		  // alert('estamos listos');
+		  setTimeout(function() { $(event.target).removeClass('ui-state-active'); }, 1000);
+		  //$(event.target).removeClass('ui-state-active');
+		});				
+		dfd.resolve("and");		
 	});
 	
-	$('#enviar').click(function(){
-		enviar_toma2();
-		// validar_cuestionario();
-	});
+	$('#enviar').mousedown(function(){
 		
-	
+		if(validar_cuestionario())
+		{
+			if(confirm("Cuestionario completado correctamente, ¿Confirma el envío de la toma?"))
+				enviar_toma2();
+		}
+		else
+		{
+			alert("Existen preguntas que no han sido correctamente respondidas. Porfavor verifique");
+		}
+	});			
 });
 </script>
 </head>
@@ -1126,9 +1481,9 @@ $(document).ready(function() {
 		<thead>
 		<tr style="background-color:#000000">
 			<th style='vertical-align:middle'>
-					<h4 style="color:#FFFFFF;">
-							CUESTIONARIO PSA
-					</h4>
+				<h5 id='titulo' style="color:#FFFFFF;">
+						CUESTIONARIO PSA
+				</h5>
 			</th>
 		</tr>
 		<thead>
@@ -1192,13 +1547,21 @@ $(document).ready(function() {
 <div id="sesion" style="width:100%;">
 	<table width='100%'>
 			<thead>
-            <tr style="background-color:#000000">
-                    <th style='vertical-align:middle'>
-						<h4 style="color:#FFFFFF;">
-								Ingreso Usuario
-						</h4>
-                    </th>
-            </tr>
+			<table width='100%'>
+				<thead>
+					<tr>
+						<th class='ui-widget-header' width='40%'>
+							<h4>
+							MEDICION:
+							</h4>
+						</th>
+						<th style='vertical-align:middle' width='60%'>							
+							<select id='mediciones' style='width:100%;text-align:center;font-size:1em'>								
+							</select>												
+						</th>
+					</tr>
+				</thead>
+			</table>
 			<thead>
 		<tr>
 			<td>

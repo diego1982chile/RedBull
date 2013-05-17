@@ -31,10 +31,14 @@ $salas=array();
 		foreach($row as $key=>$value)
 		{
 			$format_row['id_respuesta']=intval($row['ID_RESPUESTA']);
-			$format_row['valor_respuesta']=$row['VALOR_RESPUESTA'];
-			$format_row['id_item']=$row['ID_ITEM'];
-			$format_row['id_pregunta']=intval($row['ID_PREGUNTA']);		
-			$format_row['id_categoria']=$row['ID_CATEGORIA'];					
+			$format_row['valor_respuesta']=$row['VALOR_RESPUESTA'];			
+			$format_row['id_pregunta']=intval($row['ID_PREGUNTA']);
+			
+			// $format_row['id_item']=$row['ID_ITEM'];
+			// $format_row['id_categoria']=$row['ID_CATEGORIA'];
+			
+			$format_row['id_item']=(is_null($row['ID_ITEM'])? 0:$row['ID_ITEM']);			
+			$format_row['id_categoria']=(is_null($row['ID_CATEGORIA'])? 0:$row['ID_CATEGORIA']);					
 		}
 		// print_r($format_row);
 		$result[]=$format_row;

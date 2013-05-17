@@ -12,33 +12,38 @@
 					
 		$(document).ready(function() {			
 			$.getJSON('data/topicos.txt',function(data){							
-				$.post('php/poblarBD.php',{caso:1,entidad:JSON.stringify(data)},function(data){										
+				$.post('php/poblarBDRedBull.php',{caso:1,entidad:JSON.stringify(data)},function(data){										
 					alert(data.mensaje);
 				},'json');
 				$.getJSON('data/secciones.txt',function(data){					
-					$.post('php/poblarBD.php',{caso:2,entidad:JSON.stringify(data)},function(data){
+					$.post('php/poblarBDRedBull.php',{caso:2,entidad:JSON.stringify(data)},function(data){
 						alert(stringify(data));						
 					},'json');
 					$.getJSON('data/categorias.txt',function(data){						
-						$.post('php/poblarBD.php',{caso:3,entidad:JSON.stringify(data)},function(data){
+						$.post('php/poblarBDRedBull.php',{caso:3,entidad:JSON.stringify(data)},function(data){
 							alert(stringify(data));
 						},'json');						
 						$.getJSON('data/preguntas1.txt',function(data){																					
-							$.post('php/poblarBD.php',{caso:4,entidad:JSON.stringify(data)},function(data){
+							$.post('php/poblarBDRedBull.php',{caso:4,entidad:JSON.stringify(data)},function(data){
 								alert(stringify(data));
 							},'json');	
 							$.getJSON('data/preguntas_categorias.txt',function(data){								
-								$.post('php/poblarBD.php',{caso:5,entidad:JSON.stringify(data)},function(data){
+								$.post('php/poblarBDRedBull.php',{caso:5,entidad:JSON.stringify(data)},function(data){
 									alert(stringify(data));
 								},'json');	
 								$.getJSON('data/itemes.txt',function(data){									
-									$.post('php/poblarBD.php',{caso:6,entidad:JSON.stringify(data)},function(data){
+									$.post('php/poblarBDRedBull.php',{caso:6,entidad:JSON.stringify(data)},function(data){
 										alert(stringify(data));
 									},'json');	
 									$.getJSON('data/alternativas.txt',function(data){										
-										$.post('php/poblarBD.php',{caso:7,entidad:JSON.stringify(data)},function(data){
+										$.post('php/poblarBDRedBull.php',{caso:7,entidad:JSON.stringify(data)},function(data){
 											alert(stringify(data));
-										},'json');										
+										},'json');	
+										$.getJSON('data/mediciones.txt',function(data){										
+											$.post('php/poblarBDRedBull.php',{caso:8,entidad:JSON.stringify(data)},function(data){
+												alert(stringify(data));
+											},'json');										
+										});											
 									});									
 								});	
 							});		

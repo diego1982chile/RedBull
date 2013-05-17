@@ -45,10 +45,6 @@ mssql_select_db($dbn,$conn);
 		$id_pregunta=$_POST['pregunta'.$cont];
 		$id_item=$_POST['item'.$cont];
 		$valor=$_POST['valor'.$cont];
-		// echo $id_categoria;
-		// echo $id_pregunta;
-		// echo $id_item;
-		// echo $valor;
 		
 		$sql="INSERT INTO [encuesta_redbull].[dbo].[RESPUESTA] (id_categoria,id_pregunta,id_item,id_toma,valor_respuesta) values ($id_categoria,$id_pregunta,$id_item,$id_toma,$valor)";
 		$objQuery1 = mssql_query($sql); 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+
+<script>
+
+
+	// Carga de datos en los contenedores de objetos					
+					
+		$(document).ready(function() {			
+			$.getJSON('data/supervisores.txt',function(data){							
+				$.post('php/poblarMaestra.php',{caso:1,entidad:JSON.stringify(data)},function(data){										
+					alert(data.mensaje);
+				},'json');
+				$.getJSON('data/auditores.txt',function(data){					
+					$.post('php/poblarMaestra.php',{caso:2,entidad:JSON.stringify(data)},function(data){
+						alert(stringify(data));						
+					},'json');
+					$.getJSON('data/auditor_sala1.txt',function(data){						
+						$.post('php/poblarMaestra.php',{caso:3,entidad:JSON.stringify(data)},function(data){
+							alert(stringify(data));
+						},'json');												
+					});	
+				});				
+			});																	      	
+		});
+	
+</script>
+</head>
+<body>
+
+<div id="container" style="width:100%;">
+
+</div>
+</body>
+</html>

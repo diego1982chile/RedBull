@@ -178,161 +178,176 @@ String.prototype.fileExists = function() {
 				});				
 			});				
 	}
-	
-	// Carga de datos en los contenedores de objetos
-	
-		function cargar_auditores()
-		{																		
-			var xmlhttp;
-			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
-				xmlhttp=new XMLHttpRequest();				
-			}
-			else{// code for IE6, IE5				
-				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
-			}
-																	
-			xmlhttp.onreadystatechange=function(){
-													
-				if (xmlhttp.readyState==4 && xmlhttp.status==200)
-				{									
-					var data = JSON.parse(xmlhttp.responseText);											
-					
-					if(data.Codigo==0)
-					{
-						alert("Error al recuperar auditores y mediciones, porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
-						return false;
-					}									
-					
-					$(data.mediciones).each(function(key,value){	
-						$('#mediciones').append("<option value='"+value.id_medicion+"' "+value.activa+">"+value.nombre_medicion+"</option>");						
-					});
-					
-					
-					var html="<table id='tabla_auditores' width='100%'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
-				
-					$(data.auditores).each(function(key,value){															
-						html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=390px;padding:0em'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
-					});
-					html=html+"</tbody></table>";
-					// alert(html);					
-					$('#auditores').html(html);
-					$('#tabla_auditores').dataTable({
-						"sScrollY": "215px",		 		 		
-						"bFilter": true,
-						"bSort": false,
-						"bInfo": false,
-						"bPaginate": false,
-						"bJQueryUI": true,
-						"bAutoWidth": false, 		
-					});			
-					
-					$('.auditor').mousedown(function(){											
-						
-						$('#salas').html('Cargando salas...');
-						$('.ui-state-active').removeClass();
-						$(this).addClass('ui-state-active');
-					
-						codigo_auditor=$(this).attr('codigo_auditor');
-						var id_auditor=$(this).attr('id_auditor');
-					
-						var xmlhttp;
-						if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
-							xmlhttp=new XMLHttpRequest();				
-						}
-						else{// code for IE6, IE5							
-							xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
-						}												
-											
-						xmlhttp.onreadystatechange=function(){												
-													
-							if (xmlhttp.readyState==4 && xmlhttp.status==200)
-							{																	
-								var data = JSON.parse(xmlhttp.responseText);	
-								
-								if($.isEmptyObject(data))
-								{
-									alert("No existen salas asignadas para este auditor");
-									$('#salas').html('');
-								}
-								else
-								{
-									var html="<table id='tabla_salas' border=1 width='100%'><thead><tr><th width='90%'>SALAS</th><th width='10%'></th></tr></thead><tbody>";
-							
-									$(data.salas).each(function(key,value){	
-										var pathToma="\\Application\\toma"+id_medicion+codigo_auditor+value.folio+".txt";
-										// Si la toma no existe
-										var estado="<img src='images/bubble-red-md.png' style='height:1em;width:1em' />";										
-										// Si la toma existe en el equipo
-										if(isDocumentAvailable(pathToma))										
-											estado="<img src='images/bubble-yellow-md.png' style='height:1em;width:1em' />";																					
-										// Si la toma existe en la BD
-										if(value.id_toma!=0)											
-											estado="<img src='images/bubble-green-md.png' style='height:1em;width:1em' />";
-											
-										html+="<tr><td style='padding:0em'><button class='sala' folio_sala="+value.folio+" style='width=370px;padding:0em'><label style='font-size:1.5em'>"+value.folio+"/"+value.calle+"-"+value.numero+"</label></button></td><td style='padding:0em'>"+estado+"</td></tr>";									
-										
-									});
-									html+="</tbody></table>";
 		
-									$('#loader').hide();
-									$('#salas').html(html);
-								
-									$('#tabla_salas').dataTable({
-										"sScrollY": "215px",										
-										"bFilter": true,
-										"bSort": false,
-										"bInfo": false,
-										"bPaginate": false,
-										"bJQueryUI": false,
-										"bAutoWidth": false, 																				
-									});																	
+	
+	function cargar_auditores()
+	{																		
+		var xmlhttp;
+		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
+			xmlhttp=new XMLHttpRequest();				
+		}
+		else{// code for IE6, IE5				
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
+		}
+																
+		xmlhttp.onreadystatechange=function(){
+												
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{									
+				var data = JSON.parse(xmlhttp.responseText);											
+				
+				if(data.Codigo==0)
+				{
+					alert("Error al recuperar auditores y mediciones, porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
+					return false;
+				}									
+				
+				$(data.mediciones).each(function(key,value){	
+					$('#mediciones').append("<option value='"+value.id_medicion+"' "+value.activa+">"+value.nombre_medicion+"</option>");						
+				});
+				
+				
+				var html="<table id='tabla_auditores' width='100%'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
+			
+				$(data.auditores).each(function(key,value){															
+					html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=390px;padding:0em'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
+				});
+				html=html+"</tbody></table>";
+				// alert(html);					
+				$('#auditores').html(html);
+				$('#tabla_auditores').dataTable({
+					"sScrollY": "215px",		 		 		
+					"bFilter": true,
+					"bSort": false,
+					"bInfo": false,
+					"bPaginate": false,
+					"bJQueryUI": true,
+					"bAutoWidth": false, 	
+					"bDeferRender": true,
+					"bSortClasses": false						
+				});			
+				
+				$('.auditor').mousedown(function(){											
+					
+					$('#salas').html('Cargando salas...');
+					$('.ui-state-active').removeClass();
+					$(this).addClass('ui-state-active');
+				
+					codigo_auditor=$(this).attr('codigo_auditor');
+					var id_auditor=$(this).attr('id_auditor');
+				
+					var xmlhttp;
+					if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
+						xmlhttp=new XMLHttpRequest();				
+					}
+					else{// code for IE6, IE5							
+						xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");				
+					}												
+										
+					xmlhttp.onreadystatechange=function(){												
+												
+						if (xmlhttp.readyState==4 && xmlhttp.status==200)
+						{																	
+							var data = JSON.parse(xmlhttp.responseText);	
+							
+							if($.isEmptyObject(data))
+							{
+								alert("No existen salas asignadas para este auditor");
+								$('#salas').html('');
+							}
+							else
+							{
+								var html="<table id='tabla_salas' border=1 width='100%'><thead><tr><th width='90%'>SALAS</th><th width='10%'></th></tr></thead><tbody>";
+						
+								$(data.salas).each(function(key,value){	
+									var pathToma="\\Application\\toma"+id_medicion+codigo_auditor+value.folio+".txt";
+									// Si la toma no existe
+									var estado="<img src='images/bubble-red-md.png' style='height:1em;width:1em' />";	
+									var status=0;
+									// Si la toma existe en el equipo
+									if(isDocumentAvailable(pathToma))			
+									{
+										status=status+1;
+										estado="<img src='images/bubble-yellow-md.png' style='height:1em;width:1em' />";																					
+									}
+									// Si la toma existe en la BD
+									if(value.id_toma!=0)
+									{
+										status=status+2;
+										estado="<img src='images/bubble-green-md.png' style='height:1em;width:1em' />";											
+									}
+										
+									html+="<tr><td style='padding:0em'><button class='sala' status='"+status+"' folio_sala="+value.folio+" style='width=370px;padding:0em'><label style='font-size:1.5em'>"+value.folio+"/"+value.calle+"-"+value.numero+"</label></button></td><td style='padding:0em'>"+estado+"</td></tr>";									
+									
+								});
+								html+="</tbody></table>";
+	
+								$('#loader').hide();
+								$('#salas').html(html);
+							
+								$('#tabla_salas').dataTable({
+									"sScrollY": "215px",										
+									"bFilter": true,
+									"bSort": false,
+									"bInfo": false,
+									"bPaginate": false,
+									"bJQueryUI": false,
+									"bAutoWidth": false, 	
+									"bDeferRender": true,
+									"bSortClasses": false										
+								});																	
 
-									$('.sala').mousedown(function(){
-										
-										folio_sala=$(this).attr('folio_sala');
-										
-										pathCuestionario="\\Application\\toma"+id_medicion+codigo_auditor+folio_sala+".txt";
-										
-										// cargar_datos();
-										
-										if(pathCuestionario.fileExists())
-										{									
-											$.getJSON(pathCuestionario,function(data){					
+								$('.sala').mousedown(function(){
+									
+									folio_sala=$(this).attr('folio_sala');
+									var status=parseInt($(this).attr('status'));																			
+									
+									pathCuestionario="\\Application\\toma"+id_medicion+codigo_auditor+folio_sala+".txt";
+									
+									if(isDocumentAvailable(pathCuestionario))
+									{									
+										$.getJSON(pathCuestionario,function(data){					
 											respuestasDB=TAFFY(data.respuestas);
-												if(parseInt(data.estado_toma)==1)
-												{																														
-													var opcion=confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?");																																						
-													if(opcion)
-														cargar_datos();													
-												}
-												else
-												{
-													var opcion=confirm("Esta sesión corresponde a una toma completada en este equipo. ¿Desea cargar los datos de esta toma?");													
-														cargar_datos();	
-													if(opcion)
-														cargar_datos();															
-												}												
-											});		
-										}	
-										else
-										{
+										});
+									}
+									
+									switch(status)
+									{
+										case 0:
 											var opcion=confirm("La siguiente sesión:\nMedición: "+$('#mediciones :selected').text()+"\nAuditor: "+codigo_auditor+"\nSala: "+folio_sala+"\ncorresponde a una nueva toma en este equipo. ¿Desea iniciar esta toma?");
 											if(opcion)
-												cargar_datos();																						
-										}										
-									});
-								}																										
-							}
-						}						
-						id_medicion=$('#mediciones').val();
-						xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'&id_medicion='"+id_medicion+"'",true);
-						xmlhttp.send();	
-					});						
-				}
+												cargar_datos();	
+											break;
+										case 1:
+											var opcion=confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?");																																						
+											if(opcion)
+												cargar_datos();	
+											break;
+										case 2:
+											var opcion=confirm("Esta sesión corresponde a una toma inexistente en este equipo. Sin embargo existe en la base de datos. ¿Desea recuperar los datos de esta toma y cargarlos?");														
+											if(opcion)
+												cargar_datos();	
+											break;												
+											break;	
+										case 3:
+											var opcion=confirm("Esta sesión corresponde a una toma completada en este equipo y enviada a la base de datos. ¿Desea cargar los datos de esta toma?");														
+											if(opcion)
+												cargar_datos();	
+											break;																								
+									}									
+								});
+							}																										
+						}
+					}						
+					id_medicion=$('#mediciones').val();
+					xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'&id_medicion='"+id_medicion+"'",true);
+					xmlhttp.send();	
+				});						
 			}
-			xmlhttp.open("GET",'http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=1',true);
-			xmlhttp.send();			
 		}
+		xmlhttp.open("GET",'http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=1',true);
+		xmlhttp.send();			
+	}
 	
 	    function cargar_contenido(id_pregunta)
 		{					     					

@@ -91,7 +91,7 @@ String.prototype.fileExists = function() {
 	
 		var cursor=1;
         var id_respuesta=1;
-		var contestadas=0;
+		var contestadas=0;		
 		// var id_toma=1;					
         
 		// Estas variables se usan para identificar el archivo con la toma
@@ -114,11 +114,11 @@ String.prototype.fileExists = function() {
 		
 	function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
 	{
-            this.id_respuesta=id_respuesta;
-            this.valor_respuesta=valor_respuesta;               
-            this.id_item=id_item;
-            this.id_pregunta=id_pregunta;	
-            this.id_categoria=id_categoria;
+		this.id_respuesta=id_respuesta;
+		this.valor_respuesta=valor_respuesta;               
+		this.id_item=id_item;
+		this.id_pregunta=id_pregunta;	
+		this.id_categoria=id_categoria;
 	}	
 	
 	function toma(id_medicion,fecha_toma,estado_toma,id_auditor,id_sala,respuestas)
@@ -178,8 +178,7 @@ String.prototype.fileExists = function() {
 				});				
 			});				
 	}
-		
-	
+			
 	function cargar_auditores()
 	{																		
 		var xmlhttp;
@@ -205,8 +204,7 @@ String.prototype.fileExists = function() {
 				$(data.mediciones).each(function(key,value){	
 					$('#mediciones').append("<option value='"+value.id_medicion+"' "+value.activa+">"+value.nombre_medicion+"</option>");						
 				});
-				
-				
+								
 				var html="<table id='tabla_auditores' width='100%'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
 			
 				$(data.auditores).each(function(key,value){															
@@ -291,10 +289,10 @@ String.prototype.fileExists = function() {
 									"bSort": false,
 									"bInfo": false,
 									"bPaginate": false,
-									"bJQueryUI": false,
+									"bJQueryUI": true,
+									"bSortClasses": false,
 									"bAutoWidth": false, 	
-									"bDeferRender": true,
-									"bSortClasses": false										
+									"bDeferRender": true,																	
 								});																	
 
 								$('.sala').mousedown(function(){
@@ -349,8 +347,8 @@ String.prototype.fileExists = function() {
 		xmlhttp.send();			
 	}
 	
-	    function cargar_contenido(id_pregunta)
-		{					     					
+	function cargar_contenido(id_pregunta)
+	{					     					
         // Filtrar preguntas por id_pregunta segun cursor actual		
         preguntasDB().filter({'id_pregunta':id_pregunta}).each(function (r1) { 
 
@@ -469,7 +467,13 @@ String.prototype.fileExists = function() {
 											cont++;
 											});										
 										});			
-									});	
+									});										
+									// Aqui se agrega la alternativa adicional "no existen ubiaciones adicionales"									
+									alternativasDB().filter({'id_categoria':null},{'id_pregunta':id_pregunta}).each(function (r7) {												
+										itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {  																				
+											html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' colspan='2' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='null' item='"+r7.id_item+"' name='radio"+cursor+"null' value='null"+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+										});	
+									});										
 									html=html+"</table>";                         
 									}
 									else
@@ -480,6 +484,9 @@ String.prototype.fileExists = function() {
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 											cont++;
 											itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
+												if(r6.id_item=='34')																
+													html=html+"<tr><td id='"+r6.id_item+"' colspan='2' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='null' item='"+r5.id_item+"' name='radio"+cursor+"null' value='null"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+												else
 													html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left'><input type='checkbox' id='radio"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='checkbox' value='"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
 											});															
 										});		
@@ -489,9 +496,18 @@ String.prototype.fileExists = function() {
 									$('#respuesta').html(html);
 									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
 																		
-									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {							
-										$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-										$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {	
+										// console.log(r10);				
+										if($.inArray(r10.id_item,["33","34","35","37"])==-1)
+										{
+											$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+											$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+										}
+										else
+										{											
+											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+										}
 									});																																		
 									break;																					                                                     
 								case 3: // Tipo conjuntiva con valor	
@@ -526,6 +542,12 @@ String.prototype.fileExists = function() {
 											});										
 										});			
 									});	
+									// Aqui se agrega la alternativa adicional "no existen ubiaciones adicionales"									
+									alternativasDB().filter({'id_categoria':null},{'id_pregunta':id_pregunta}).each(function (r7) {												
+										itemesDB().filter({'id_item':r7.id_item}).each(function (r8) {  																				
+											html=html+"<tr id='"+r8.id_item+"'><td item='"+r7.id_item+"' colspan='3' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='null' item='"+r7.id_item+"' name='radio"+cursor+"null' value='null"+r8.id_item+"' /><label style='font-size:0.9em'>"+r8.nombre_item+"</label></td></tr>";										
+										});	
+									});	
 									html=html+"</table>";                         
 									}
 									else
@@ -535,18 +557,28 @@ String.prototype.fileExists = function() {
 										var cont=1;
 										alternativasDB().filter({'id_pregunta':id_pregunta}).each(function (r5) {					
 												cont++;
-												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {									
-													html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left' width='50%'><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='input"+r5.id_categoria+r5.id_item+"' class='valor' size='4' /></td></tr>";										
+												itemesDB().filter({'id_item':r5.id_item}).each(function (r6) {	
+													if(r6.id_item=='34')	
+														html=html+"<tr><td id='"+r6.id_item+"' colspan='2' style='text-align:left'><input type='radio' id='radio"+cont+"' pregunta='"+cursor+"' categoria='null' item='"+r5.id_item+"' name='radio"+cursor+"null' value='null"+r6.id_item+"' /><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td></tr>";										
+													else
+														html=html+"<tr><td id='"+r6.id_item+"' style='text-align:left' width='50%'><label style='font-size:0.9em'>"+r6.nombre_item+"</label></td><td width='20%'><input id='valor"+cont+"' pregunta='"+cursor+"' categoria='"+r5.id_categoria+"' item='"+r5.id_item+"' name='input"+r5.id_categoria+r5.id_item+"' class='valor' size='4' /></td></tr>";										
 												});															
 										});		
 										html=html+"</table>";									
 									}															
 									// $('#seccion'+r3.id_topico+r2.id_seccion).dataTable().fnAddData([html]);	
 									$('#respuesta').html(html);									
-									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas
-																		
-									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {											
-										$('[name=input'+r10.id_categoria+r10.id_item+']').val(r10.valor_respuesta);
+									// Si existen respuestas buscar las respuestas correspondientes a la pregunta actual y cargarlas																		
+									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {	
+										if($.inArray(r10.id_item,["33","34","35"])==-1)
+										{									
+											$('[name=input'+r10.id_categoria+r10.id_item+']').val(r10.valor_respuesta);
+										}
+										else
+										{
+											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
+											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");										
+										}
 									});																																																																                           																			
 									break;		
 							}
@@ -571,7 +603,7 @@ String.prototype.fileExists = function() {
 	return true;
     }
 		
-// Carga listener para eventos para cada pregunta y sus validaciones
+	// Carga listener para eventos para cada pregunta y sus validaciones
 	
     function cargar_listener(id_pregunta)
     {					     			
@@ -611,11 +643,11 @@ String.prototype.fileExists = function() {
 										else
 											cuestionario_valido=false;
 									}
-									$('#tabla_alternativas'+cursor+' tr td').mousedown(function(){
+									$('#tabla_alternativas'+cursor+' tr td:has(input)').mousedown(function(){
 										if($.inArray(id_pregunta,[21,22,23,24,25,26,27,28,29,30])!=-1)
-										{
-											// alert($(this).children().attr('item'));
-											if($(this).children().attr('item')=='31')// Si se selecciono "no hay ubicaciones adicionales" deseleccionar el resto de alternativas
+										{											
+											// Si se selecciono "no hay ubicaciones adicionales", "No hay SKUs de Red Bull disponibles" deseleccionar el resto de alternativas
+											if($.inArray($(this).children().attr('item'),['31','33','34','36'])!=-1)
 											{
 												$(':input').parent('.seleccionada').removeClass();
 												$(':input').prop('checked',false);   
@@ -634,6 +666,27 @@ String.prototype.fileExists = function() {
 										$(this).addClass("seleccionada");                                
 										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);																																						
+										// Verificar concistencia de respuestas para esta sección
+										if(id_pregunta>21)
+										{
+											var valido;
+											respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(r1){													
+												valido=false
+												respuestasDB().filter({'id_pregunta':id_pregunta-1},{'id_categoria':r1.id_categoria}).each(function(r3){
+													console.log(r3);
+													valido=true;
+													return false;
+												});												
+											});
+											if(!valido)
+											{
+												alert("En la pregunta anterior no están las mismas ubicaciones marcadas. Revise por favor");
+												$(this).removeClass();
+												$(this).children().prop('checked',false);
+												respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).children().attr('categoria')},{'id_item':$(this).children().attr('item')}).remove();												
+												return false;
+											}
+										}
 									});													
 									break;
 								case 2: // Tipo conjuntiva	
@@ -642,7 +695,7 @@ String.prototype.fileExists = function() {
 									if(id_pregunta==17)
 									{
 										var ok=true;
-										// Por cada respuesta en pregunta 15 debe haber una respuesta en pregunta 16																								
+										// AL MENOS Por cada respuesta en pregunta 15 debe haber una respuesta en pregunta 16																								
 										respuestasDB().filter({'id_pregunta':15}).each(function(r1){													
 											if(respuestasDB().filter({'id_pregunta':16},{'id_categoria':r1.id_categoria},{'id_item':r1.id_item}).count()==0)
 											{			
@@ -674,7 +727,7 @@ String.prototype.fileExists = function() {
 											cargar_contenido(cursor);
 											cargar_listener(cursor);
 											return false;
-										}
+										}																				
 									}
 									// Verificar que si se contesto facing distinto de nulo en pregunta 6, no se deje de marcar presencia en pregunta relacionada
 									if(id_pregunta==18)
@@ -690,72 +743,93 @@ String.prototype.fileExists = function() {
 											return false;
 										}
 									}									
-									$('#tabla_alternativas'+cursor+' tr td').mousedown(function(){										
-										if($(this).children().prop('checked'))
+									$('#tabla_alternativas'+cursor+' tr td:has(input)').mousedown(function(){	
+										if($.inArray($(this).children().attr('item'),['31','33','34','35'])!=-1)											
 										{
-											$(this).removeClass("seleccionada");
-											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
-											if($.inArray(id_pregunta,[15,17])!=-1)
-											{																				
-												// Si se deselecciono algun checkbox el precio no deberia existir
-												if(respuestasDB().filter({'id_pregunta':id_pregunta+1},{'id_categoria':$(this).children().attr('categoria')},{'id_item':$(this).children().attr('item')}).count()!=0)
-												{
-													alert("El 'SKU' correspondiente tiene un precio en la siguiente regunta ('1.4.3'). Debe quitar el precio primero");													
-													$(this).addClass("seleccionada");        											
-													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
-													return false;
-												}													
+											// Si se selecciono "no hay ubicaciones adicionales", "No hay SKUs de Red Bull disponibles" deseleccionar el resto de alternativas
+											if($.inArray(id_pregunta,[14,15,17])!=-1)
+											{
+											
+												$(':input').parent('.seleccionada').removeClass();
+												$(':input').prop('checked',false);   
+												// Eliminar todas las respuestas para esta pregunta
+												respuestasDB({'id_pregunta':id_pregunta}).remove();
+												$(this).addClass("seleccionada");                                
+												$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                																							
 											}
 										}
 										else
-										{
-											$(this).addClass("seleccionada");        											
-											$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
-											// Verificar que el facing no sea 0 en pregunta 1											
-											if(id_pregunta==14)
+										{																						
+											if($(this).children().prop('checked'))
 											{
-												if(respuestasDB().filter({'id_pregunta':1}).count()==0)
-												{
-													alert("No ha contestado pregunta '1.1.1' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
-													$(this).removeClass("seleccionada");
-													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
-													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
-													id_respuesta--;
-													return false;											
+												$(this).removeClass("seleccionada");
+												$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+												if($.inArray(id_pregunta,[15,17])!=-1)
+												{																				
+													// Si se deselecciono algun checkbox el precio no deberia existir
+													if(respuestasDB().filter({'id_pregunta':id_pregunta+1},{'id_categoria':$(this).children().attr('categoria')},{'id_item':$(this).children().attr('item')}).count()!=0)
+													{
+														alert("El 'SKU' correspondiente tiene un precio en la siguiente regunta ('1.4.3'). Debe quitar el precio primero");													
+														$(this).addClass("seleccionada");        											
+														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
+														return false;
+													}													
 												}
-												if(parseInt(respuestasDB().filter({'id_pregunta':1}).select('valor_respuesta'))==0)
-												{
-													alert("En la pregunta '1.1.1' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
-													$(this).removeClass("seleccionada");
-													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
-													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
-													id_respuesta--;
-													return false;											
-												}
-											}	
-											// Verificar que el facing no sea 0 en pregunta 6
-											if(id_pregunta==17)
+											}
+											else
 											{
-												if(respuestasDB().filter({'id_pregunta':6}).count()==0)
+												$('[name=radio'+id_pregunta+'null]').parent('.seleccionada').removeClass();												                           
+												$('[name=radio'+id_pregunta+'null]').prop('checked',false);                                
+												// Eliminar todas las respuestas para esta pregunta
+												respuestasDB({'id_pregunta':id_pregunta},{'id_item':['33','34','35']}).remove();
+												$(this).addClass("seleccionada");        											
+												$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
+												// Verificar que el facing no sea 0 en pregunta 1											
+												if(id_pregunta==14)
 												{
-													alert("No ha contestado pregunta '1.1.6' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
-													$(this).removeClass("seleccionada");
-													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
-													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
-													id_respuesta--;
-													return false;											
-												}											
-												if(parseInt(respuestasDB().filter({'id_pregunta':6}).select('valor_respuesta'))==0)
+													if(respuestasDB().filter({'id_pregunta':1}).count()==0)
+													{
+														alert("No ha contestado pregunta '1.1.1' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
+														$(this).removeClass("seleccionada");
+														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+														id_respuesta--;
+														return false;											
+													}
+													if(parseInt(respuestasDB().filter({'id_pregunta':1}).select('valor_respuesta'))==0)
+													{
+														alert("En la pregunta '1.1.1' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
+														$(this).removeClass("seleccionada");
+														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+														id_respuesta--;
+														return false;											
+													}
+												}	
+												// Verificar que el facing no sea 0 en pregunta 6
+												if(id_pregunta==17)
 												{
-													alert("En la pregunta '1.1.3' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
-													$(this).removeClass("seleccionada");
-													$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
-													respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
-													id_respuesta--;
-													return false;											
-												}
-											}																									
-										}										
+													if(respuestasDB().filter({'id_pregunta':6}).count()==0)
+													{
+														alert("No ha contestado pregunta '1.1.6' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
+														$(this).removeClass("seleccionada");
+														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+														id_respuesta--;
+														return false;											
+													}											
+													if(parseInt(respuestasDB().filter({'id_pregunta':6}).select('valor_respuesta'))==0)
+													{
+														alert("En la pregunta '1.1.3' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
+														$(this).removeClass("seleccionada");
+														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
+														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+														id_respuesta--;
+														return false;											
+													}
+												}																									
+											}					
+										}
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);  																											
 									});																													
 									break;																					                                                     
@@ -775,30 +849,77 @@ String.prototype.fileExists = function() {
 									if(id_pregunta==16)
 									{										
 										var ok=true;
-										// Por cada respuesta en pregunta 14 debe haber una omision en pregunta 15																								
+										// Por cada respuesta en pregunta 14 debe haber una omision en pregunta 15, si es que la respuesta no fue "no hay SKUs de RedBull disponibles"																								
 										respuestasDB().filter({'id_pregunta':14}).each(function(r1){		
-											JSON.stringify(r1);
-											if(respuestasDB().filter({'id_pregunta':15},{'id_categoria':r1.id_categoria},{'id_item':r1.id_item}).count()>0	)										
-											{																								
-												if(!ok)
+											if(r1.id_item!=33)
+											{
+												if(respuestasDB().filter({'id_pregunta':15},{'id_categoria':r1.id_categoria},{'id_item':r1.id_item}).count()>0)										
+												{																								
+													if(!ok)
+														return false;
+													alert("Existen SKUs marcados como presentes en '1.4.1' y marcados como ausentes en pregunta '1.4.2'. Revise porfavor");
+													cursor=cursor-2;
+													cargar_contenido(cursor);
+													cargar_listener(cursor);
+													ok=false;
 													return false;
-												alert("Existen SKUs marcados como presentes en '1.4.1' y marcados como ausentes en pregunta '1.4.2'. Revise porfavor");
-												cursor=cursor-2;
-												cargar_contenido(cursor);
-												cargar_listener(cursor);
-												ok=false;
-												return false;
+												}
 											}
+											// else
+											// {	// Si se selcciono "no hay SKUs de RedBull disponibles, debe haber consistencia en las preguntas siguientes
+												// if(respuestasDB().filter({'id_pregunta':15},{'id_item'33}).count()==0)
+												// {
+													// if(!ok)
+														// return false;
+													// alert("Se marcó 'No hay SKUs de Red Bull disponibles en '1.4.1', sin embargo se marcó  '1.4.2'. Revise porfavor");
+													// cursor=cursor-2;
+													// cargar_contenido(cursor);
+													// cargar_listener(cursor);
+													// ok=false;
+													// return false;												
+												// }
+											// }
 										});
 										if(ok)										
 											cuestionario_valido=true;
 										else
 											cuestionario_valido=false;
-									}									
-									$('.valor').keyup(function(event){											
-																			
+									}		
+									$('#tabla_alternativas'+cursor+' tr td:has(:radio)').mousedown(function(){
+										// Verificar que sea concistente con pregunta anterior										
+										if(respuestasDB({'id_pregunta':id_pregunta-1},{'id_item':["35","34"]}).count()==0)
+										{
+											alert("En pregunta anterior se marcó SKUs con etiqueta de precio. Por favor revise");																								
+											respuestasDB({'id_pregunta':id_pregunta},{'id_item':["35","34"]}).remove();
+											return false;
+										}		
+										// Si se selecciono "No hay etiqueta"
+										$('.valor').val('');				
+										// Eliminar respuestas para esta pregunta, si existen
+										respuestasDB({'id_pregunta':id_pregunta}).remove();
+										id_respuesta--;										
+										$(this).addClass("seleccionada");   										
+										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
+										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);
+										// Eliminar los precios ingresados, si existen
+									});
+									$('.valor').keyup(function(event){																						
 										if(parseInt($(this).val()).toString()!="NaN")
-										{											
+										{								
+											// Verificar que sea concistente con pregunta anterior
+											if(respuestasDB({'id_pregunta':id_pregunta-1},{'id_item':["35","34"]}).count()>0)
+											{
+												alert("En pregunta anterior se marcó 'No hay etiqueta de precio para SKUs'. Por favor revise");													
+												$(this).val('');
+												respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
+												return false;
+											}	
+											// Si se ingresó un precio válido, remover respuesta "No hay etiqueta de precio para SKUs de Red Bull"
+											$(':input').parent('.seleccionada').removeClass();
+											$(':input').prop('checked',false);   
+											// Eliminar respuesta "No hay etiqueta", si existe
+											respuestasDB({'id_pregunta':id_pregunta},{'id_item':'35'}).remove();											
+											$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                										
 											// Guardar la respuesta
 											$(this).val(parseInt($(this).val()));
 											$(this).attr('valor',$(this).val());
@@ -809,7 +930,7 @@ String.prototype.fileExists = function() {
 											if($.inArray(id_pregunta,[16,18])!=-1)
 											{																												
 												// Si se ingreso algun precio, el SKU debe estar previamente marcado
-												if(respuestasDB().filter({'id_pregunta':id_pregunta-1},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).count()==0)
+												if(respuestasDB({'id_pregunta':[id_pregunta-1,id_pregunta-2]},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).count()==0)
 												{
 													alert("El 'SKU' correspondiente no está marcado en la pregunta anterior ('1.4.2'). Debe quitar el precio o marcar el SKU");
 													$(this).val('');
@@ -818,7 +939,7 @@ String.prototype.fileExists = function() {
 													id_respuesta--;
 													return false;
 												}													
-											}												
+											}											
 										}
 										else
 										{																								
@@ -855,37 +976,7 @@ String.prototype.fileExists = function() {
 									$(this).val(parseInt($(this).val()));
 									$(this).attr('valor',$(this).val());
 									guardarRespuesta(id_pregunta,$(this).attr('categoria'),$(this).attr('item'),$(this).val());									
-									// Si esta en pregunta 33 las preguntas siguientes son dependientes de lo que se ingrese aqui
-									if(id_pregunta==33)
-									{				
-										if(parseInt($(this).val())>9)
-										{
-											alert("Excede numero maximo de cajas disponibles");
-											$(this).val('');
-											// Eliminar la respuesta
-											respuestasDB({'id_pregunta':id_pregunta}).remove();											
-											return false;
-										}
-										var cont=6; // 1a Caja
-										var activas=cont+parseInt($(this).val()); // Cajas activas
-										var valores1= new Array();
-										var valores2= new Array();
-										
-										while(cont<activas)
-										{
-											valores1.push(cont);
-											cont++;
-										}
-										while(cont<15)
-										{
-											valores2.push(cont);
-											cont++;
-										}		
-										// Se activan las categorias menores o iguales a la cantidad ingresada
-										categoriasDB().filter({id_categoria:valores1}).update({estado_categoria:true});
-										// Se desactivan las categorias menores o iguales a la cantidad ingresada
-										categoriasDB().filter({id_categoria:valores2}).update({estado_categoria:false});										
-									}
+									// Si esta en pregunta 33 las preguntas siguientes son dependientes de lo que se ingrese aqui									
 									// Validacion totales primer grupo									
 									if($.inArray(id_pregunta,[1,2,3,4,5,6])!=-1)
 									{										
@@ -937,8 +1028,7 @@ String.prototype.fileExists = function() {
 								{
 									$(this).val('');
 								}															
-							});	
-						
+							});							
                         break;				
                     }						
                 });
@@ -947,12 +1037,34 @@ String.prototype.fileExists = function() {
 		return true;
     }		
 	
+	function activarCajas(cajas)
+	{		
+		var cont=6; // 1a Caja
+		var activas=cont+cajas; // Cajas activas
+		var valores1= new Array();
+		var valores2= new Array();
+		
+		while(cont<activas)
+		{
+			valores1.push(cont);
+			cont++;
+		}
+		while(cont<15)
+		{
+			valores2.push(cont);
+			cont++;
+		}		
+		// Se activan las categorias menores o iguales a la cantidad ingresada
+		categoriasDB().filter({id_categoria:valores1}).update({estado_categoria:true});
+		// Se desactivan las categorias menores o iguales a la cantidad ingresada
+		categoriasDB().filter({id_categoria:valores2}).update({estado_categoria:false});												
+	}
+	
 	function setFocus(id)
 	{
 		document.getElementById(id).focus();
 	}	
-	
-		
+			
     function guardarRespuesta(id_pregunta,id_categoria,id_item,valor)    
     {		
         var existeRespuesta=false;
@@ -1076,7 +1188,7 @@ String.prototype.fileExists = function() {
 						if(tieneCategoria)
 						{																
 							// Ahora ademas hay que considerar que en estos casos puede haber respuesta sin categoria
-							if(respuestasDB().filter({'id_pregunta':id_pregunta},{'id_item':'31'}).count()>0)
+							if(respuestasDB().filter({'id_pregunta':id_pregunta},{'id_item':['31','36']}).count()>0)
 							{
 								aux=true;
 							}
@@ -1104,6 +1216,8 @@ String.prototype.fileExists = function() {
 										
 									var cont2=0;
 									respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){
+										aux=true;
+										return false;
 										cont2++;
 									});
 									cont1=cont1*cont2;
@@ -1128,6 +1242,11 @@ String.prototype.fileExists = function() {
 					case 2: // Tipo conjuntiva
 						if(tieneCategoria)
 						{
+							// Ahora ademas hay que considerar que en estos casos puede haber respuesta sin categoria
+							if(respuestasDB().filter({'id_pregunta':id_pregunta},{'id_item':['33','34','35','37']}).count()>0)
+							{
+								aux=true;
+							}
 							var cont=0;
 							preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function(categoria){	
 								// alert('soy categoria conjuuntiva');
@@ -1152,6 +1271,11 @@ String.prototype.fileExists = function() {
 					case 3: // Tipo conjuntiva con valor
 						if(tieneCategoria)
 						{
+							// Ahora ademas hay que considerar que en estos casos puede haber respuesta sin categoria
+							if(respuestasDB().filter({'id_pregunta':id_pregunta},{'id_item':['33','34','35']}).count()>0)
+							{
+								aux=true;
+							}						
 							var cont=0;
 							preguntas_categoriasDB().filter({'id_pregunta':id_pregunta}).each(function(categoria){									
 								respuestasDB().filter({'id_pregunta':id_pregunta,'id_categoria':(categoria.id_categoria).toString()}).each(function(){
@@ -1165,7 +1289,7 @@ String.prototype.fileExists = function() {
 						else
 						{
 							respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(respuesta){
-								if(respuesta.valor_respuesta!=null)						
+								if(respuesta.valor_respuesta!=null || respuesta.id_item!=null)						
 									aux=true;						
 							});
 						}							
@@ -1199,32 +1323,6 @@ String.prototype.fileExists = function() {
 			// alert('ups...algo raro paso');
 		}
 	}
-	
-	function enviar_toma(){			
-
-		var obj_toma=new toma(new Date(),2,codigo_auditor,folio_sala,respuestasDB().get());
-		
-		html = "<div id='envio_toma' style='display:none' ></div>";
-		$('body').append(html);	
-		
-		html = "<form id ='form' action='http://200.29.139.244/REDBULL/php/ingresar_toma.php' method='POST' >";
-		html += "<input type='hidden' name='codigo_auditor' value='"+obj_toma.id_auditor+"' />";
-		html += "<input type='hidden' name='folio_sala' value='"+obj_toma.id_sala+"' />";
-		
-		var cont=0;
-		
-		$(obj_toma.respuestas).each(function(key,value){	
-			html += "<input type='hidden' name='categoria"+cont+"' value='"+value.id_categoria+"' />";			
-			html += "<input type='hidden' name='pregunta"+cont+"' value='"+value.id_pregunta+"' />";			
-			html += "<input type='hidden' name='item"+cont+"' value='"+value.id_item+"' />";						
-			html += "<input type='hidden' name='valor"+cont+"' value='"+value.valor_respuesta+"' />";	
-			cont++;
-		});				
-		html += "<input type='hidden' name='cont' value='"+cont+"' type='submit' />";
-		html += "</form>";	
-		$('body').append(html);				
-		$('#form').submit();	
-	}	
 	
 	function enviar_toma2(){		
 	
@@ -1402,6 +1500,10 @@ $(document).ready(function() {
 					return false;
 				$('#sig').addClass('ui-state-active');
 				var id='sig';
+				if(cursor==33){											
+					cajas = prompt("¿Cuántas cajas registradoras tiene ubiaciones adicionales? Si no sabe ignore esta pregunta","9");							
+					activarCajas(parseInt(cajas));
+				}							
 				if(cursor<42)
 					cursor++;
 				var dfd = $.Deferred();		 
@@ -1454,6 +1556,10 @@ $(document).ready(function() {
 				$(event.target).removeClass('ui-state-active');
 				return false;				
 			}
+			if(cursor==33){										
+				cajas = prompt("¿Cuántas cajas registradoras tienen ubiaciones adicionales? Si no sabe ignore esta pregunta","9");							
+				activarCajas(parseInt(cajas));
+			}
             if(cursor<42)							
                 cursor++;
 		}				
@@ -1497,7 +1603,7 @@ $(document).ready(function() {
 		<tr style="background-color:#000000">
 			<th style='vertical-align:middle'>
 				<h5 id='titulo' style="color:#FFFFFF;">
-						CUESTIONARIO PSA
+					CUESTIONARIO PSA
 				</h5>
 			</th>
 		</tr>
@@ -1519,16 +1625,16 @@ $(document).ready(function() {
 		</tr>		
 		<tr>
 			<td id='pregunta' style='height:100px;' style='vertical-align:middle'>
-					<h4>
-							Cargando...
-					</h4>
+				<h4>
+						Cargando...
+				</h4>
 			</td>
 		</tr>				
 		<tr>
 			<td id='respuesta' style='vertical-align:top'>				
-						<h4>
-								Cargando...
-						</h4>
+				<h4>
+						Cargando...
+				</h4>
 			</td>		
 		</tr>	
 		<tbody>

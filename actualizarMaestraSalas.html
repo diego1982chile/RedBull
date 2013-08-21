@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+
+<script>
+
+
+	// Carga de datos en los contenedores de objetos					
+					
+		$(document).ready(function() {			
+			$.getJSON('data/salas282013.txt',function(data){	
+				alert('Recuperados auditores');
+				$.post('php/poblarMaestra.php',{caso:5,entidad:JSON.stringify(data)},function(data){						
+					alert(data.Mensaje);							
+				},'json');				
+			});																	      	
+		});
+	
+</script>
+</head>
+<body>
+
+<div id="container" style="width:100%;">
+
+</div>
+</body>
+</html>

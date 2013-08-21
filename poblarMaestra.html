@@ -11,20 +11,23 @@
 	// Carga de datos en los contenedores de objetos					
 					
 		$(document).ready(function() {			
-			$.getJSON('data/supervisores.txt',function(data){							
-				$.post('php/poblarMaestra.php',{caso:1,entidad:JSON.stringify(data)},function(data){										
-					alert(data.mensaje);
-				},'json');
-				$.getJSON('data/auditores.txt',function(data){					
-					$.post('php/poblarMaestra.php',{caso:2,entidad:JSON.stringify(data)},function(data){
-						alert(stringify(data));						
-					},'json');
-					$.getJSON('data/auditor_sala1.txt',function(data){						
-						$.post('php/poblarMaestra.php',{caso:3,entidad:JSON.stringify(data)},function(data){
-							alert(stringify(data));
-						},'json');												
-					});	
-				});				
+			$.getJSON('data/supervisores.txt',function(data){	
+				alert('Recuperados supervisores');
+				$.post('php/poblarMaestra.php',{caso:1,entidad:JSON.stringify(data)},function(data){						
+					alert(data.Mensaje);
+					$.getJSON('data/auditores.txt',function(data){	
+						alert('Recuperados auditores');					
+						$.post('php/poblarMaestra.php',{caso:2,entidad:JSON.stringify(data)},function(data){
+							alert(data.Mensaje);
+							$.getJSON('data/auditor_sala1.txt',function(data){		
+								alert('Recuperadas asignaciones');
+								$.post('php/poblarMaestra.php',{caso:3,entidad:JSON.stringify(data)},function(data){
+									alert(data.Mensaje);
+								},'json');												
+							});	
+						},'json');
+					});				
+				},'json');				
 			});																	      	
 		});
 	

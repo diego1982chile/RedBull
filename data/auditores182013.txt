@@ -1,0 +1,322 @@
+[
+	{
+		"COD_AUD": "34",
+		"AUDITOR": "ANGELICA TAPIA",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "322",
+		"AUDITOR": "ANGELLO ALARCON",
+		"COD_SUP": "320"
+	},
+	{
+		"COD_AUD": "330",
+		"AUDITOR": "ANIBAL DELGADO",
+		"COD_SUP": "320"
+	},
+	{
+		"COD_AUD": "513",
+		"AUDITOR": "CARLINA NUÑEZ",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "360",
+		"AUDITOR": "CARMEN MUÑOZ",
+		"COD_SUP": "320"
+	},
+	{
+		"COD_AUD": "33",
+		"AUDITOR": "CAROLINA CASTRO",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "210",
+		"AUDITOR": "CAROLINA CORTES",
+		"COD_SUP": "211"
+	},
+	{
+		"COD_AUD": "137",
+		"AUDITOR": "CAROLINA KLAUS",
+		"COD_SUP": "121"
+	},
+	{
+		"COD_AUD": "718",
+		"AUDITOR": "CESAR JARA",
+		"COD_SUP": "635"
+	},
+	{
+		"COD_AUD": "637",
+		"AUDITOR": "CESAR ZUÑIGA",
+		"COD_SUP": "635"
+	},
+	{
+		"COD_AUD": "482",
+		"AUDITOR": "CLAUDINA SEPULVEDA",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "480",
+		"AUDITOR": "CRISTIAN PEREZ",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "55",
+		"AUDITOR": "DAISY PAVEZ",
+		"COD_SUP": "42"
+	},
+	{
+		"COD_AUD": "220",
+		"AUDITOR": "DALIA MUÑOZ",
+		"COD_SUP": "211"
+	},
+	{
+		"COD_AUD": "814",
+		"AUDITOR": "DANIELA ALVAREZ",
+		"COD_SUP": "722"
+	},
+	{
+		"COD_AUD": "615",
+		"AUDITOR": "DANIELA PARRA",
+		"COD_SUP": "600"
+	},
+	{
+		"COD_AUD": "43",
+		"AUDITOR": "DARKO SALDAÑA",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "633",
+		"AUDITOR": "DIEGO QUILENCHEO",
+		"COD_SUP": "635"
+	},
+	{
+		"COD_AUD": "132",
+		"AUDITOR": "EDDA FLORES",
+		"COD_SUP": "121"
+	},
+	{
+		"COD_AUD": "30",
+		"AUDITOR": "EDUARDO RAMIREZ",
+		"COD_SUP": "54"
+	},
+	{
+		"COD_AUD": "111",
+		"AUDITOR": "ELIZABETH QUINCHAVIL",
+		"COD_SUP": "121"
+	},
+	{
+		"COD_AUD": "52",
+		"AUDITOR": "ESTEBAN HUENCHUQUEN",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "540",
+		"AUDITOR": "EUGENIO MIRANDA",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "807",
+		"AUDITOR": "FABIOLA VIDAL",
+		"COD_SUP": "722"
+	},
+	{
+		"COD_AUD": "42",
+		"AUDITOR": "ISAAC CARRILLO",
+		"COD_SUP": "42"
+	},
+	{
+		"COD_AUD": "121",
+		"AUDITOR": "ITALO PIETROBONI",
+		"COD_SUP": "121"
+	},
+	{
+		"COD_AUD": "730",
+		"AUDITOR": "IVONNE GUZMAN",
+		"COD_SUP": "722"
+	},
+	{
+		"COD_AUD": "310",
+		"AUDITOR": "IVONNE IBACACHE",
+		"COD_SUP": "320"
+	},
+	{
+		"COD_AUD": "510",
+		"AUDITOR": "JACQUELINE KUSCHEL",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "671",
+		"AUDITOR": "JESSICA RUBILAR",
+		"COD_SUP": "600"
+	},
+	{
+		"COD_AUD": "732",
+		"AUDITOR": "JOHN DIAZ",
+		"COD_SUP": "722"
+	},
+	{
+		"COD_AUD": "28",
+		"AUDITOR": "JONATHAN CONTRERAS",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "16",
+		"AUDITOR": "JORGE SALAZAR",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "41",
+		"AUDITOR": "JUAN GUERRERO",
+		"COD_SUP": "54"
+	},
+	{
+		"COD_AUD": "67",
+		"AUDITOR": "JUAN MUÑOZ",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "62",
+		"AUDITOR": "JUAN URZUA",
+		"COD_SUP": "42"
+	},
+	{
+		"COD_AUD": "331",
+		"AUDITOR": "JUDY MUÑOZ",
+		"COD_SUP": "320"
+	},
+	{
+		"COD_AUD": "10",
+		"AUDITOR": "LESLIE MORALES",
+		"COD_SUP": "42"
+	},
+	{
+		"COD_AUD": "723",
+		"AUDITOR": "LORENA SILVA",
+		"COD_SUP": "722"
+	},
+	{
+		"COD_AUD": "638",
+		"AUDITOR": "LUIS ARTIGAS",
+		"COD_SUP": "635"
+	},
+	{
+		"COD_AUD": "600",
+		"AUDITOR": "MARIA FIGUEROA",
+		"COD_SUP": "600"
+	},
+	{
+		"COD_AUD": "390",
+		"AUDITOR": "MARIA RODRIGUEZ",
+		"COD_SUP": "320"
+	},
+	{
+		"COD_AUD": "140",
+		"AUDITOR": "MARINA RODRIGUEZ",
+		"COD_SUP": "121"
+	},
+	{
+		"COD_AUD": "37",
+		"AUDITOR": "MARISOL BARROS",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "50",
+		"AUDITOR": "MARLENE ROCCO",
+		"COD_SUP": "42"
+	},
+	{
+		"COD_AUD": "19",
+		"AUDITOR": "MAURICIO JIMENEZ",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "27",
+		"AUDITOR": "MIGUEL PACHECO",
+		"COD_SUP": "42"
+	},
+	{
+		"COD_AUD": "520",
+		"AUDITOR": "MONICA CESPEDES",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "481",
+		"AUDITOR": "NANCY LEON",
+		"COD_SUP": "510"
+	},
+	{
+		"COD_AUD": "661",
+		"AUDITOR": "NATALIA PEÑA",
+		"COD_SUP": "600"
+	},
+	{
+		"COD_AUD": "15",
+		"AUDITOR": "OSCAR VERDUGO",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "26",
+		"AUDITOR": "PABLINA RIOS",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "71",
+		"AUDITOR": "PAMELA QUINTEROS",
+		"COD_SUP": "211"
+	},
+	{
+		"COD_AUD": "999",
+		"AUDITOR": "RECHAZO",
+		"COD_SUP": "999"
+	},
+	{
+		"COD_AUD": "38",
+		"AUDITOR": "ROBERTO BERRIOS",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "620",
+		"AUDITOR": "ROMINA GAJARDO",
+		"COD_SUP": "600"
+	},
+	{
+		"COD_AUD": "78",
+		"AUDITOR": "ROSA HERNANDEZ",
+		"COD_SUP": "52"
+	},
+	{
+		"COD_AUD": "123",
+		"AUDITOR": "RUTH CAMILO",
+		"COD_SUP": "121"
+	},
+	{
+		"COD_AUD": "64",
+		"AUDITOR": "SAMUEL CASTRO",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "242",
+		"AUDITOR": "SANDRA CARVAJAL",
+		"COD_SUP": "211"
+	},
+	{
+		"COD_AUD": "218",
+		"AUDITOR": "TALINA RIVAS",
+		"COD_SUP": "211"
+	},
+	{
+		"COD_AUD": "17",
+		"AUDITOR": "TERESA GONZALEZ",
+		"COD_SUP": "64"
+	},
+	{
+		"COD_AUD": "662",
+		"AUDITOR": "VALERIA MANRIQUEZ",
+		"COD_SUP": "600"
+	},
+	{
+		"COD_AUD": "45",
+		"AUDITOR": "VICTOR ARREY",
+		"COD_SUP": "42"
+	}
+]

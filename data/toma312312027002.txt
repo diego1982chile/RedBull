@@ -1,0 +1,1 @@
+﻿{"id_medicion":"3","fecha_toma":"2013-07-26T21:32:27.255Z","estado_toma":1,"id_auditor":123,"id_sala":"12027002","respuestas":[]}

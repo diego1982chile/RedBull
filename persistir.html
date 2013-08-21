@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+<link href="css/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
+
+<style>
+	
+	table tr td{
+		text-align: center;
+		font-family: "Arial",Georgia,Serif;
+		vertical-align: middle !important;
+	}	
+	h4,h5,div,table{
+		padding:0em;
+		margin:0em;
+	}
+	.seleccionada{
+		background:blue;
+		color:white;
+	}
+	
+</style>
+
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+
+<script type="text/javascript" src="js/taffy.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script>
+
+<script>
+
+	// Indice comienza en 1
+	
+		var cursor=1;
+        var id_respuesta=1;
+		var id_toma=1;			
+		
+		respondida=false;
+        
+        var preguntasDB;
+        var seccionesDB;		
+        var topicosDB;        
+        var categoriasDB;									
+        var preguntas_categoriasDB;											
+        var itemesDB;								
+        var alternativasDB;	
+        var respuestasDB;
+        var flag=false;
+
+	// Definicion de Objetos Javascript
+	
+	function medicion(id_medicion,nombre_medicion,descripcion,fecha_ini,fecha_fin)
+	{
+		this.id_medicion=id_medicion;
+		this.nombre_medicion=nombre_medicion;
+		this.descripcion=descripcion;
+		this.fecha_ini=fecha_ini;
+		this.fecha_fin=fecha_fin;
+	}
+
+	function topico(id_topico,numero_topico,nombre_topico,color_topico,color_letra)	
+	{
+		this.id_topico=id_topico;
+		this.numero_topico=numero_topico;		
+		this.nombre_topico=nombre_topico;
+		this.color_topico=color_topico;
+		this.color_letra=color_letra;		
+	}	
+	
+	function seccion(id_seccion,numero_seccion,nombre_seccion,id_topico,color_seccion)	
+	{
+		this.id_seccion=id_seccion;
+		this.numero_seccion=numero_seccion;		
+		this.nombre_seccion=nombre_seccion;
+		this.color_seccion=color_seccion;		
+		this.id_topico=id_topico;
+	}		
+	
+	function categoria(id_categoria,nombre_categoria,estado_categoria)
+	{
+		this.id_categoria=id_categoria;
+		this.nombre_categoria=nombre_categoria;
+		this.estado_categoria=estado_categoria;
+	}
+	
+	//tipo: 1:alternativa, 2:numerico, 3:texto, 4:fecha
+	function pregunta(id_pregunta,numero_pregunta,contenido_pregunta,id_seccion,tipo,tipo2)	
+	{
+		this.id_pregunta=id_pregunta;
+		this.numero_pregunta=numero_pregunta;		
+		this.contenido_pregunta=contenido_pregunta;
+		this.id_seccion=id_seccion;		
+		this.tipo=tipo;						
+		this.tipo2=tipo2;
+	}			
+	
+	function pregunta_categoria(id_pregunta_categoria,id_pregunta,id_categoria)
+	{
+		this.id_pregunta_categoria=id_pregunta_categoria;
+		this.id_pregunta=id_pregunta;
+		this.id_categoria=id_categoria;
+	}
+		
+	function iteme(id_item,nombre_item)
+	{
+		this.id_item=id_item;
+		this.nombre_item=nombre_item;
+	}	
+	
+	function alternativa(id_alternativa,id_pregunta,id_item,id_categoria)
+	{
+		this.id_alternativa=id_alternativa;
+		this.id_item=id_item;
+		this.id_pregunta=id_pregunta;
+		this.id_categoria=id_categoria;
+	}		
+	
+	function auditor(id_auditor,nombre_auditor)
+	{
+		this.id_auditor=id_auditor;
+		this.nombre_auditor=nombre_auditor;
+	}			
+	
+	function toma(id_toma,id_medicion,id_auditor,id_sala,fecha_toma,estado_toma,path_toma)
+	{
+		this.id_toma=id_toma;
+		this.id_medicion=id_medicion;		
+		this.id_auditor=id_auditor;
+		this.id_sala=id_sala;		
+		this.fecha_toma=fecha_toma;
+		this.estado_toma=estado_toma;		
+		this.path_toma=path_toma;		
+	}				
+	
+	function sala(id_sala,nombre_sala,codigo_sala)
+	{
+		this.id_auditor=id_auditor;
+		this.nombre_auditor=nombre_auditor;
+	}			
+	
+	function segmento(id_segmento,nombre_segmento)
+	{
+		this.id_segmento=id_segmento;
+		this.nombre_segmento=nombre_segmento;
+	}
+	
+	function sala_segmento(id_sala,id_segmento)
+	{
+		this.id_sala=id_sala;
+		this.id_segmento=id_segmento;
+	}
+	
+	function respuesta(id_respuesta,valor_respuesta,id_item,id_pregunta,id_categoria)
+	{
+		this.id_respuesta=id_respuesta;
+		this.valor_respuesta=valor_respuesta;               
+		this.id_item=id_item;
+		this.id_pregunta=id_pregunta;	
+		this.id_categoria=id_categoria;
+	}				
+
+	// Declaracion de contenedores para los objetos javascript
+	
+	var mediciones= new Array();
+	var topicos= new Array();
+	var secciones= new Array();		
+	var categorias= new Array();	
+	var preguntas= new Array();	
+	var preguntas_categorias= new Array();	
+	var itemes= new Array();
+	var alternativas= new Array();
+	var auditores= new Array();
+	var respuestas= new Array();			
+
+	// Carga de datos en los contenedores de objetos
+	
+	function cargar_datos()
+	{	
+		///////////////////////////////////TOPICOS/////////////////////////////////////
+		
+		topicos.push(new topico(1,1,'UBICACION PRINCIPAL','#0B0B61','#FFFFFF'));	
+		topicos.push(new topico(2,2,'UBICACIONES ADICIONALES EN TIENDA','#B40431','#FFFFFF'));		
+		topicos.push(new topico(3,3,'UBICACIONES ADICIONALES EN CAJA REGISTRADORA','#FFBF00','#000000'));																											
+		
+		///////////////////////////////////SECCIONES/////////////////////////////////////		
+		
+		secciones.push(new seccion(1,1,'Ubicación principal',1,'#6E6E6E'));
+		secciones.push(new seccion(2,2,'Primero en el Flujo',1,'#6E6E6E'));
+		secciones.push(new seccion(3,3,'Zona de Alto Impacto',1,'#6E6E6E'));		
+		secciones.push(new seccion(4,4,'Distribución de U. Principal y Precio',1,'#6E6E6E'));			
+		secciones.push(new seccion(5,5,'Mensaje Funcional',1,'#6E6E6E'));										
+		
+		secciones.push(new seccion(6,1,'Temperatura ambiente de Red Bull',2,'#F78B83'));
+		secciones.push(new seccion(7,2,'Refrigeradas de Red Bull',2,'#F78B83'));
+		secciones.push(new seccion(8,3,'Ambiente y Refrigeradas del Competidor #1',2,'#F78B83'));	
+		
+		secciones.push(new seccion(9,1,'Temperatura ambiente Red Bull y Competidor #1',3,'#F4FA58'));
+		secciones.push(new seccion(10,2,'Refrigeradas Red Bull y Competidor #1',3,'#F4FA58'));		
+
+		///////////////////////////////////PREGUNTAS/////////////////////////////////////		
+		
+		///////////////////////////////////TOPICO 1////////////////////////////////////////
+		
+		///////////////////////////////////SECCION 1.1/////////////////////////////////////
+		
+		preguntas.push(new pregunta(1,1,'¿Cuántos "facings" tienen todas las Bebidas Energéticas, incluyendo Red Bull?',1,2,1));
+		preguntas.push(new pregunta(2,2,'¿Cuántos "facings" tienen todos los SKU de Red Bull?',1,2,1));	
+		preguntas.push(new pregunta(3,'A','¿Cuántos "facings" tiene el SKU RED Edition?',1,2,1));		
+		preguntas.push(new pregunta(4,'B','¿Cuántos "facings" tiene el SKU de BLUE Edition?',1,2,1));	
+		preguntas.push(new pregunta(5,'C','¿Cuántos "facings" tiene el SKU de SILVER Edition?',1,2,1));			
+		preguntas.push(new pregunta(6,3,'¿Cuántos "facings" tienen los SKU del Competidor #1?',1,2,1));		
+		
+		///////////////////////////////////SECCION 1.2/////////////////////////////////////
+		
+		preguntas.push(new pregunta(7,1,'Los SKU de Bebidas Energéticas, ¿están junto a, sobre o debajo de qué categorías de producto?',2,1,2));
+		preguntas.push(new pregunta(8,2,'¿Está la Categoría de Bebidas Energéticas ubicada en la primera o última góndola del pasillo?',2,1,1));	
+		preguntas.push(new pregunta(9,'A','¿Junto a qué SKU se ubican los SKU Editions?',2,1,1));		
+		
+		///////////////////////////////////SECCION 1.3/////////////////////////////////////
+		
+		preguntas.push(new pregunta(10,1,'¿Cuántos "facings" tienen todos los SKU de Red Bull en la Zona de Alto Impacto?',3,2,1));	
+		preguntas.push(new pregunta(11,2,'¿Cuántos "facings" tienen todos los SKU (incluyendo Red Bull) en la Zona de Alto Impacto?',3,2,1));
+		preguntas.push(new pregunta(12,'A','¿Cuántos "facings" tienen todos los SKU de Editions (Red, Blue y Silver) en la Zona de Alto Impacto?',3,2,1));	
+		preguntas.push(new pregunta(13,3,'¿Cuántos "facings" tienen los SKU del Competidor #1 en la Zona de Alto Impacto?',3,2,1));	
+		
+		///////////////////////////////////SECCION 1.4/////////////////////////////////////
+		
+		preguntas.push(new pregunta(14,1,'¿Cuáles SKU de Red Bull están disponibles en la ubicación Principal (Físicamente ahí)?',4,1,2));	
+		preguntas.push(new pregunta(15,2,'¿Cuáles SKU de Red Bull están sin stock (OOS) en la Ubicación Principal (sin producto, pero con etiqueta de precio)?',4,1,2));
+		preguntas.push(new pregunta(16,3,'¿Cuál es el precio regular por SKU? (Sin Promo)?',4,1,3));	
+		preguntas.push(new pregunta(17,4,'¿Qué SKU del Competidor #1 se encuentran en la Ubicación Principal (Físicamente ahí u OOS)?',4,1,2));	
+		preguntas.push(new pregunta(18,5,'¿Cuál es el precio regular por SKU? (Competidor #1)',4,1,3));				
+
+		///////////////////////////////////SECCION 1.5/////////////////////////////////////		
+
+		preguntas.push(new pregunta(19,1,'¿Existe un mensaje funcional Red Bull dispuesto?',5,1,1));	
+		preguntas.push(new pregunta(20,2,'¿Hay algún Ítem POP de la Competencia dispuesto?',5,1,1));				
+				
+		///////////////////////////////////TOPICO 2////////////////////////////////////////
+		
+		///////////////////////////////////SECCION 2.1/////////////////////////////////////	
+		
+		preguntas.push(new pregunta(21,1,'Por favor, marque el tipo de Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));	
+		preguntas.push(new pregunta(22,2,'Por favor marque el Área de las Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));	
+		preguntas.push(new pregunta(23,3,'Por favor marque la disponibilidad de un mensaje funcional en las Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));			
+		preguntas.push(new pregunta(24,'A','Por favor, marque si las Editions (Red, Blue y Silver) están disponibles en estas Ubicaciones Adicionales a TEMPERATURA AMBIENTE:',6,1,1));	
+		preguntas.push(new pregunta(25,'B','Por favor, marque si las ubicaciones sólo contienen Editions y no hay otros SKU de  Red Bull disponibles:',6,1,1));	
+		
+		///////////////////////////////////SECCION 2.2/////////////////////////////////////
+		
+		preguntas.push(new pregunta(26,1,'Por favor, marque el tipo de Ubicaciones Adicionales REFRIGERADAS:',7,1,1));	
+		preguntas.push(new pregunta(27,2,'Por favor, marque el Área de las Ubicaciones Adicionales REFRIGERADAS:',7,1,1));	
+		preguntas.push(new pregunta(28,3,'Por favor, marque la disponibilidad de un mensaje funcional en las Ubicaciones Adicionales REFRIGERADAS:',7,1,1));			
+		preguntas.push(new pregunta(29,'A','Por favor, marque si las Editions (Red, Blue y Silver) están disponibles en esta Ubicaciones Adicionales REFRIGERADAS:',7,1,1));					
+		preguntas.push(new pregunta(30,'B','Por favor, marque si la ubicación sólo contiene Editions y no hay otros SKU de  Red Bull disponibles:',7,1,1));									
+		
+		///////////////////////////////////SECCION 2.3/////////////////////////////////////
+		
+		preguntas.push(new pregunta(31,1,'¿Cuántas Ubicaciones adicionales a TEMPERATURA AMBIENTE tiene el Competidor #1 en la tienda? (EXCL. Ubicaciones en Caja registradora)',8,2,1));					
+		preguntas.push(new pregunta(32,2,'¿Cuántas Ubicaciones adicionales REFRIGERADAS  tiene el Competidor #1 en la tienda? (EXCL. Ubicaciones en Caja registradora)',8,2,1));				
+		
+		///////////////////////////////////TOPICO 3////////////////////////////////////////
+		
+		///////////////////////////////////SECCION 3.1/////////////////////////////////////
+		
+		preguntas.push(new pregunta(33,0,'¿Cuántas cajas registradoras tiene esta tienda en total?',9,2,1));					
+		
+		preguntas.push(new pregunta(34,1,'Si esta caja registradora tiene una Ubicación adicional de Red Bull a TEMPERATURA AMBIENTE disponible, por favor marque el tipo',9,1,1));											
+		preguntas.push(new pregunta(35,2,'¿Tiene esta ubicación un Mensaje Funcional Red Bull dispuesto?',9,1,1));					
+		preguntas.push(new pregunta(36,'A','¿Tiene esta caja registradora una Ubicación adicional de Editions (Red, Blue, Silver) a TEMPERATURA AMBIENTE disponible?',9,1,1));	
+		preguntas.push(new pregunta(37,3,'¿Tiene esta caja registradora una Ubicación adicional del  Competidor #1 a TEMPERATURA AMBIENTE disponible?',9,1,1));		
+		
+		///////////////////////////////////SECCION 3.2/////////////////////////////////////
+		
+		preguntas.push(new pregunta(38,1,'Si esta caja registradora tiene un refrigerador disponible, por favor marque el tipo.',10,1,1));					
+		preguntas.push(new pregunta(39,2,'Si esta caja registradora tiene un refrigerador, ¿Tiene Red Bull disponibles?',10,1,1));											
+		preguntas.push(new pregunta(40,3,'Si este refrigerador tiene Red Bull disponibles, ¿tiene un mensaje funcional?',10,1,1));					
+		preguntas.push(new pregunta(41,'A','Si esta caja registradora tiene un refrigerador, ¿Tiene Editions (Red, Blue, Silver) disponibles?',10,1,1));	
+		preguntas.push(new pregunta(42,4,'Si esta caja tiene un refrigerador, ¿Tiene Bebidas Energéticas del Competidor #1 disponibles?',10,1,1));		
+
+		///////////////////////////////////CATEGORIAS/////////////////////////////////////
+		
+		categorias.push(new categoria(1,'Latas',true));
+		categorias.push(new categoria(2,'Multi Packs',true));								
+		categorias.push(new categoria(3,'1a Ubicacion',true));		
+		categorias.push(new categoria(4,'2a Ubicacion',true));			
+		categorias.push(new categoria(5,'3a Ubicacion',true));		
+		categorias.push(new categoria(6,'1° Caja',true));				
+		categorias.push(new categoria(7,'2° Caja',true));						
+		categorias.push(new categoria(8,'3° Caja',true));				
+		categorias.push(new categoria(9,'4° Caja',true));				
+		categorias.push(new categoria(10,'5° Caja',true));				
+		categorias.push(new categoria(11,'6° Caja',true));				
+		categorias.push(new categoria(12,'7° Caja',true));				
+		categorias.push(new categoria(13,'8° Caja',true));				
+		categorias.push(new categoria(14,'9° Caja',true));				
+		// categorias.push(new categoria(15,'10° Caja'));				
+		// categorias.push(new categoria(16,'11° Caja'));				
+		// categorias.push(new categoria(17,'12° Caja'));				
+		// categorias.push(new categoria(18,'13° Caja'));				
+		// categorias.push(new categoria(19,'14° Caja'));								
+				
+		///////////////////////////////////PREGUNTA CATEGORIA/////////////////////////////////////
+		// function pregunta_categoria(id_pregunta_categoria,id_pregunta,id_categoria)
+		///////////////////////////////////PREGUNTA CATEGORIA/////////////////////////////////////
+		
+		preguntas_categorias.push(new pregunta_categoria(1,14,1));
+		preguntas_categorias.push(new pregunta_categoria(2,14,2));		
+		
+		preguntas_categorias.push(new pregunta_categoria(3,15,1));
+		preguntas_categorias.push(new pregunta_categoria(4,15,2));
+
+		preguntas_categorias.push(new pregunta_categoria(5,16,1));
+		preguntas_categorias.push(new pregunta_categoria(6,16,2));	
+		
+		preguntas_categorias.push(new pregunta_categoria(5,21,3));
+		preguntas_categorias.push(new pregunta_categoria(6,21,4));				
+		preguntas_categorias.push(new pregunta_categoria(7,21,5));									
+		
+		preguntas_categorias.push(new pregunta_categoria(8,22,3));
+		preguntas_categorias.push(new pregunta_categoria(9,22,4));				
+		preguntas_categorias.push(new pregunta_categoria(10,22,5));								
+		
+		preguntas_categorias.push(new pregunta_categoria(11,23,3));
+		preguntas_categorias.push(new pregunta_categoria(12,23,4));				
+		preguntas_categorias.push(new pregunta_categoria(13,23,5));										
+		
+		preguntas_categorias.push(new pregunta_categoria(14,24,3));
+		preguntas_categorias.push(new pregunta_categoria(15,24,4));				
+		preguntas_categorias.push(new pregunta_categoria(16,24,5));												
+		
+		preguntas_categorias.push(new pregunta_categoria(14,25,3));
+		preguntas_categorias.push(new pregunta_categoria(15,25,4));				
+		preguntas_categorias.push(new pregunta_categoria(16,25,5));				
+		
+		preguntas_categorias.push(new pregunta_categoria(17,26,3));
+		preguntas_categorias.push(new pregunta_categoria(18,26,4));				
+		preguntas_categorias.push(new pregunta_categoria(19,26,5));						
+		
+		preguntas_categorias.push(new pregunta_categoria(20,27,3));
+		preguntas_categorias.push(new pregunta_categoria(21,27,4));				
+		preguntas_categorias.push(new pregunta_categoria(22,27,5));								
+		
+		preguntas_categorias.push(new pregunta_categoria(23,28,3));
+		preguntas_categorias.push(new pregunta_categoria(24,28,4));				
+		preguntas_categorias.push(new pregunta_categoria(25,28,5));										
+		
+		preguntas_categorias.push(new pregunta_categoria(26,29,3));
+		preguntas_categorias.push(new pregunta_categoria(27,29,4));				
+		preguntas_categorias.push(new pregunta_categoria(28,29,5));												
+		
+		preguntas_categorias.push(new pregunta_categoria(29,30,3));
+		preguntas_categorias.push(new pregunta_categoria(30,30,4));				
+		preguntas_categorias.push(new pregunta_categoria(31,30,5));				
+		
+		preguntas_categorias.push(new pregunta_categoria(32,34,6));
+		preguntas_categorias.push(new pregunta_categoria(33,34,7));				
+		preguntas_categorias.push(new pregunta_categoria(34,34,8));				
+		preguntas_categorias.push(new pregunta_categoria(35,34,9));
+		preguntas_categorias.push(new pregunta_categoria(36,34,10));				
+		preguntas_categorias.push(new pregunta_categoria(37,34,11));						
+		preguntas_categorias.push(new pregunta_categoria(38,34,12));
+		preguntas_categorias.push(new pregunta_categoria(38,34,13));
+		preguntas_categorias.push(new pregunta_categoria(39,34,14));				
+		preguntas_categorias.push(new pregunta_categoria(40,34,15));				
+		preguntas_categorias.push(new pregunta_categoria(41,34,16));
+		preguntas_categorias.push(new pregunta_categoria(42,34,17));				
+		preguntas_categorias.push(new pregunta_categoria(43,34,18));								
+		preguntas_categorias.push(new pregunta_categoria(44,34,19));				
+		preguntas_categorias.push(new pregunta_categoria(45,34,20));																
+		
+		preguntas_categorias.push(new pregunta_categoria(52,35,6));
+		preguntas_categorias.push(new pregunta_categoria(53,35,7));				
+		preguntas_categorias.push(new pregunta_categoria(54,35,8));				
+		preguntas_categorias.push(new pregunta_categoria(55,35,9));
+		preguntas_categorias.push(new pregunta_categoria(56,35,10));				
+		preguntas_categorias.push(new pregunta_categoria(57,35,11));						
+		preguntas_categorias.push(new pregunta_categoria(58,35,12));
+		preguntas_categorias.push(new pregunta_categoria(58,35,13));
+		preguntas_categorias.push(new pregunta_categoria(59,35,14));				
+		preguntas_categorias.push(new pregunta_categoria(60,35,15));				
+		preguntas_categorias.push(new pregunta_categoria(61,35,16));
+		preguntas_categorias.push(new pregunta_categoria(62,35,17));				
+		preguntas_categorias.push(new pregunta_categoria(63,35,18));								
+		preguntas_categorias.push(new pregunta_categoria(64,35,19));				
+		preguntas_categorias.push(new pregunta_categoria(65,35,20));									
+		
+		preguntas_categorias.push(new pregunta_categoria(72,36,6));
+		preguntas_categorias.push(new pregunta_categoria(73,36,7));				
+		preguntas_categorias.push(new pregunta_categoria(74,36,8));				
+		preguntas_categorias.push(new pregunta_categoria(75,36,9));
+		preguntas_categorias.push(new pregunta_categoria(76,36,10));				
+		preguntas_categorias.push(new pregunta_categoria(77,36,11));						
+		preguntas_categorias.push(new pregunta_categoria(78,36,12));
+		preguntas_categorias.push(new pregunta_categoria(78,36,13));
+		preguntas_categorias.push(new pregunta_categoria(79,36,14));				
+		preguntas_categorias.push(new pregunta_categoria(80,36,15));				
+		preguntas_categorias.push(new pregunta_categoria(81,36,16));
+		preguntas_categorias.push(new pregunta_categoria(82,36,17));				
+		preguntas_categorias.push(new pregunta_categoria(83,36,18));								
+		preguntas_categorias.push(new pregunta_categoria(84,36,19));				
+		preguntas_categorias.push(new pregunta_categoria(85,36,20));						
+		
+		preguntas_categorias.push(new pregunta_categoria(92,37,6));
+		preguntas_categorias.push(new pregunta_categoria(93,37,7));				
+		preguntas_categorias.push(new pregunta_categoria(94,37,8));				
+		preguntas_categorias.push(new pregunta_categoria(95,37,9));
+		preguntas_categorias.push(new pregunta_categoria(96,37,10));				
+		preguntas_categorias.push(new pregunta_categoria(97,37,11));						
+		preguntas_categorias.push(new pregunta_categoria(98,37,12));
+		preguntas_categorias.push(new pregunta_categoria(98,37,13));
+		preguntas_categorias.push(new pregunta_categoria(99,37,14));				
+		preguntas_categorias.push(new pregunta_categoria(100,37,15));				
+		preguntas_categorias.push(new pregunta_categoria(101,37,16));
+		preguntas_categorias.push(new pregunta_categoria(102,37,17));				
+		preguntas_categorias.push(new pregunta_categoria(103,37,18));								
+		preguntas_categorias.push(new pregunta_categoria(104,37,19));				
+		preguntas_categorias.push(new pregunta_categoria(105,37,20));									
+		
+		preguntas_categorias.push(new pregunta_categoria(112,38,6));
+		preguntas_categorias.push(new pregunta_categoria(113,38,7));				
+		preguntas_categorias.push(new pregunta_categoria(114,38,8));				
+		preguntas_categorias.push(new pregunta_categoria(115,38,9));
+		preguntas_categorias.push(new pregunta_categoria(116,38,10));				
+		preguntas_categorias.push(new pregunta_categoria(117,38,11));						
+		preguntas_categorias.push(new pregunta_categoria(118,38,12));
+		preguntas_categorias.push(new pregunta_categoria(98,38,13));
+		preguntas_categorias.push(new pregunta_categoria(119,38,14));				
+		preguntas_categorias.push(new pregunta_categoria(120,38,15));				
+		preguntas_categorias.push(new pregunta_categoria(121,38,16));
+		preguntas_categorias.push(new pregunta_categoria(122,38,17));				
+		preguntas_categorias.push(new pregunta_categoria(123,38,18));								
+		preguntas_categorias.push(new pregunta_categoria(124,38,19));				
+		preguntas_categorias.push(new pregunta_categoria(125,38,20));								
+		
+		preguntas_categorias.push(new pregunta_categoria(132,39,6));
+		preguntas_categorias.push(new pregunta_categoria(133,39,7));				
+		preguntas_categorias.push(new pregunta_categoria(134,39,8));				
+		preguntas_categorias.push(new pregunta_categoria(135,39,9));
+		preguntas_categorias.push(new pregunta_categoria(136,39,10));				
+		preguntas_categorias.push(new pregunta_categoria(137,39,11));						
+		preguntas_categorias.push(new pregunta_categoria(138,39,12));
+		preguntas_categorias.push(new pregunta_categoria(98,39,13));
+		preguntas_categorias.push(new pregunta_categoria(139,39,14));				
+		preguntas_categorias.push(new pregunta_categoria(140,39,15));				
+		preguntas_categorias.push(new pregunta_categoria(141,39,16));
+		preguntas_categorias.push(new pregunta_categoria(142,39,17));				
+		preguntas_categorias.push(new pregunta_categoria(143,39,18));								
+		preguntas_categorias.push(new pregunta_categoria(144,39,19));				
+		preguntas_categorias.push(new pregunta_categoria(145,39,20));								
+		
+		preguntas_categorias.push(new pregunta_categoria(152,40,6));
+		preguntas_categorias.push(new pregunta_categoria(153,40,7));				
+		preguntas_categorias.push(new pregunta_categoria(154,40,8));				
+		preguntas_categorias.push(new pregunta_categoria(155,40,9));
+		preguntas_categorias.push(new pregunta_categoria(156,40,10));				
+		preguntas_categorias.push(new pregunta_categoria(157,40,11));						
+		preguntas_categorias.push(new pregunta_categoria(158,40,12));
+		preguntas_categorias.push(new pregunta_categoria(158,40,13));
+		preguntas_categorias.push(new pregunta_categoria(159,40,14));				
+		preguntas_categorias.push(new pregunta_categoria(160,40,15));				
+		preguntas_categorias.push(new pregunta_categoria(161,40,16));
+		preguntas_categorias.push(new pregunta_categoria(162,40,17));				
+		preguntas_categorias.push(new pregunta_categoria(163,40,18));								
+		preguntas_categorias.push(new pregunta_categoria(164,40,19));				
+		preguntas_categorias.push(new pregunta_categoria(165,40,20));								
+		
+		preguntas_categorias.push(new pregunta_categoria(172,41,6));
+		preguntas_categorias.push(new pregunta_categoria(173,41,7));				
+		preguntas_categorias.push(new pregunta_categoria(174,41,8));				
+		preguntas_categorias.push(new pregunta_categoria(175,41,9));
+		preguntas_categorias.push(new pregunta_categoria(176,41,10));				
+		preguntas_categorias.push(new pregunta_categoria(177,41,11));						
+		preguntas_categorias.push(new pregunta_categoria(178,41,12));
+		preguntas_categorias.push(new pregunta_categoria(158,41,13));
+		preguntas_categorias.push(new pregunta_categoria(179,41,14));				
+		preguntas_categorias.push(new pregunta_categoria(180,41,15));				
+		preguntas_categorias.push(new pregunta_categoria(181,41,16));
+		preguntas_categorias.push(new pregunta_categoria(182,41,17));				
+		preguntas_categorias.push(new pregunta_categoria(183,41,18));								
+		preguntas_categorias.push(new pregunta_categoria(184,41,19));				
+		preguntas_categorias.push(new pregunta_categoria(185,41,20));											
+		
+		preguntas_categorias.push(new pregunta_categoria(192,42,6));
+		preguntas_categorias.push(new pregunta_categoria(193,42,7));				
+		preguntas_categorias.push(new pregunta_categoria(194,42,8));				
+		preguntas_categorias.push(new pregunta_categoria(195,42,9));
+		preguntas_categorias.push(new pregunta_categoria(196,42,10));				
+		preguntas_categorias.push(new pregunta_categoria(197,42,11));						
+		preguntas_categorias.push(new pregunta_categoria(198,42,12));
+		preguntas_categorias.push(new pregunta_categoria(198,42,13));
+		preguntas_categorias.push(new pregunta_categoria(199,42,14));				
+		preguntas_categorias.push(new pregunta_categoria(200,42,15));				
+		preguntas_categorias.push(new pregunta_categoria(201,42,16));
+		preguntas_categorias.push(new pregunta_categoria(202,42,17));				
+		preguntas_categorias.push(new pregunta_categoria(203,42,18));								
+		preguntas_categorias.push(new pregunta_categoria(204,42,19));				
+		preguntas_categorias.push(new pregunta_categoria(205,42,20));								
+											
+		///////////////////////////////////ITEMES/////////////////////////////////////
+		
+		itemes.push(new iteme(1,'Agua'));
+		itemes.push(new iteme(2,'Bebidas Carbonatadas'));		
+		itemes.push(new iteme(3,'Alcohol'));
+		itemes.push(new iteme(4,'Bebidas Deportivas'));
+		itemes.push(new iteme(5,'Café'));
+		itemes.push(new iteme(6,'Té'));
+		itemes.push(new iteme(7,'Agua Enriquecida'));
+		itemes.push(new iteme(8,'Otros'));												
+		itemes.push(new iteme(9,'No hay energéticas'));														
+		itemes.push(new iteme(10,'Si'));														
+		itemes.push(new iteme(11,'No'));																
+		itemes.push(new iteme(12,'SKU Bebida Energética Red Bull'));	
+		itemes.push(new iteme(13,'SKU de CUALQUIER Bebida Energética'));																
+		itemes.push(new iteme(14,'Cualquier OTRO SKU (Jugos, Té, etc.)'));					
+		itemes.push(new iteme(15,'ED 250 ml'));																															
+		itemes.push(new iteme(16,'SF 250 ml'));																															
+		itemes.push(new iteme(17,'ED 355 ml'));																															
+		itemes.push(new iteme(18,'ED 250 ml Pack de 4'));																															
+		itemes.push(new iteme(19,'SF 250 ml Pack de 4'));																																								
+		itemes.push(new iteme(20,'Monster Verde'));																															
+		itemes.push(new iteme(21,'Monster Azul'));																															
+		itemes.push(new iteme(22,'Monster Amarilla'));			
+		itemes.push(new iteme(23,'Brandeado Red Bull'));																															
+		itemes.push(new iteme(24,'No Brandeado Red Bull'));																															
+		itemes.push(new iteme(25,'Área de bebidas'));	
+		itemes.push(new iteme(26,'Área de entrada'));	
+		itemes.push(new iteme(27,'Otras áreas'));																																	
+		itemes.push(new iteme(28,'Unidad Brandeada Red Bull'));																															
+		itemes.push(new iteme(29,'Unidad no Brandeada Red Bull'));		
+		itemes.push(new iteme(30,'Unidad no brandeada Red Bull ni Competidor #1'));		
+		itemes.push(new iteme(31,'No hay ubicaciones adicionales a TEMPERATURA AMBIENTE'));		
+		itemes.push(new iteme(32,'No hay unidades de Red Bull'));	
+		itemes.push(new iteme(33,'No hay SKUs de Red Bull disponibles en la Ubicación Principal'));
+		itemes.push(new iteme(34,'No hay SKUs del Competidor 1 en la ubicación principal'));
+		itemes.push(new iteme(35,'No hay etiqueta de precio para SKUs de Red Bull en la ubicación principal'));
+		itemes.push(new iteme(36,'No hay ubicaciones adicionales REFRIGERADAS'));				
+        //function alternativa(id_alternativa,id_pregunta,id_item,id_categoria)	
+		// PREGUNTA7
+		alternativas.push(new alternativa(1,7,1,null));
+		alternativas.push(new alternativa(2,7,2,null));
+		alternativas.push(new alternativa(3,7,3,null));
+		alternativas.push(new alternativa(4,7,4,null));
+		alternativas.push(new alternativa(5,7,5,null));
+		alternativas.push(new alternativa(6,7,6,null));
+		alternativas.push(new alternativa(7,7,7,null));
+		alternativas.push(new alternativa(8,7,8,null));		
+		alternativas.push(new alternativa(9,7,9,null));		
+		
+		// PREGUNTA8
+		alternativas.push(new alternativa(10,8,10,null));
+		alternativas.push(new alternativa(11,8,11,null));
+		alternativas.push(new alternativa(12,8,9,null));
+
+		// PREGUNTA9
+		alternativas.push(new alternativa(13,9,12,null));
+		alternativas.push(new alternativa(14,9,13,null));
+		alternativas.push(new alternativa(15,9,14,null));
+		alternativas.push(new alternativa(16,9,9,null));																																																
+	
+		// PREGUNTA14
+		alternativas.push(new alternativa(17,14,15,1));
+		alternativas.push(new alternativa(18,14,16,1));
+		alternativas.push(new alternativa(19,14,17,1));			
+		
+		alternativas.push(new alternativa(20,14,18,2));	
+		alternativas.push(new alternativa(21,14,19,2));	
+		
+		alternativas.push(new alternativa(21,14,33,null));	
+		
+		// PREGUNTA15
+		alternativas.push(new alternativa(22,15,15,1));
+		alternativas.push(new alternativa(23,15,16,1));
+		alternativas.push(new alternativa(24,15,17,1));			
+		
+		alternativas.push(new alternativa(25,15,18,2));	
+		alternativas.push(new alternativa(26,15,19,2));	
+						
+		alternativas.push(new alternativa(21,15,35,null));			
+		
+		// PREGUNTA16
+		alternativas.push(new alternativa(27,16,15,1));
+		alternativas.push(new alternativa(28,16,16,1));
+		alternativas.push(new alternativa(29,16,17,1));			
+		
+		alternativas.push(new alternativa(30,16,18,2));	
+		alternativas.push(new alternativa(31,16,19,2));			
+		
+		alternativas.push(new alternativa(21,16,35,null));	
+		
+		// PREGUNTA17
+		alternativas.push(new alternativa(32,17,20,null));
+		alternativas.push(new alternativa(33,17,21,null));		
+		alternativas.push(new alternativa(34,17,22,null));
+		
+		alternativas.push(new alternativa(21,17,34,null));	
+	
+		// PREGUNTA18
+		alternativas.push(new alternativa(35,18,20,null));
+		alternativas.push(new alternativa(36,18,21,null));		
+		alternativas.push(new alternativa(37,18,22,null));
+		
+		alternativas.push(new alternativa(21,18,34,null));	
+	
+		alternativas.push(new alternativa(38,19,10,null));			
+		alternativas.push(new alternativa(39,19,11,null));	
+
+		alternativas.push(new alternativa(40,20,10,null));	
+		alternativas.push(new alternativa(41,20,11,null));					
+		
+		//////////////////////////////////////////////////////////////////////////////////
+		
+		alternativas.push(new alternativa(34,21,23,3));			
+		alternativas.push(new alternativa(35,21,24,3));	
+		alternativas.push(new alternativa(36,21,23,4));	
+		alternativas.push(new alternativa(37,21,24,4));			
+		alternativas.push(new alternativa(38,21,23,5));	
+		alternativas.push(new alternativa(39,21,24,5));			
+		alternativas.push(new alternativa(39,21,31,null));			
+		
+		alternativas.push(new alternativa(40,22,25,3));			
+		alternativas.push(new alternativa(41,22,26,3));	
+		alternativas.push(new alternativa(42,22,27,3));	
+		alternativas.push(new alternativa(43,22,25,4));			
+		alternativas.push(new alternativa(44,22,26,4));	
+		alternativas.push(new alternativa(45,22,27,4));		
+		alternativas.push(new alternativa(46,22,25,5));			
+		alternativas.push(new alternativa(47,22,26,5));	
+		alternativas.push(new alternativa(48,22,27,5));			
+		alternativas.push(new alternativa(39,22,31,null));					
+		
+		alternativas.push(new alternativa(49,23,10,3));			
+		alternativas.push(new alternativa(50,23,11,3));	
+		alternativas.push(new alternativa(51,23,10,4));	
+		alternativas.push(new alternativa(52,23,11,4));			
+		alternativas.push(new alternativa(53,23,10,5));	
+		alternativas.push(new alternativa(54,23,11,5));		
+		alternativas.push(new alternativa(39,23,31,null));					
+		
+		alternativas.push(new alternativa(55,24,10,3));			
+		alternativas.push(new alternativa(56,24,11,3));	
+		alternativas.push(new alternativa(57,24,10,4));	
+		alternativas.push(new alternativa(58,24,11,4));			
+		alternativas.push(new alternativa(59,24,10,5));	
+		alternativas.push(new alternativa(60,24,11,5));
+		alternativas.push(new alternativa(39,24,31,null));			
+
+		alternativas.push(new alternativa(61,25,10,3));			
+		alternativas.push(new alternativa(62,25,11,3));	
+		alternativas.push(new alternativa(63,25,10,4));	
+		alternativas.push(new alternativa(64,25,11,4));			
+		alternativas.push(new alternativa(65,25,10,5));	
+		alternativas.push(new alternativa(66,25,11,5));		
+		alternativas.push(new alternativa(39,25,31,null));			
+		
+		/////////////////////////////////////////////////////////////////////////////
+	
+		alternativas.push(new alternativa(67,26,23,3));			
+		alternativas.push(new alternativa(68,26,24,3));	
+		alternativas.push(new alternativa(69,26,23,4));	
+		alternativas.push(new alternativa(70,26,24,4));			
+		alternativas.push(new alternativa(71,26,23,5));	
+		alternativas.push(new alternativa(72,26,24,5));		
+		alternativas.push(new alternativa(39,26,36,null));		
+		
+		alternativas.push(new alternativa(73,27,25,3));			
+		alternativas.push(new alternativa(74,27,26,3));	
+		alternativas.push(new alternativa(75,27,27,3));	
+		alternativas.push(new alternativa(76,27,25,4));			
+		alternativas.push(new alternativa(77,27,26,4));	
+		alternativas.push(new alternativa(78,27,27,4));		
+		alternativas.push(new alternativa(79,27,25,5));			
+		alternativas.push(new alternativa(80,27,26,5));	
+		alternativas.push(new alternativa(81,27,27,5));		
+		alternativas.push(new alternativa(39,27,36,null));		
+		
+		alternativas.push(new alternativa(82,28,10,3));			
+		alternativas.push(new alternativa(83,28,11,3));	
+		alternativas.push(new alternativa(84,28,10,4));	
+		alternativas.push(new alternativa(85,28,11,4));			
+		alternativas.push(new alternativa(86,28,10,5));	
+		alternativas.push(new alternativa(97,28,11,5));		
+		alternativas.push(new alternativa(39,28,36,null));		
+		
+		alternativas.push(new alternativa(88,29,10,3));			
+		alternativas.push(new alternativa(89,29,11,3));	
+		alternativas.push(new alternativa(90,29,10,4));	
+		alternativas.push(new alternativa(91,29,11,4));			
+		alternativas.push(new alternativa(92,29,10,5));	
+		alternativas.push(new alternativa(93,29,11,5));
+		alternativas.push(new alternativa(39,29,36,null));
+
+		alternativas.push(new alternativa(94,30,10,3));			
+		alternativas.push(new alternativa(95,30,11,3));	
+		alternativas.push(new alternativa(96,30,10,4));	
+		alternativas.push(new alternativa(97,30,11,4));			
+		alternativas.push(new alternativa(98,30,10,5));	
+		alternativas.push(new alternativa(99,30,11,5));	
+		alternativas.push(new alternativa(39,30,36,null));		
+				
+		/////////////////////////////////////////////////////////////////////////////////
+		// PREGUNTA 34
+		
+		alternativas.push(new alternativa(100,34,28,6));			
+		alternativas.push(new alternativa(101,34,29,6));	
+		alternativas.push(new alternativa(101,34,32,6));	
+		alternativas.push(new alternativa(102,34,28,7));			
+		alternativas.push(new alternativa(103,34,29,7));			
+		alternativas.push(new alternativa(101,34,32,7));		
+		alternativas.push(new alternativa(104,34,28,8));			
+		alternativas.push(new alternativa(105,34,29,8));			
+		alternativas.push(new alternativa(101,34,32,8));		
+		alternativas.push(new alternativa(106,34,28,9));			
+		alternativas.push(new alternativa(107,34,29,9));			
+		alternativas.push(new alternativa(101,34,32,9));
+		alternativas.push(new alternativa(108,34,28,10));			
+		alternativas.push(new alternativa(109,34,29,10));					
+		alternativas.push(new alternativa(101,34,32,10));
+		alternativas.push(new alternativa(110,34,28,11));			
+		alternativas.push(new alternativa(111,34,29,11));			
+		alternativas.push(new alternativa(101,34,32,11));
+		alternativas.push(new alternativa(112,34,28,12));			
+		alternativas.push(new alternativa(113,34,29,12));			
+		alternativas.push(new alternativa(101,34,32,12));
+		alternativas.push(new alternativa(114,34,28,13));			
+		alternativas.push(new alternativa(115,34,29,13));
+		alternativas.push(new alternativa(101,34,32,13));
+		alternativas.push(new alternativa(116,34,28,14));			
+		alternativas.push(new alternativa(117,34,29,14));	
+		alternativas.push(new alternativa(101,34,32,14));
+		
+		alternativas.push(new alternativa(118,35,10,6));			
+		alternativas.push(new alternativa(119,35,11,6));					
+		alternativas.push(new alternativa(120,35,10,7));			
+		alternativas.push(new alternativa(121,35,11,7));			
+		alternativas.push(new alternativa(122,35,10,8));			
+		alternativas.push(new alternativa(123,35,11,8));			
+		alternativas.push(new alternativa(124,35,10,9));			
+		alternativas.push(new alternativa(125,35,11,9));			
+		alternativas.push(new alternativa(126,35,10,10));			
+		alternativas.push(new alternativa(127,35,11,10));					
+		alternativas.push(new alternativa(128,35,10,11));			
+		alternativas.push(new alternativa(130,35,11,11));			
+		alternativas.push(new alternativa(131,35,10,12));			
+		alternativas.push(new alternativa(132,35,11,12));			
+		alternativas.push(new alternativa(133,35,10,13));			
+		alternativas.push(new alternativa(134,35,11,13));
+		alternativas.push(new alternativa(135,35,10,14));			
+		alternativas.push(new alternativa(136,35,11,14));	
+
+		alternativas.push(new alternativa(137,36,10,6));			
+		alternativas.push(new alternativa(138,36,11,6));					
+		alternativas.push(new alternativa(139,36,10,7));			
+		alternativas.push(new alternativa(140,36,11,7));			
+		alternativas.push(new alternativa(141,36,10,8));			
+		alternativas.push(new alternativa(142,36,11,8));			
+		alternativas.push(new alternativa(143,36,10,9));			
+		alternativas.push(new alternativa(144,36,11,9));			
+		alternativas.push(new alternativa(145,36,10,10));			
+		alternativas.push(new alternativa(146,36,11,10));					
+		alternativas.push(new alternativa(147,36,10,11));			
+		alternativas.push(new alternativa(148,36,11,11));			
+		alternativas.push(new alternativa(149,36,10,12));			
+		alternativas.push(new alternativa(150,36,11,12));			
+		alternativas.push(new alternativa(151,36,10,13));			
+		alternativas.push(new alternativa(152,36,11,13));
+		alternativas.push(new alternativa(153,36,10,14));			
+		alternativas.push(new alternativa(154,36,11,14));	
+
+		alternativas.push(new alternativa(155,37,10,6));			
+		alternativas.push(new alternativa(156,37,11,6));					
+		alternativas.push(new alternativa(157,37,10,7));			
+		alternativas.push(new alternativa(158,37,11,7));			
+		alternativas.push(new alternativa(159,37,10,8));			
+		alternativas.push(new alternativa(160,37,11,8));			
+		alternativas.push(new alternativa(161,37,10,9));			
+		alternativas.push(new alternativa(162,37,11,9));			
+		alternativas.push(new alternativa(163,37,10,10));			
+		alternativas.push(new alternativa(164,37,11,10));					
+		alternativas.push(new alternativa(165,37,10,11));			
+		alternativas.push(new alternativa(166,37,11,11));			
+		alternativas.push(new alternativa(167,37,10,12));			
+		alternativas.push(new alternativa(168,37,11,12));			
+		alternativas.push(new alternativa(169,37,10,13));			
+		alternativas.push(new alternativa(170,37,11,13));
+		alternativas.push(new alternativa(171,37,10,14));			
+		alternativas.push(new alternativa(172,37,11,14));
+
+		alternativas.push(new alternativa(173,38,28,6));			
+		alternativas.push(new alternativa(174,38,29,6));					
+		alternativas.push(new alternativa(101,38,32,6));
+		alternativas.push(new alternativa(175,38,28,7));			
+		alternativas.push(new alternativa(176,38,29,7));			
+		alternativas.push(new alternativa(101,38,32,7));
+		alternativas.push(new alternativa(177,38,28,8));			
+		alternativas.push(new alternativa(178,38,29,8));			
+		alternativas.push(new alternativa(101,38,32,8));
+		alternativas.push(new alternativa(179,38,28,9));			
+		alternativas.push(new alternativa(180,38,29,9));			
+		alternativas.push(new alternativa(101,38,32,9));
+		alternativas.push(new alternativa(181,38,28,10));			
+		alternativas.push(new alternativa(182,38,29,10));					
+		alternativas.push(new alternativa(101,38,32,10));
+		alternativas.push(new alternativa(183,38,28,11));			
+		alternativas.push(new alternativa(184,38,29,11));			
+		alternativas.push(new alternativa(101,38,32,11));
+		alternativas.push(new alternativa(185,38,28,12));			
+		alternativas.push(new alternativa(186,38,29,12));			
+		alternativas.push(new alternativa(101,38,32,12));
+		alternativas.push(new alternativa(187,38,28,13));			
+		alternativas.push(new alternativa(188,38,29,13));
+		alternativas.push(new alternativa(101,38,32,13));
+		alternativas.push(new alternativa(189,38,28,14));			
+		alternativas.push(new alternativa(190,38,29,14));	
+		alternativas.push(new alternativa(101,38,32,14));
+
+		alternativas.push(new alternativa(191,39,10,6));			
+		alternativas.push(new alternativa(192,39,11,6));					
+		alternativas.push(new alternativa(193,39,10,7));			
+		alternativas.push(new alternativa(194,39,11,7));			
+		alternativas.push(new alternativa(195,39,10,8));			
+		alternativas.push(new alternativa(196,39,11,8));			
+		alternativas.push(new alternativa(197,39,10,9));			
+		alternativas.push(new alternativa(198,39,11,9));			
+		alternativas.push(new alternativa(199,39,10,10));			
+		alternativas.push(new alternativa(200,39,11,10));					
+		alternativas.push(new alternativa(201,39,10,11));			
+		alternativas.push(new alternativa(202,39,11,11));			
+		alternativas.push(new alternativa(203,39,10,12));			
+		alternativas.push(new alternativa(204,39,11,12));			
+		alternativas.push(new alternativa(205,39,10,13));			
+		alternativas.push(new alternativa(206,39,11,13));
+		alternativas.push(new alternativa(207,39,10,14));			
+		alternativas.push(new alternativa(208,39,11,14));	
+
+		alternativas.push(new alternativa(209,40,10,6));			
+		alternativas.push(new alternativa(210,40,11,6));					
+		alternativas.push(new alternativa(211,40,10,7));			
+		alternativas.push(new alternativa(212,40,11,7));			
+		alternativas.push(new alternativa(213,40,10,8));			
+		alternativas.push(new alternativa(214,40,11,8));			
+		alternativas.push(new alternativa(215,40,10,9));			
+		alternativas.push(new alternativa(216,40,11,9));			
+		alternativas.push(new alternativa(217,40,10,10));			
+		alternativas.push(new alternativa(218,40,11,10));					
+		alternativas.push(new alternativa(219,40,10,11));			
+		alternativas.push(new alternativa(220,40,11,11));			
+		alternativas.push(new alternativa(221,40,10,12));			
+		alternativas.push(new alternativa(222,40,11,12));			
+		alternativas.push(new alternativa(223,40,10,13));			
+		alternativas.push(new alternativa(224,40,11,13));
+		alternativas.push(new alternativa(225,40,10,14));			
+		alternativas.push(new alternativa(226,40,11,14));		
+			
+		alternativas.push(new alternativa(227,41,10,6));			
+		alternativas.push(new alternativa(228,41,11,6));					
+		alternativas.push(new alternativa(229,41,10,7));			
+		alternativas.push(new alternativa(230,41,11,7));			
+		alternativas.push(new alternativa(231,41,10,8));			
+		alternativas.push(new alternativa(232,41,11,8));			
+		alternativas.push(new alternativa(233,41,10,9));			
+		alternativas.push(new alternativa(234,41,11,9));			
+		alternativas.push(new alternativa(235,41,10,10));			
+		alternativas.push(new alternativa(236,41,11,10));					
+		alternativas.push(new alternativa(237,41,10,11));			
+		alternativas.push(new alternativa(238,41,11,11));			
+		alternativas.push(new alternativa(239,41,10,12));			
+		alternativas.push(new alternativa(240,41,11,12));			
+		alternativas.push(new alternativa(241,41,10,13));			
+		alternativas.push(new alternativa(242,41,11,13));
+		alternativas.push(new alternativa(243,41,10,14));			
+		alternativas.push(new alternativa(244,41,11,14));
+
+		alternativas.push(new alternativa(245,42,10,6));			
+		alternativas.push(new alternativa(246,42,11,6));					
+		alternativas.push(new alternativa(247,42,10,7));			
+		alternativas.push(new alternativa(248,42,11,7));			
+		alternativas.push(new alternativa(249,42,10,8));			
+		alternativas.push(new alternativa(250,42,11,8));			
+		alternativas.push(new alternativa(251,42,10,9));			
+		alternativas.push(new alternativa(252,42,11,9));			
+		alternativas.push(new alternativa(253,42,10,10));			
+		alternativas.push(new alternativa(254,42,11,10));					
+		alternativas.push(new alternativa(255,42,10,11));			
+		alternativas.push(new alternativa(256,42,11,11));			
+		alternativas.push(new alternativa(257,42,10,12));			
+		alternativas.push(new alternativa(258,42,11,12));			
+		alternativas.push(new alternativa(259,42,10,13));			
+		alternativas.push(new alternativa(260,42,11,13));
+		alternativas.push(new alternativa(261,42,10,14));			
+		alternativas.push(new alternativa(262,42,11,14));		
+			
+		mediciones.push(new medicion(1,"TRIMESTRE 1-2013","Trimestre Enero / Febrero / Marzo",new Date(),new Date()));			
+		mediciones.push(new medicion(2,"TRIMESTRE 2-2013","Trimestre Abril / Mayo / Junio",new Date(),new Date()));
+		mediciones.push(new medicion(3,"TRIMESTRE 3-2013","Trimestre Julio / Agosto / Sept.",new Date(),new Date()));
+		mediciones.push(new medicion(4,"TRIMESTRE 4-2013","Trimestre Oct. / Nov. / Dic.",new Date(),new Date()));		
+		
+		// alert(JSON.stringify(preguntas));		
+		// $.getJSON('data/topicos.txt',function(data){
+			// topicosDB=TAFFY(data);
+			// topicosDB().each(function(r){
+				// console.log(r);
+			// });
+		// });			
+		
+		medicionesDB=TAFFY(mediciones);
+        preguntasDB=TAFFY(preguntas);
+		seccionesDB=TAFFY(secciones);		
+		topicosDB=TAFFY(topicos);
+		
+		categoriasDB=TAFFY(categorias);									
+		preguntas_categoriasDB=TAFFY(preguntas_categorias);											
+		itemesDB=TAFFY(itemes);								
+		alternativasDB=TAFFY(alternativas);
+        respuestasDB=TAFFY(respuestas);
+	}
+
+	function save_content_to_file(content, filename){
+		var dlg = false;
+		with(document){
+		 ir=createElement('iframe');
+		 ir.id='ifr';
+		 ir.location='about.blank';
+		 ir.style.display='none';
+		 body.appendChild(ir);
+		
+		  with(getElementById('ifr').contentWindow.document){
+			   open("text/plain", "replace");
+			   charset = "utf-8";
+			   write(content);
+			   close();
+			   document.charset = "utf-8";
+			   dlg = execCommand('SaveAs', true, filename);
+		   }
+		   //body.removeChild(ir);
+		 }
+		return dlg;
+	}
+
+	function persistir_colecciones()
+	{
+		save_content_to_file(JSON.stringify(alternativas), "data/alternativas.txt");
+	}
+	
+$(document).ready(function() {	
+
+	var callbacks = $.Callbacks();
+
+	callbacks.add( cargar_datos() );
+	callbacks.add( persistir_colecciones() );	
+    alert("Entidad persistida");    
+	
+	// content is the data (a string) you'll write to file.
+	// filename is a string filename to write to on server side.
+	// This function uses iFrame as a buffer, it fills it up with your content
+	// and prompts the user to save it out.	
+	
+	/*
+	$.getJSON('\\Application\\encuesta.txt',function(data){
+		alert(data.one);
+	});		
+	*/
+
+	var msg =  {
+		  "Auditor": "Carlos perez",
+		  "Respuestas": {"id_respuesta":1}
+	};		
+});
+</script>
+</head>
+<body>
+</body>
+</html>

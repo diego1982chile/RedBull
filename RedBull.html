@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
-<link href="css/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
+<link href="css/dark-hive/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" />
 
 <style>
 	
@@ -16,6 +16,10 @@
 		font-family: "Arial",Georgia,Serif;		
 	}	
 	
+	h1,h2{
+		font-family: "Arial",Georgia,Serif;		
+	}
+	
 	h4,h5,div,table{
 		padding:0em;
 		margin:0em;
@@ -24,13 +28,132 @@
 		background:blue;
 		color:white;
 	}
+
+	.ui-button-text{
+		padding:.3em !important;
+	}
 	
+	#respuesta table tbody tr.ui-widget-header{
+		font-family: "Arial",Georgia,Serif !important;		
+		font-weight: normal !important;
+	}
+	
+.nueva {
+	-moz-box-shadow:inset 0px 1px 0px 0px #cae3fc;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #cae3fc;
+	box-shadow:inset 0px 1px 0px 0px #cae3fc;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #4197ee) );
+	background:-moz-linear-gradient( center top, #79bbff 5%, #4197ee 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#4197ee');
+	background-color:#79bbff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #469df5;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:7px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #287ace;
+}.classname:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
+	background:-moz-linear-gradient( center top, #4197ee 5%, #79bbff 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
+	background-color:#4197ee;
+}.classname:active {
+	position:relative;
+	top:1px;
+}
+	
+.completada {
+	-moz-box-shadow:inset 0px 1px 0px 0px #a4e271;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #a4e271;
+	box-shadow:inset 0px 1px 0px 0px #a4e271;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #89c403), color-stop(1, #77a809) );
+	background:-moz-linear-gradient( center top, #89c403 5%, #77a809 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#89c403', endColorstr='#77a809');
+	background-color:#89c403;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #74b807;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:7px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #528009;
+}.classname:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77a809), color-stop(1, #89c403) );
+	background:-moz-linear-gradient( center top, #77a809 5%, #89c403 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77a809', endColorstr='#89c403');
+	background-color:#77a809;
+}.classname:active {
+	position:relative;
+	top:1px;
+}
+
+.pendiente {
+	-moz-box-shadow:inset 0px 1px 0px 0px #fff6af;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #fff6af;
+	box-shadow:inset 0px 1px 0px 0px #fff6af;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffec64), color-stop(1, #ffab23) );
+	background:-moz-linear-gradient( center top, #ffec64 5%, #ffab23 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffec64', endColorstr='#ffab23');
+	background-color:#ffec64;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #ffaa22;
+	display:inline-block;
+	color:#333333;
+	font-family:arial;
+	font-size:7px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #ffee66;
+}.classname:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffab23), color-stop(1, #ffec64) );
+	background:-moz-linear-gradient( center top, #ffab23 5%, #ffec64 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffab23', endColorstr='#ffec64');
+	background-color:#ffab23;
+}.classname:active {
+	position:relative;
+	top:1px;
+}
+	
+#botones label{
+	font-size: .9em !important;
+}
+
+.matched_active{			
+	border-style: solid;	
+	border-width: 2px;
+	border-color: yellow;
+	// background-color: #d1ffd1 !important;	
+	background-color:#fbb450;
+}
+
+.matched{			
+	border-style: solid;
+	border-width: 2px;
+	border-color: yellow;
+	background-color: rgb(253, 255, 209) !important;
+}
+
 </style>
 
 <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
 <script type="text/javascript" src="js/taffy.js"></script>
 <script type="text/javascript" src="js/json2.js"></script>
-<!--script type="text/javascript" src="js/jquery-ui-1.10.2.custom.min.js"></script-->
+<!--script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script-->
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
 <script>
@@ -89,7 +212,7 @@ String.prototype.fileExists = function() {
 
 	// Indice comienza en 1
 	
-		var cursor=1;
+		var cursor=0;
         var id_respuesta=1;
 		var contestadas=0;		
 		// var id_toma=1;					
@@ -108,6 +231,9 @@ String.prototype.fileExists = function() {
         var alternativasDB;	  
 
 		var cuestionario_valido=true;
+		
+		// var seleccionada='seleccionada';
+		var seleccionada="ui-state-active";
 
 	// var pathCuestionario="cuestionario.txt"
 	var pathCuestionario="\\Application\\cuestionario.txt";
@@ -141,7 +267,15 @@ String.prototype.fileExists = function() {
 	{				
 		$('#sesion').hide(),
 		$('#container').show();
-		$('#titulo').text($('#mediciones :selected').text()+'/'+codigo_auditor+'/'+folio_sala);	
+		$('#botones').show();
+		// $('#volver').show();
+		var palabras=$('#mediciones :selected').text().split(" ");
+		var cadena=palabras[1]+'/'+$('#nombre_auditor').text()+'/'+folio_sala;
+		
+		if(cadena.length>32)
+			$('#titulo').text(cadena.substring(0,29)+'...');
+		else
+			$('#titulo').text(cadena);	
 		// cargar_respuestas();
 			$.getJSON('data/topicos.txt',function(data){					
 				topicosDB=TAFFY(data);
@@ -156,7 +290,8 @@ String.prototype.fileExists = function() {
 								$.getJSON('data/itemes.txt',function(data){
 									itemesDB=TAFFY(data);
 									$.getJSON('data/alternativas.txt',function(data){
-										alternativasDB=TAFFY(data);									
+										alternativasDB=TAFFY(data);	
+										cursor=1;
 										cargar_contenido(cursor);	
 										cargar_listener(cursor);
 										$('#cuestionario').dataTable({
@@ -165,7 +300,7 @@ String.prototype.fileExists = function() {
 											"bSort": false,
 											"bInfo": false,
 											"bPaginate": false,
-											"bJQueryUI": false,
+											"bJQueryUI": true,
 											"bAutoWidth": false, 	
 											"bRetrieve": true, 											
 											// "bDestroy": false, 
@@ -179,7 +314,7 @@ String.prototype.fileExists = function() {
 			});				
 	}
 			
-	function cargar_auditores()
+	function cargar_mediciones()
 	{																		
 		var xmlhttp;
 		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
@@ -197,42 +332,33 @@ String.prototype.fileExists = function() {
 				
 				if(data.Codigo==0)
 				{
-					alert("Error al recuperar auditores y mediciones, porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
+					alert("Error al recuperar datos, porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
 					return false;
-				}									
+				}													
+				alert("Datos recuperados exitosamente. A continuación ingrese su código de auditor");
+				$('#inicio').hide();
+				$('#sesion').show();
 				
 				$(data.mediciones).each(function(key,value){	
 					$('#mediciones').append("<option value='"+value.id_medicion+"' "+value.activa+">"+value.nombre_medicion+"</option>");						
 				});
 								
-				var html="<table id='tabla_auditores' width='100%'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";
-			
-				$(data.auditores).each(function(key,value){															
-					html=html+"<tr><td><button id_auditor="+value.id_auditor+" codigo_auditor="+value.codigo_auditor+" class='auditor' style='width=390px;padding:0em'><label style='font-size:2em'>"+value.nombre_auditor+"</label></button></td></tr>";
-				});
-				html=html+"</tbody></table>";
-				// alert(html);					
-				$('#auditores').html(html);
-				$('#tabla_auditores').dataTable({
-					"sScrollY": "215px",		 		 		
-					"bFilter": true,
-					"bSort": false,
-					"bInfo": false,
-					"bPaginate": false,
-					"bJQueryUI": true,
-					"bAutoWidth": false, 	
-					"bDeferRender": true,
-					"bSortClasses": false						
-				});			
-				
-				$('.auditor').mousedown(function(){											
+				var html="<table id='tabla_auditores' width='100%'><thead><tr><th>AUDITORES</th></tr></thead><tbody>";				
+								
+				$('#auditor').mousedown(function(){											
 					
-					$('#salas').html('Cargando salas...');
+					if($('#codigo_auditor').val()=='')
+					{
+						$('#codigo_auditor').val('');						
+						alert('Debe introducir un ID de auditor');
+						return false;
+					}
+					
+					$('#salas').html('<p>Cargando visitas...</p>');
 					$('.ui-state-active').removeClass();
 					$(this).addClass('ui-state-active');
 				
-					codigo_auditor=$(this).attr('codigo_auditor');
-					var id_auditor=$(this).attr('id_auditor');
+					codigo_auditor=parseInt($('#codigo_auditor').val());								
 				
 					var xmlhttp;
 					if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari				
@@ -255,27 +381,47 @@ String.prototype.fileExists = function() {
 							}
 							else
 							{
-								var html="<table id='tabla_salas' border=1 width='100%'><thead><tr><th width='90%'>SALAS</th><th width='10%'></th></tr></thead><tbody>";
-						
+								$('button').removeClass();
+								
+								if(data.Codigo==0)
+								{
+									alert(data.Mensaje);
+									$('#salas').html('');
+									return false;
+								}
+									
+								$('#nombre_auditor').text(data.nombre_auditor);
+							
+								// var html="<table id='tabla_salas' border=1 width='100%'><thead><tr><th width='90%'>SALAS_AUDITOR</th><th width='10%'></th></tr></thead><tbody>";
+								var html="<table id='tabla_salas' border=1 width='100%'><thead><tr><th>VISITAS</th></tr></thead><tbody>";								
+								
 								$(data.salas).each(function(key,value){	
 									var pathToma="\\Application\\toma"+id_medicion+codigo_auditor+value.folio+".txt";
+																		
 									// Si la toma no existe
-									var estado="<img src='images/bubble-red-md.png' style='height:1em;width:1em' />";	
+									// var estado="<img src='images/bubble-red-md.png' style='height:1em;width:1em' />";	
+									var estado="nueva";	
 									var status=0;
 									// Si la toma existe en el equipo
 									if(isDocumentAvailable(pathToma))			
 									{
 										status=status+1;
-										estado="<img src='images/bubble-yellow-md.png' style='height:1em;width:1em' />";																					
+										estado="pendiente"
+										// estado="<img src='images/bubble-yellow-md.png' style='height:1em;width:1em' />";																					
 									}
 									// Si la toma existe en la BD
 									if(value.id_toma!=0)
 									{
 										status=status+2;
-										estado="<img src='images/bubble-green-md.png' style='height:1em;width:1em' />";											
+										estado="completada";
+										// estado="<img src='images/bubble-green-md.png' style='height:1em;width:1em' />";											
 									}
-										
-									html+="<tr><td style='padding:0em'><button class='sala' status='"+status+"' folio_sala="+value.folio+" style='width=370px;padding:0em'><label style='font-size:1.5em'>"+value.folio+"/"+value.calle+"-"+value.numero+"</label></button></td><td style='padding:0em'>"+estado+"</td></tr>";									
+									var cadena=value.cadena;
+									
+									if(value.cadena=='#N/A')
+										cadena=value.folio;
+									
+									html+="<tr><td style='padding:0em'><button style='width:370px' class='sala "+estado+"' status='"+status+"' folio_sala="+value.folio+"><label style='font-size:1.5em'>"+cadena+"<br />"+value.comuna+"<br />"+value.direccion+"</label></button></td></tr>";									
 									
 								});
 								html+="</tbody></table>";
@@ -284,8 +430,8 @@ String.prototype.fileExists = function() {
 								$('#salas').html(html);
 							
 								$('#tabla_salas').dataTable({
-									"sScrollY": "215px",										
-									"bFilter": true,
+									"sScrollY": "350px",																			
+									"bFilter": false,
 									"bSort": false,
 									"bInfo": false,
 									"bPaginate": false,
@@ -293,8 +439,11 @@ String.prototype.fileExists = function() {
 									"bSortClasses": false,
 									"bAutoWidth": false, 	
 									"bDeferRender": true,																	
-								});																	
+								});							
+								$("<div class='dataTables_filter' align='right'><label style='float:left;color:black'>buscar:</label><input id='buscar' style='float:left' /></div>").appendTo('#tabla_salas_wrapper .fg-toolbar:first');				 												
 
+								listenerFiltro();
+								
 								$('.sala').mousedown(function(){
 									
 									folio_sala=$(this).attr('folio_sala');
@@ -305,30 +454,31 @@ String.prototype.fileExists = function() {
 									if(isDocumentAvailable(pathCuestionario))
 									{									
 										$.getJSON(pathCuestionario,function(data){					
-											respuestasDB=TAFFY(data.respuestas);
+											respuestasDB=TAFFY(data.respuestas);											
+											cursor=parseInt(respuestasDB().max('id_pregunta'));
 										});
-									}
+									}																		
 									
 									switch(status)
 									{
 										case 0:
-											var opcion=confirm("La siguiente sesión:\nMedición: "+$('#mediciones :selected').text()+"\nAuditor: "+codigo_auditor+"\nSala: "+folio_sala+"\ncorresponde a una nueva toma en este equipo. ¿Desea iniciar esta toma?");
+											var opcion=confirm("La siguiente sesión:\nMedición: "+$('#mediciones :selected').text()+"\nAuditor: "+$('#nombre_auditor').text()+"\nSala: "+folio_sala+"\ncorresponde a una nueva toma en este equipo. ¿Desea iniciar esta toma?");
 											if(opcion)
 												cargar_datos();	
 											break;
 										case 1:
-											var opcion=confirm("Esta sesión corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?");																																						
+											var opcion=confirm("La sesión "+pathCuestionario+" corresponde a una toma pendiente en este equipo. ¿Desea cargar los datos de esta toma?");																																						
 											if(opcion)
 												cargar_datos();	
 											break;
 										case 2:
-											var opcion=confirm("Esta sesión corresponde a una toma inexistente en este equipo. Sin embargo existe en la base de datos. ¿Desea recuperar los datos de esta toma y cargarlos?");														
+											var opcion=confirm("La sesión "+pathCuestionario+" corresponde a una toma inexistente en este equipo. Sin embargo existe en la base de datos. ¿Desea recuperar los datos de esta toma y cargarlos?");														
 											if(opcion)
 												cargar_datos();	
 											break;												
 											break;	
 										case 3:
-											var opcion=confirm("Esta sesión corresponde a una toma completada en este equipo y enviada a la base de datos. ¿Desea cargar los datos de esta toma?");														
+											var opcion=confirm("La sesión "+pathCuestionario+" corresponde a una toma completada en este equipo y enviada a la base de datos. ¿Desea cargar los datos de esta toma?");														
 											if(opcion)
 												cargar_datos();	
 											break;																								
@@ -336,15 +486,35 @@ String.prototype.fileExists = function() {
 								});
 							}																										
 						}
+						setTimeout(function() { 
+							if(xmlhttp.readyState!=4)
+							{
+								xmlhttp.abort(); 
+								alert("Excede tiempo de respuesta, verifique que la conexión 3g esté activada. Si la conexión está activada intente con una mejor señal"); 
+								return false;
+							}
+							else
+								return true;
+						},60000);						
 					}						
 					id_medicion=$('#mediciones').val();
-					xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&id_auditor='"+id_auditor+"'&id_medicion='"+id_medicion+"'",true);
-					xmlhttp.send();	
+					xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=2&codigo_auditor='"+codigo_auditor+"'&id_medicion='"+id_medicion+"'",true);
+					xmlhttp.send();						
 				});						
 			}
+			setTimeout(function() { 
+				if(xmlhttp.readyState!=4)
+				{
+					xmlhttp.abort(); 
+					alert("Excede tiempo de respuesta, verifique que la conexión 3g esté activada. Si la conexión está activada intente con una mejor señal"); 
+					return false;
+				}
+				else
+					return true;
+			},60000);
 		}
 		xmlhttp.open("GET",'http://200.29.139.244/REDBULL/php/cargar_maestra.php?caso=1',true);
-		xmlhttp.send();			
+		xmlhttp.send();					
 	}
 	
 	function cargar_contenido(id_pregunta)
@@ -434,7 +604,7 @@ String.prototype.fileExists = function() {
 																		
 									respuestasDB().filter({'id_pregunta':id_pregunta}).each(function (r10) {											
 										$('[name=radio'+id_pregunta+r10.id_categoria+']').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-										$('[name=radio'+id_pregunta+r10.id_categoria+']').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+										$('[name=radio'+id_pregunta+r10.id_categoria+']').filter('[categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass(seleccionada);
 									});										
 									
 									break;
@@ -501,12 +671,12 @@ String.prototype.fileExists = function() {
 										if($.inArray(r10.id_item,["33","34","35","37"])==-1)
 										{
 											$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-											$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+											$('[name=checkbox]').filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass(seleccionada);
 										}
 										else
 										{											
 											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");
+											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass(seleccionada);
 										}
 									});																																		
 									break;																					                                                     
@@ -577,7 +747,7 @@ String.prototype.fileExists = function() {
 										else
 										{
 											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').prop('checked', true);
-											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass("seleccionada");										
+											$("[name='radio"+cursor+"null']").filter('[pregunta='+id_pregunta+'][categoria="'+r10.id_categoria+'"][item="'+r10.id_item+'"]').parent().addClass(seleccionada);										
 										}
 									});																																																																                           																			
 									break;		
@@ -600,6 +770,9 @@ String.prototype.fileExists = function() {
                 });
             });
         });
+	// $('#pregunta').addClass('ui-widget-content');		
+	// $('#respuesta').addClass('ui-widget-content');		
+	// $('#respuesta table tbody tr').addClass('ui-widget-header');
 	return true;
     }
 		
@@ -621,7 +794,7 @@ String.prototype.fileExists = function() {
 																					
 							switch(parseInt(r1.tipo2))
 							{								
-								case 1: // Tipo disyuntiva	
+								case 1: // Tipo disyuntiva										
 									if(id_pregunta==19)
 									{				
 										var ok=true;
@@ -649,31 +822,31 @@ String.prototype.fileExists = function() {
 											// Si se selecciono "no hay ubicaciones adicionales", "No hay SKUs de Red Bull disponibles" deseleccionar el resto de alternativas
 											if($.inArray($(this).children().attr('item'),['31','33','34','36'])!=-1)
 											{
-												$(':input').parent('.seleccionada').removeClass();
+												$(':input').parent('.'+seleccionada).removeClass();
 												$(':input').prop('checked',false);   
 												// Eliminar todas las respuestas para esta pregunta
 												respuestasDB({'id_pregunta':id_pregunta}).remove();	
 											}
 											else
 											{
-												$('[name=radio'+id_pregunta+'null]').parent('.seleccionada').removeClass();												                           
+												$('[name=radio'+id_pregunta+'null]').parent('.'+seleccionada).removeClass();												                           
 												$('[name=radio'+id_pregunta+'null]').prop('checked',false);                                
 												// Eliminar todas las respuestas para esta pregunta
 												respuestasDB({'id_pregunta':id_pregunta},{'id_item':'31'}).remove();
 											}
 										}
-										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').parent('.seleccionada').removeClass();
-										$(this).addClass("seleccionada");                                
+										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').parent('.'+seleccionada).removeClass();
+										$(this).addClass(seleccionada);                                
 										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);																																						
+										
 										// Verificar concistencia de respuestas para esta sección
-										if(id_pregunta>21)
+										if((id_pregunta>21 && id_pregunta <26) || (id_pregunta>26 && id_pregunta <31) || (id_pregunta>34 && id_pregunta <38) || (id_pregunta>38 && id_pregunta <42))
 										{
 											var valido;
 											respuestasDB().filter({'id_pregunta':id_pregunta}).each(function(r1){													
 												valido=false
-												respuestasDB().filter({'id_pregunta':id_pregunta-1},{'id_categoria':r1.id_categoria}).each(function(r3){
-													console.log(r3);
+												respuestasDB().filter({'id_pregunta':id_pregunta-1},{'id_categoria':r1.id_categoria}).each(function(r3){													
 													valido=true;
 													return false;
 												});												
@@ -686,7 +859,7 @@ String.prototype.fileExists = function() {
 												respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).children().attr('categoria')},{'id_item':$(this).children().attr('item')}).remove();												
 												return false;
 											}
-										}
+										}																					
 									});													
 									break;
 								case 2: // Tipo conjuntiva	
@@ -750,11 +923,11 @@ String.prototype.fileExists = function() {
 											if($.inArray(id_pregunta,[14,15,17])!=-1)
 											{
 											
-												$(':input').parent('.seleccionada').removeClass();
+												$(':input').parent('.'+seleccionada).removeClass();
 												$(':input').prop('checked',false);   
 												// Eliminar todas las respuestas para esta pregunta
 												respuestasDB({'id_pregunta':id_pregunta}).remove();
-												$(this).addClass("seleccionada");                                
+												$(this).addClass(seleccionada);                                
 												$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                																							
 											}
 										}
@@ -762,7 +935,7 @@ String.prototype.fileExists = function() {
 										{																						
 											if($(this).children().prop('checked'))
 											{
-												$(this).removeClass("seleccionada");
+												$(this).removeClass(seleccionada);
 												$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
 												if($.inArray(id_pregunta,[15,17])!=-1)
 												{																				
@@ -770,7 +943,7 @@ String.prototype.fileExists = function() {
 													if(respuestasDB().filter({'id_pregunta':id_pregunta+1},{'id_categoria':$(this).children().attr('categoria')},{'id_item':$(this).children().attr('item')}).count()!=0)
 													{
 														alert("El 'SKU' correspondiente tiene un precio en la siguiente regunta ('1.4.3'). Debe quitar el precio primero");													
-														$(this).addClass("seleccionada");        											
+														$(this).addClass(seleccionada);        											
 														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
 														return false;
 													}													
@@ -778,11 +951,11 @@ String.prototype.fileExists = function() {
 											}
 											else
 											{
-												$('[name=radio'+id_pregunta+'null]').parent('.seleccionada').removeClass();												                           
+												$('[name=radio'+id_pregunta+'null]').parent('.'+seleccionada).removeClass();												                           
 												$('[name=radio'+id_pregunta+'null]').prop('checked',false);                                
 												// Eliminar todas las respuestas para esta pregunta
 												respuestasDB({'id_pregunta':id_pregunta},{'id_item':['33','34','35']}).remove();
-												$(this).addClass("seleccionada");        											
+												$(this).addClass(seleccionada);        											
 												$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);
 												// Verificar que el facing no sea 0 en pregunta 1											
 												if(id_pregunta==14)
@@ -790,7 +963,7 @@ String.prototype.fileExists = function() {
 													if(respuestasDB().filter({'id_pregunta':1}).count()==0)
 													{
 														alert("No ha contestado pregunta '1.1.1' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
-														$(this).removeClass("seleccionada");
+														$(this).removeClass(seleccionada);
 														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
 														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
 														id_respuesta--;
@@ -799,7 +972,7 @@ String.prototype.fileExists = function() {
 													if(parseInt(respuestasDB().filter({'id_pregunta':1}).select('valor_respuesta'))==0)
 													{
 														alert("En la pregunta '1.1.1' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
-														$(this).removeClass("seleccionada");
+														$(this).removeClass(seleccionada);
 														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
 														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
 														id_respuesta--;
@@ -812,7 +985,7 @@ String.prototype.fileExists = function() {
 													if(respuestasDB().filter({'id_pregunta':6}).count()==0)
 													{
 														alert("No ha contestado pregunta '1.1.6' correspondiente a 'facings' totales. No puede haber presencia si no hay 'facings'.");
-														$(this).removeClass("seleccionada");
+														$(this).removeClass(seleccionada);
 														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
 														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
 														id_respuesta--;
@@ -821,7 +994,7 @@ String.prototype.fileExists = function() {
 													if(parseInt(respuestasDB().filter({'id_pregunta':6}).select('valor_respuesta'))==0)
 													{
 														alert("En la pregunta '1.1.3' ha contestado 0 'facings' totales. No puede haber presencia si no hay 'facings'.");
-														$(this).removeClass("seleccionada");
+														$(this).removeClass(seleccionada);
 														$('[name=checkbox]').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', false);																															
 														respuestasDB({'id_pregunta':id_pregunta},{'id_categoria':$(this).attr('categoria')},{'id_item':$(this).attr('item')}).remove();
 														id_respuesta--;
@@ -898,7 +1071,7 @@ String.prototype.fileExists = function() {
 										// Eliminar respuestas para esta pregunta, si existen
 										respuestasDB({'id_pregunta':id_pregunta}).remove();
 										id_respuesta--;										
-										$(this).addClass("seleccionada");   										
+										$(this).addClass(seleccionada);   										
 										$('[name=radio'+$(this).children().attr('pregunta')+$(this).children().attr('categoria')+']').filter('[pregunta='+$(this).children().attr('pregunta')+'][categoria="'+$(this).children().attr('categoria')+'"][item="'+$(this).children().attr('item')+'"]').prop('checked', true);                                
 										guardarRespuesta(id_pregunta,$(this).children().attr('categoria'),$(this).children().attr('item'),null);
 										// Eliminar los precios ingresados, si existen
@@ -915,7 +1088,7 @@ String.prototype.fileExists = function() {
 												return false;
 											}	
 											// Si se ingresó un precio válido, remover respuesta "No hay etiqueta de precio para SKUs de Red Bull"
-											$(':input').parent('.seleccionada').removeClass();
+											$(':input').parent('.'+seleccionada).removeClass();
 											$(':input').prop('checked',false);   
 											// Eliminar respuesta "No hay etiqueta", si existe
 											respuestasDB({'id_pregunta':id_pregunta},{'id_item':'35'}).remove();											
@@ -1038,7 +1211,7 @@ String.prototype.fileExists = function() {
     }		
 	
 	function activarCajas(cajas)
-	{		
+	{				
 		var cont=6; // 1a Caja
 		var activas=cont+cajas; // Cajas activas
 		var valores1= new Array();
@@ -1155,7 +1328,16 @@ String.prototype.fileExists = function() {
 	
 	function validar_cuestionario(){
 
-		if(respuestasDB().distinct('id_pregunta').length==42)
+		var adicionales=parseInt($('#select_cajas').val());
+		
+		var preguntas_requeridas;						
+		
+		if(adicionales>0)
+			preguntas_requeridas=42;
+		else
+			preguntas_requeridas=33;
+		
+		if(respuestasDB().distinct('id_pregunta').length==preguntas_requeridas)
 		{
 			return true;
 		}
@@ -1186,7 +1368,12 @@ String.prototype.fileExists = function() {
 				{
 					case 1: // Tipo disyuntiva		
 						if(tieneCategoria)
-						{																
+						{					
+							if((id_pregunta>21 && id_pregunta <26) || (id_pregunta>26 && id_pregunta <31) || (id_pregunta>34 && id_pregunta <38) || (id_pregunta>38 && id_pregunta <42))						
+							{
+								if(respuestasDB({'id_pregunta':id_pregunta-1}).count()!=respuestasDB({'id_pregunta':id_pregunta}).count())
+									ok=false;
+							}
 							// Ahora ademas hay que considerar que en estos casos puede haber respuesta sin categoria
 							if(respuestasDB().filter({'id_pregunta':id_pregunta},{'id_item':['31','36']}).count()>0)
 							{
@@ -1324,10 +1511,8 @@ String.prototype.fileExists = function() {
 		}
 	}
 	
-	function enviar_toma2(){		
-	
-		$('#container').hide();
-		$('body').append('<div><h2>ENVIANDO TOMA...</h2></div>');
+	function enviar_toma2(){			
+		$('#container').hide();		
 		
 		var xmlhttp;				
 		
@@ -1379,11 +1564,12 @@ String.prototype.fileExists = function() {
 				switch(parseInt(data.Codigo))
 				{
 					case 0: // Si hubo errores no manejables en la transaccion
-						$('#container').show();						
+						$('#container').show();				
+						$('#dialog_enviando_toma').hide();									
 						alert("Error al ingresar el 1er segmento de la toma. porfavor vuelva a intentarlo más tarde.\nDetalles: "+data.Mensaje);
 						break;
-					case 2: // Si la toma enviada ya existe
-						alert(data.Mensaje);
+					case 2: // Si la toma enviada ya existe							
+						alert(data.Mensaje);						
 						break;
 					case 1: // Si el primer envio fue exitoso continuar con el segundo envio					
 						// Si el segundo segmento esta vacio terminar el proceso
@@ -1393,9 +1579,11 @@ String.prototype.fileExists = function() {
 							alert("Envio completado con exito. Por favor confirme el siguiente diálogo para actualizar el estado de la toma");
 							obj_toma= new toma(id_medicion,new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
 							save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
-							location.reload();														
 							$('#container').hide();
-							$('#sesion').show();							
+							$('#dialog_enviando_toma').hide();
+							$('#fin').show();
+							// $('#volver').show();
+							// location.reload(true);																															
 							return true;
 						}
 						
@@ -1430,9 +1618,11 @@ String.prototype.fileExists = function() {
 											alert("Envio completado con exito. Por favor confirme el siguiente diálogo para actualizar el estado de la toma");
 											obj_toma= new toma(id_medicion,new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
 											save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
-											location.reload();														
 											$('#container').hide();
-											$('#sesion').show();																	
+											$('#dialog_enviando_toma').hide();
+											$('#fin').show();											
+											// $('#volver').show();
+											// location.reload(true);																																				
 											return true;
 										}
 										
@@ -1461,9 +1651,11 @@ String.prototype.fileExists = function() {
 														alert("Envio completado con exito. Por favor confirme el siguiente diálogo para actualizar el estado de la toma");
 														obj_toma= new toma(id_medicion,new Date(),3,codigo_auditor,folio_sala,respuestasDB().get());		
 														save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
-														location.reload();														
 														$('#container').hide();
-														$('#sesion').show();
+														$('#dialog_enviando_toma').hide();
+														$('#fin').show();
+														// $('#volver').show();
+														// location.reload(true);																												
 														return true;													
 														break;
 												}
@@ -1485,27 +1677,102 @@ String.prototype.fileExists = function() {
 			}	
 		}		
 		xmlhttp.open("GET","http://200.29.139.244/REDBULL/php/cargar_maestra2.php?caso=1&toma="+JSON.stringify(obj_toma1),true);
-		xmlhttp.send();				
+		xmlhttp.send();	
+		setTimeout(function() { 
+			if(xmlhttp.readyState!=4)
+			{
+				xmlhttp.abort(); 
+				alert("Excede tiempo de respuesta, verifique que la conexión 3g esté activada. Si la conexión está activada intente con una mejor señal"); 
+				return false;
+			}
+			else
+				return true;				
+		},60000);
 	}		
 	
-$(document).ready(function() {		
-
+$(document).ready(function() {			
+	
+	$( "#botones" ).buttonset();					
+	// $( "#volver" ).buttonset();		
+	
 	$(document).keydown(function(e){		
 			
 		switch(e.keyCode)
-		{
+		{					
 			case 32:	
-				e.preventDefault();							
+				e.preventDefault();			
+				if(cursor==0)
+				{
+					$('#auditor').trigger('mousedown');										
+					$('#codigo_auditor').val('');						
+					return false;
+				}				
 				if(!validar_pregunta(cursor))
 					return false;
-				$('#sig').addClass('ui-state-active');
+				
+				// $('input').addClass('ui-state-active');
+				$("label[for='sig']").addClass('ui-state-active');
 				var id='sig';
-				if(cursor==33){											
-					cajas = prompt("¿Cuántas cajas registradoras tiene ubiaciones adicionales? Si no sabe ignore esta pregunta","9");							
-					activarCajas(parseInt(cajas));
-				}							
-				if(cursor<42)
+				
+				if(cursor==33 && $('#dialog_encuesta_terminada').is(':visible'))				
+					return false;				
+					
+				if(cursor==33 && $('#dialog_cajas').is(':visible'))
+				{
+					if(parseInt($('#select_cajas').val())==0)
+					{						
+						$('label.ui-state-active').removeClass('ui-state-active');
+						$('#dialog_encuesta_terminada').show();
+						$('#dialog_cajas').hide();
+						$('#container').hide();
+						$('#botones').show();
+						return false;
+					}
+					activarCajas(parseInt($('#select_cajas').val()));
 					cursor++;
+					cargar_contenido(cursor);
+					cargar_listener(cursor);
+					$('#container').show();
+					$('#dialog_cajas').hide();					
+					$('#botones').show();
+					return false;
+				}
+				if(cursor==33){																
+					$('#container').hide();
+					$('#dialog_cajas').show();	
+					// $('#volver').hide();	
+					$('#botones').hide();
+					$('#boton_cajas').click(function(){						
+						if(parseInt($('#select_cajas').val())==0)						
+						{							
+							$('label.ui-state-active').removeClass('ui-state-active');
+							$('#dialog_encuesta_terminada').show();
+							$('#dialog_cajas').hide();
+							$('#container').hide();
+							$('#botones').show();
+							return false;
+						}
+						activarCajas(parseInt($('#select_cajas').val()));
+						cursor++;
+						cargar_contenido(cursor);
+						cargar_listener(cursor);
+						$('#container').show();
+						$('#dialog_cajas').hide();					
+						$('#botones').show();
+					});	
+					return false;
+				}			
+				if(cursor==42)
+				{					
+					$('label.ui-state-active').removeClass('ui-state-active');
+					$('#dialog_encuesta_terminada').show();
+					$('#dialog_cajas').hide();
+					$('#container').hide();
+					$('#botones').show();
+					return false;
+				}
+				if(cursor<42)
+					cursor++;				
 				var dfd = $.Deferred();		 
 				/* add handlers to be called when dfd is resolved */
 				dfd
@@ -1514,7 +1781,7 @@ $(document).ready(function() {
 				/* we can chain done methods, too */
 				.done(function() {
 				  // alert('estamos listos');
-				  setTimeout(function() { $('#'+id).removeClass('ui-state-active'); }, 1000);
+				  setTimeout(function() { $('label.ui-state-active').removeClass('ui-state-active'); }, 1000);
 				  //$(event.target).removeClass('ui-state-active');				  
 				});	
 				dfd.resolve("and");			
@@ -1529,41 +1796,84 @@ $(document).ready(function() {
 	});
 
 	// $('button').button();
-	$('button').css('padding','0em');
-	$('span').css('padding','0em');	
-	cargar_auditores();
-		
-	$('#guardar').mousedown(function(){		
-		
-		var obj_toma=new toma(id_medicion,new Date(),1,codigo_auditor,folio_sala,respuestasDB().get());			
-		
-		save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
-	});
+	// $('button').css('padding','0em');
+	// $('span').css('padding','0em');	
+	cargar_mediciones();
 	
-	$('.cursor').mousedown(function(event){				
+	// $('#volver').click(function(event){															
+		// $('#sesion').show();
+		// $('#botones').hide();
+		// $('#container').hide();
+		// $('#volver').hide();
+		// $('label.ui-state-active').removeClass('ui-state-active');		
+	// });
 	
-		$(event.target).addClass('ui-state-active');	
-	
-		if($(this).attr('id')==='ant')
+	$('.cursor').click(function(event){																			
+		
+		switch($(event.target).attr('id'))
 		{
-            if(cursor>1)							
-                cursor--;
-		}
-		else
-		{
-			if(!validar_pregunta(cursor))
-			{
-				$(event.target).removeClass('ui-state-active');
-				return false;				
-			}
-			if(cursor==33){										
-				cajas = prompt("¿Cuántas cajas registradoras tienen ubiaciones adicionales? Si no sabe ignore esta pregunta","9");							
-				activarCajas(parseInt(cajas));
-			}
-            if(cursor<42)							
-                cursor++;
-		}				
-		
+			case 'ant':
+				if(cursor>1)							
+					cursor--;
+				break;
+			case 'sig':
+				if(!validar_pregunta(cursor))
+				{
+					$('label.ui-state-active').removeClass('ui-state-active');
+					return false;				
+				}
+				if(cursor==33 && $('#dialog_encuesta_terminada').is(':visible'))				
+					return false;				
+				if(cursor==33){
+					$('#container').hide();
+					$('#dialog_cajas').show();
+					// $('#volver').hide();
+					$('#botones').hide();
+					$('#boton_cajas').click(function(){
+						activarCajas(parseInt($('#select_cajas').val()));
+						$('#container').show();
+						$('#dialog_cajas').hide();
+						cursor++;
+						cargar_contenido(cursor);
+						cargar_listener(cursor);
+						$('#botones').show();	
+					});	
+					return false;
+				}		
+				if(cursor==42)
+				{				
+					$('label.ui-state-active').removeClass('ui-state-active');
+					$('#dialog_encuesta_terminada').show();
+					$('#dialog_cajas').hide();
+					$('#container').hide();
+					$('#botones').show();
+					return false;
+				}
+				if(cursor<42)							
+					cursor++;			
+				break;
+			case 'guardar':
+				var obj_toma=new toma(id_medicion,new Date(),1,codigo_auditor,folio_sala,respuestasDB().get());					
+				save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);
+				break;
+			case 'enviar':
+				if(validar_cuestionario())
+				{
+					alert("Cuestionario completado. Por favor confirme el siguiente diálogo para guardar su trabajo y evitar posibles pérdidas");
+					obj_toma= new toma(id_medicion,new Date(),2,codigo_auditor,folio_sala,respuestasDB().get());		
+					save_content_to_file(JSON.stringify(obj_toma), pathCuestionario);			
+					$('#dialog_encuesta_terminada').hide();
+					$('#botones').hide();
+					$('#dialog_enviando_toma').show();
+					enviar_toma2();
+					return false;					
+				}
+				else
+				{
+					alert("Existen preguntas que no han sido correctamente respondidas. Porfavor verifique");
+				}
+				break;			
+		}											
 		var dfd = $.Deferred();
 		 
 		/* add handlers to be called when dfd is resolved */
@@ -1573,31 +1883,97 @@ $(document).ready(function() {
 		/* we can chain done methods, too */
 		.done(function() {
 		  // alert('estamos listos');
-		  setTimeout(function() { $(event.target).removeClass('ui-state-active'); }, 1000);
+		  setTimeout(function() { $('label.ui-state-active').removeClass('ui-state-active'); }, 1000);
 		  //$(event.target).removeClass('ui-state-active');
 		});				
 		dfd.resolve("and");		
-	});
-	
-	$('#enviar').mousedown(function(){
-		
-		if(validar_cuestionario())
-		{
-			if(confirm("Cuestionario completado correctamente, ¿Confirma el envío de la toma?"))
-				enviar_toma2();
-		}
-		else
-		{
-			alert("Existen preguntas que no han sido correctamente respondidas. Porfavor verifique");
-		}
-	});			
+	});		
 });
+
+function listenerFiltro()
+{	
+	var filtrado= false;
+	var indice=0;
+	var clase='';
+
+	$('#buscar').keydown(function(e){				
+		setTimeout("setFocus('buscar')", 0);			
+		switch(e.keyCode)
+		{			
+			case 13:					
+				var needle=$('#buscar').val().toUpperCase();	
+				var delta=$('#salas tbody tr:first').height();				
+				// delta=0.97*delta;
+				var offset=delta;
+				var oSettings = $('#tabla_salas').dataTable().fnSettings();				
+				
+				if(needle=='')
+				{
+					$('.matched').removeClass('matched');	
+					$('.matched_active').removeClass('matched_active');	
+					return false;
+				}
+				if(!filtrado)
+				{
+					filtrado=true;							
+					var hit=false;
+					// $('.ui-state-active').removeClass('ui-state-active');				
+					$('.matched').removeClass('matched');	
+					$('.matched_active').removeClass('matched_active');	
+					$('#tabla_salas tbody tr').each(function(){						
+						var haystack=$(this).text().toString().toUpperCase();		
+						// alert(haystack);
+						if (haystack.indexOf(needle)!=-1) {															
+							if(!hit)							
+								clase='matched_active';														
+							else							
+								clase='matched';
+														
+							
+							// $(this).addClass(clase);
+							
+							$('#tabla_salas tbody').children(':eq('+$(this).index()+')').addClass(clase);
+							hit=true;							
+						}
+					});
+					if(hit)
+					{															
+						offset=($('.matched_active:first').index())*delta;
+						$('.dataTables_scrollBody').animate({ scrollTop: offset });		
+					}
+					else
+					{
+						alert('El item no fue encontrado');
+						$('#buscar').val('');
+						$('.dataTables_scrollBody').animate({ scrollTop: 0 });	
+					}
+				}
+				else
+				{									
+					offset=($('.matched:first').index())*delta;
+					if($('.matched').length<=1)
+						filtrado=false;
+					$('.matched_active').removeClass('matched_active');	
+					$('#tabla_salas tbody tr.matched:first').addClass('matched_active');
+					$('#tabla_salas tbody tr.matched:first').removeClass('matched');	
+					
+					// $('#tabla_salas tbody tr.matched:first').addClass('matched_active');
+					// $('#tabla_salas tbody tr.matched:first').removeClass('matched');						
+					
+					$('.dataTables_scrollBody').animate({ scrollTop: offset });						
+				}
+				break;
+			default:
+				filtrado=false;
+				break;
+		}		
+	});
+}
 </script>
 </head>
 <body>
 
 <div id="container" style="width:100%;display:none;">
-
     <table id='cuestionario' width='100%' class='display table' border=1>
 		<thead>
 		<tr style="background-color:#000000">
@@ -1612,72 +1988,74 @@ $(document).ready(function() {
 		<tr>
 			<td id='topico' style='vertical-align:middle'>
 					<h4 style="background-color:#000000;">
-							Cargando...
+						Cargando...
 					</h4>			
 			</td>
 		</tr>		
 		<tr>
 			<td id='seccion' style='vertical-align:middle'>
 					<h4>
-							Cargando...
+						Cargando...
 					</h4>			
 			</td>
 		</tr>		
 		<tr>
 			<td id='pregunta' style='height:100px;' style='vertical-align:middle'>
 				<h4>
-						Cargando...
+					Cargando...
 				</h4>
 			</td>
 		</tr>				
 		<tr>
 			<td id='respuesta' style='vertical-align:top'>				
 				<h4>
-						Cargando...
+					Cargando...
 				</h4>
 			</td>		
 		</tr>	
 		<tbody>
-    </table>	
-	
-    <table width='70%' align='center'>    
-        <tr>
-            <td width='20%'>
-                <button class='cursor' id='ant' style='padding:0em;margin:0em'>
-                    <img src='images/arrow-left.png' style='width:4em;height:3em'/>
-                </button>                
-            </td>
-            <td width='20%'>
-                <button id='guardar' style='width:100%;height:50%'>
-                    <img src='images/System-Save-icon.png' style='width:4em;height:3em'/>
-                </button>  
-            </td>
-            <td width='20%'>
-                <button id='enviar' style='width:100%;height:50%'>
-                    <img src='images/600px-Black_check.svg.png' style='width:4em;height:3em'/>
-                </button> 
-            </td>
-            <td width='20%'>
-                <button class='cursor' id='sig' style='padding:0em;margin:0em'>
-                    <img src='images/arrow.png' style='width:4em;height:3em'/>
-                </button>	
-            </td>
-        </tr>
-    </table>
+    </table>	    
+</div>	
+</body>
+<div id="dialog_encuesta_terminada" align='center' style='display:none'>
+	<p>
+		Cuestionario completado correctamente. 
+	</p>
+	<p>
+		Presione el botón "Enviar" para enviar la toma a la Base de Datos, o bien presione el botón de disco para guardarla localmente.
+	</p>
 </div>
-<div id="sesion" style="width:100%;">
+<div id="dialog_enviando_toma" align='center' style='display:none'>
+	<p>
+		Enviando toma...
+	</p>
+	<p>
+		Por favor espere. El envío puede llegar a tardar varios segundos, dependiendo de la intensidad de la señal.
+	</p>
+</div>
+<div id='botones' style='display:none;text-align:center'>
+	<input type="radio" class='cursor' id="ant" name="radio" /><label for="ant">Anterior</label>
+	<input type="radio" class='cursor' id="guardar" name="radio" /><label for="guardar">Guardar</label>
+	<input type="radio" class='cursor' id="enviar" name="radio" /><label for="enviar">Enviar</label>
+	<input type="radio" class='cursor' id="sig" name="radio" /><label for="sig">Siguiente</label>	
+</div>		
+<!-- <div id='volver' style='display:none;text-align:center'>
+	<input type="radio" class='cursor' id="volver" name="radio" /><label for="volver">Volver</label>
+</div> -->		
+<div id="sesion" style="width:100%;display:none">
 	<table width='100%'>
 			<thead>
 			<table width='100%'>
 				<thead>
 					<tr>
-						<th class='ui-widget-header' width='40%'>
-							<h4>
-							MEDICION:
-							</h4>
+						<th class='ui-widget-header' width='40%'>							
+							MEDICION							
 						</th>
 						<th style='vertical-align:middle' width='60%'>							
-							<select id='mediciones' style='width:100%;text-align:center;font-size:1em'>								
+							<select id='mediciones' style='width:100%;text-align:center;font-size:1em' disabled>	
+								<option>
+									CARGANDO...
+								</option>
 							</select>												
 						</th>
 					</tr>
@@ -1687,9 +2065,27 @@ $(document).ready(function() {
 		<tr>
 			<td>
 				<div id='auditores'>
-					<h2>
-						Cargando auditores...
-					</h2>
+					<table width='100%'>
+						<tr>
+							<td class='ui-widget-header' width='40%'>
+								ID AUDITOR
+							</td>
+							<td class='ui-widget-content' width='60%'>
+								<input id='codigo_auditor' size=4 style='font-size:1.2em' />
+								<button id='auditor' style='font-size:1em' class='btn'>
+									OK
+								</button>
+							</td>
+						</tr>
+						<tr>
+							<td class='ui-widget-header'>
+								USUARIO
+							</td>
+							<td class='ui-widget-content' id='nombre_auditor' style='font-size:1.2em'>
+								---
+							</td>
+						</tr>										
+					</table>
 				</div>
 			</td>
 		</tr>
@@ -1701,5 +2097,80 @@ $(document).ready(function() {
 		</tr>
 	</table>
 </div>
-</body>
+<div id="dialog_cajas" align='center' style='display:none'>
+	<p>
+		¿Cuántas cajas registradoras tienen ubicaciones adicionales? Si no sabe, acepte la cantidad por defecto
+	</p>
+	<select id='select_cajas' style='font-size:1em'>
+		<option value='0'>
+			Ninguna
+		</option>
+		<option value='1'>
+			1 Caja
+		</option>
+		<option value='2'>
+			2 Cajas
+		</option>		
+		<option value='3'>
+			3 Cajas
+		</option>
+		<option value='4'>
+			4 Cajas
+		</option>				
+		<option value='5'>
+			5 Cajas
+		</option>
+		<option value='6'>
+			6 Cajas
+		</option>		
+		<option value='7'>
+			7 Cajas
+		</option>
+		<option value='8'>
+			8 Cajas
+		</option>						
+		<option value='9' selected='selected'>
+			9 Cajas
+		</option>								
+	</select>
+	<button id='boton_cajas' style='font-size:1em;'>
+		Aceptar
+	</button>
+</div>
+<div id='inicio' style='text-align:center'>
+	<br />
+	<br />	
+	<p>
+		<img src='images/logocadem.png' style='height:75%;width:75%' />					
+	</p>
+	<p>
+		<h2>
+			Cuestionario PSA
+		</h2>
+		<h3>
+			Espere unos momentos mientras se cargan los datos...
+		</h3>
+	</p>
+	<p>
+		<img src='images/redbull-logo.jpg'/>					
+	</p>
+</div>
+<div id='fin' style='text-align:center;display:none'>
+	<br />
+	<br />	
+	<p>
+		<img src='images/logocadem.png' style='height:75%;width:75%' />					
+	</p>
+	<p>
+		<h2>
+			Cuestionario PSA
+		</h2>
+		<h3>
+			Sesión finalizada. Para realizar una nueva visita cierre y vuelva a abrir el programa.
+		</h3>
+	</p>
+	<p>
+		<img src='images/redbull-logo.jpg'/>					
+	</p>
+</div>
 </html>
